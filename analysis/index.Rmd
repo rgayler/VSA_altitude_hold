@@ -1,11 +1,54 @@
 ---
-title: "Home"
+title: "Project Home"
 site: workflowr::wflow_site
+# output:
+#   workflowr::wflow_html:
+#     toc: false
 output:
-  workflowr::wflow_html:
+  bookdown::html_document2:
     toc: false
 editor_options:
   chunk_output_type: console
+  markdown: 
+    wrap: 72
 ---
 
-Welcome to my research website.
+This is the website for the research project "VSA Altitude Hold".
+
+If you have cloned the project to a local computer this website is
+rendered in the `docs` subdirectory of the project directory.
+
+If you are using `workflowr` to publish the research website it will
+also be rendered online to GitHub Pages.
+
+This page acts as a table of contents for the website. There are links
+to the web pages generated from the analysis notebooks and to the
+rendered versions of any manuscripts/documents/presentations.
+
+------------------------------------------------------------------------
+
+# Overview documents {.unnumbered}
+
+## [Design Notes](design_notes.html) {.unnumbered}
+
+This notebook is for keeping notes about potential approaches for implementing altitude hold in VSA.
+
+------------------------------------------------------------------------
+
+# Publications {.unnumbered}
+
+Links to rendered manuscripts and presentations will go here.
+
+------------------------------------------------------------------------
+
+# Empirical Notebooks {.unnumbered}
+
+Links to notebooks recording empirical work will go here.
+
+This project repository deals with the conceptual issues of using VSA for altitude hold.
+Actual implementation occurs in the [gym-copter][] repository
+So the empirical work in this repository is limited to exploration of VSA-specific issues.
+
+[gym-copter]: https://github.com/simondlevy/gym-copter
+
+

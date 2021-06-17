@@ -1,0 +1,122 @@
+---
+title: "Design Notes"
+author: "Ross Gayler"
+date: "2021-06-17"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+  markdown: 
+    wrap: 72
+---
+
+## Introduction
+
+This notebook records the thinking behind implementing altitude hold in
+[VSA](https://www.hd-computing.com/).
+
+# Strategy
+
+-   Limit the initial problem to altitude hold because this is
+    one-dimensional (as opposed to fully general flight control). This
+    is done to simplify the problem as much as possible.
+
+-   Treat the VSA components as drop-in replacements for standard
+    control circuitry.
+
+This reduces the probability that we will hit an obstacle requiring us
+to completely reconceptualise how altitude hold is done. On the other
+hand, it means that we will parallel the classical altitude hold
+computation, so we may miss seeing some (hypothetical) VSA-centric
+solution that has no classical analogue.
+
+# Data Flow Diagram
+
+-   The data floww diagram represents the desired calculation for
+    altitude hold.
+
+-   The data flow diagram is derived from
+    [`AltitudeHoldPidController`](https://github.com/simondlevy/gym-copter/blob/00dc4e6e5e2574d569ad941d064fc0f0efb1d348/heuristic/pidcontrollers.py#L14).
+
+-   Each vertex in the diagram represents a value and the computation
+    that calculates the value.
+
+-   Each directed edge in the diagram represents a value flow from one
+    vertex to another
+
+Think of the data flow diagram as specifying an electronic analog
+computer where the vertices correspond to function blocks and the edges
+correspond to wires.
+
+*Data flow diagram goes here*
+
+*Data flow table goes here*
+
+*There is a very minor technical question of whether it is better to
+represent the external signal sources and sinks by vertices in the data
+flow diagram or whether those data flows should be represented by edges
+with only one vertex.*
+
+# Interfacing
+
+-   VSA values are very high dimensional vectors.
+
+-   The values in the classical implementation of the data flow diagram
+    are very low dimensional vectors (typically scalars).
+
+-   The surrounding machinery of the multicopter simulation assumes that
+    the inputs to and outputs from the altitude hold are classical
+    values. Therefore interfaces are need to convert between the
+    classical and VSA representations.
+
+-   The interfaces between the classical and VSA are essentially
+    projections between low and high dimensional vector spaces.
+
+# Minimal Collapse Scenario
+
+-   Replace all the edges in the data flow diagram with VSA equivalents.
+
+-   Leave all the vertices in classical form.
+
+The edges are equivalent to wires. A value is inserted at one end and
+retrieved at the other end. This would require a classical to VSA
+interface at the input of the edge and a VSA to classical interface at
+the output end.
+
+This would seem to be an almost pointless thing to do. However, the
+classical values are assumed to absolutely accurate as mathematical
+idealisations. Different physical realisations will be inaccurate to
+some extent. A software implementation would likely represent the values
+as [double-precision
+floating-point](https://en.wikipedia.org/wiki/Double-precision_floating-point_format).
+A very constrained computer might represent the values with [8-bit
+integers](https://en.wikipedia.org/wiki/8-bit_computing). An analog
+computer might represent the values as voltages in some constrained
+range and with noise present in the signal.
+
+Analogously, there can be range, distortion, and noise effects present
+in VSA representations. There can also be implementation noise, for
+example if VSA representations are implemented with simulated spiking
+neurons.
+
+-   The minimal collapse scenario would be useful for investigating the
+    effects of VSA representation inaccuracy on the behaviour of the
+    otherwise unaltered altitude hold circuit. This could indicate which
+    values require high fidelity representations.
+
+# Maximal Collapse Scenario
+
+-   Replace the entire set of vertices of the data flow diagram (with
+    the exception of external sources and sinks) with a single vertex.
+    That is, altitude hold is treated as a single, complicated function
+    with no discernible internal data flows. For example, it might be
+    possible to implement the altitude hold as effectively an
+    interpolating lookup table.
+
+Such a model might have advantages depending on the implementation
+technology.
+
+# Option 1 -
+
+# Option 2 -
+
+# Etc.

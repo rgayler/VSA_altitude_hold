@@ -13,9 +13,12 @@ navbar:
   - icon: fa-github
     text: Source code
     href: https://github.com/rgayler/VSA_altitude_hold
+# use output: bookdown::html_document2: to enable cross-references in notebooks
 output:
-  workflowr::wflow_html:
+  bookdown::html_document2:
+    base_format: workflowr::wflow_html
     toc: yes
     toc_float: yes
+    toc_depth: 5
     theme: cosmo
-    highlight: textmate
+    highlight: textmate # mathjax: "local"

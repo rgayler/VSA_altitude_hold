@@ -16,7 +16,7 @@
 <title>Design Notes</title>
 
 <script src="site_libs/header-attrs-2.9/header-attrs.js"></script>
-<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/jquery-3.5.1/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
@@ -37,6 +37,14 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/htmlwidgets-1.5.3/htmlwidgets.js"></script>
+<link href="site_libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="site_libs/datatables-binding-0.18/datatables.js"></script>
+<link href="site_libs/dt-core-1.10.20/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="site_libs/dt-core-1.10.20/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="site_libs/dt-core-1.10.20/js/jquery.dataTables.min.js"></script>
+<link href="site_libs/crosstalk-1.1.1/css/crosstalk.css" rel="stylesheet" />
+<script src="site_libs/crosstalk-1.1.1/js/crosstalk.min.js"></script>
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
 
@@ -367,7 +375,9 @@ div.tocify {
 
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
-<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 </button>
 </p>
 <div id="workflowr-report" class="collapse">
@@ -376,7 +386,9 @@ div.tocify {
 <a data-toggle="tab" href="#summary">Summary</a>
 </li>
 <li>
-<a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> </a>
+<a data-toggle="tab" href="#checks">
+Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
 </li>
 <li>
 <a data-toggle="tab" href="#versions">Past versions</a>
@@ -385,17 +397,28 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2021-06-17
+<strong>Last updated:</strong> 2021-06-18
 </p>
 <p>
-<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 2 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
+<strong>Checks:</strong>
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+7
+<span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span>
+0
 </p>
 <p>
-<strong>Knit directory:</strong> <code>VSA_altitude_hold/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
+<strong>Knit directory:</strong>
+<code>VSA_altitude_hold/</code>
+<span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed.">
+</span>
 </p>
 <p>
-This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis was created with <a
-  href="https://github.com/jdblischak/workflowr">workflowr</a> (version 1.6.2). The <em>Checks</em> tab describes the reproducibility checks that were applied when the results were created. The <em>Past versions</em> tab lists the development history.
+This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/jdblischak/workflowr">workflowr</a> (version
+1.6.2). The <em>Checks</em> tab describes the
+reproducibility checks that were applied when the results were created.
+The <em>Past versions</em> tab lists the development history.
 </p>
 <hr>
 </div>
@@ -404,43 +427,141 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>R Markdown file:</strong> up-to-date
+</a>
 </p>
 </div>
 <div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
 <div class="panel-body">
-<p>Great! Since the R Markdown file has been committed to the Git repository, you know the exact version of the code that produced these results.</p>
+<p>Great! Since the R Markdown file has been committed to the Git repository, you
+know the exact version of the code that produced these results.</p>
 </div>
 </div>
 </div>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomrgaylerVSAaltitudeholdtreefe8f4b0f26f4694827c985fd36b5509540be509ftargetblankfe8f4b0a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/rgayler/VSA_altitude_hold/tree/fe8f4b0f26f4694827c985fd36b5509540be509f" target="_blank">fe8f4b0</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>Environment:</strong> empty
+</a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomrgaylerVSAaltitudeholdtreefe8f4b0f26f4694827c985fd36b5509540be509ftargetblankfe8f4b0a" class="panel-collapse collapse">
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the global
+environment can affect the analysis in your R Markdown file in unknown ways.
+For reproduciblity it’s best to always run the code in an empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20210617code">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>Seed:</strong> <code>set.seed(20210617)</code>
+</a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20210617code" class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20210617)</code> was run prior to running the code in the R Markdown file.
+Setting a seed ensures that any results that rely on randomness, e.g.
+subsampling or permutations, are reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>Session information:</strong> recorded
+</a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package versions is
+critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>Cache:</strong> none
+</a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be confident
+that you successfully produced the results during this run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>File paths:</strong> relative
+</a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr project
+makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomrgaylerVSAaltitudeholdtreeb6a61ebf13000c39f0576a79999a872d819b486ctargetblankb6a61eba">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>Repository version:</strong> <a href="https://github.com/rgayler/VSA_altitude_hold/tree/b6a61ebf13000c39f0576a79999a872d819b486c" target="_blank">b6a61eb</a>
+</a>
+</p>
+</div>
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomrgaylerVSAaltitudeholdtreeb6a61ebf13000c39f0576a79999a872d819b486ctargetblankb6a61eba" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
-Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
+Great! You are using Git for version control. Tracking code development and
+connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/rgayler/VSA_altitude_hold/tree/fe8f4b0f26f4694827c985fd36b5509540be509f" target="_blank">fe8f4b0</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/rgayler/VSA_altitude_hold/tree/b6a61ebf13000c39f0576a79999a872d819b486c" target="_blank">b6a61eb</a>.
+See the <em>Past versions</em> tab to see a history of the changes made to the
+R Markdown and HTML files.
 </p>
 <p>
-Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
+Note that you need to be careful to ensure that all relevant files for the
+analysis have been committed to Git prior to generating the results (you can
+use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only
+checks the R Markdown file, but you know if there are other scripts or data
+files that it depends on. Below is the status of the Git repository when the
+results were generated:
 </p>
 <pre><code>
 Ignored files:
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
     Ignored:    renv/library/
-    Ignored:    renv/local/
     Ignored:    renv/staging/
 
 </code></pre>
 <p>
-Note that any generated files, e.g. HTML, png, CSS, etc., are not included in this status report because it is ok for generated content to have uncommitted changes.
+Note that any generated files, e.g. HTML, png, CSS, etc., are not included in
+this status report because it is ok for generated content to have uncommitted
+changes.
 </p>
 </div>
 </div>
@@ -451,7 +572,11 @@ Note that any generated files, e.g. HTML, png, CSS, etc., are not included in t
 <div id="versions" class="tab-pane fade">
 
 <p>
-These are the previous versions of the repository in which changes were made to the R Markdown (<code>analysis/design_notes.Rmd</code>) and HTML (<code>docs/design_notes.html</code>) files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view the files as they were in that past version.
+These are the previous versions of the repository in which changes were made
+to the R Markdown (<code>analysis/design_notes.Rmd</code>) and HTML (<code>docs/design_notes.html</code>)
+files. If you’ve configured a remote Git repository (see
+<code>?wflow_git_remote</code>), click on the hyperlinks in the table below to
+view the files as they were in that past version.
 </p>
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
@@ -477,19 +602,19 @@ Message
 <tbody>
 <tr>
 <td>
-html
+Rmd
 </td>
 <td>
-<a href="https://rawcdn.githack.com/rgayler/VSA_altitude_hold/712914d549a92f6fd032a0dfae2681f177c8de49/docs/design_notes.html" target="_blank">712914d</a>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/b6a61ebf13000c39f0576a79999a872d819b486c/analysis/design_notes.Rmd" target="_blank">b6a61eb</a>
 </td>
 <td>
 Ross Gayler
 </td>
 <td>
-2021-06-17
+2021-06-18
 </td>
 <td>
-Build site.
+wflow_publish("analysis/*.Rmd", republish = TRUE)
 </td>
 </tr>
 <tr>
@@ -497,13 +622,13 @@ Build site.
 Rmd
 </td>
 <td>
-<a href="https://github.com/rgayler/VSA_altitude_hold/blob/efc80b88a47db82069db61622fec4ce561389afc/analysis/design_notes.Rmd" target="_blank">efc80b8</a>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/17282ac2114feee44eb572477f27d56dd62d0062/analysis/design_notes.Rmd" target="_blank">17282ac</a>
 </td>
 <td>
 Ross Gayler
 </td>
 <td>
-2021-06-17
+2021-06-18
 </td>
 <td>
 WIP
@@ -514,7 +639,24 @@ WIP
 html
 </td>
 <td>
-<a href="https://rawcdn.githack.com/rgayler/VSA_altitude_hold/efc80b88a47db82069db61622fec4ce561389afc/docs/design_notes.html" target="_blank">efc80b8</a>
+<a href="https://rawcdn.githack.com/rgayler/VSA_altitude_hold/17282ac2114feee44eb572477f27d56dd62d0062/docs/design_notes.html" target="_blank">17282ac</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-06-18
+</td>
+<td>
+WIP
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/0b7e1d45c154bb74f415168137e234628d4a1e9b/analysis/design_notes.Rmd" target="_blank">0b7e1d4</a>
 </td>
 <td>
 Ross Gayler
@@ -523,7 +665,24 @@ Ross Gayler
 2021-06-17
 </td>
 <td>
-WIP
+Publish initial docs
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/rgayler/VSA_altitude_hold/0b7e1d45c154bb74f415168137e234628d4a1e9b/docs/design_notes.html" target="_blank">0b7e1d4</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-06-17
+</td>
+<td>
+Publish initial docs
 </td>
 </tr>
 </tbody>
@@ -533,68 +692,233 @@ WIP
 </div>
 </div>
 </div>
-<div id="introduction" class="section level2">
-<h2>Introduction</h2>
-<p>This notebook records the thinking behind implementing altitude hold in <a href="https://www.hd-computing.com/">VSA</a>.</p>
-</div>
-<div id="strategy" class="section level1">
-<h1>Strategy</h1>
+<p>This notebook records the design considerations behind implementing
+altitude hold in <a href="https://www.hd-computing.com/">VSA</a>.</p>
+<div id="strategy" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> Strategy</h1>
 <ul>
-<li><p>Limit the initial problem to altitude hold because this is one-dimensional (as opposed to fully general flight control). This is done to simplify the problem as much as possible.</p></li>
-<li><p>Treat the VSA components as drop-in replacements for standard control circuitry.</p></li>
+<li><p>Limit the initial problem to altitude hold because this is
+one-dimensional (as opposed to fully general flight control). This
+is done to simplify the problem as much as possible.</p></li>
+<li><p>Treat the VSA components as drop-in replacements for standard
+control circuitry. This reduces the probability that we will hit an
+obstacle requiring us to completely reconceptualise how altitude
+hold is done. On the other hand, it means that we will parallel the
+classical altitude hold computation, so we may miss seeing some
+(hypothetical) VSA-centric solution that has no classical analogue.</p></li>
 </ul>
-<p>This reduces the probability that we will hit an obstacle requiring us to completely reconceptualise how altitude hold is done. On the other hand, it means that we will parallel the classical altitude hold computation, so we may miss seeing some (hypothetical) VSA-centric solution that has no classical analogue.</p>
 </div>
-<div id="data-flow-diagram" class="section level1">
-<h1>Data Flow Diagram</h1>
-<ul>
-<li><p>The data floww diagram represents the desired calculation for altitude hold.</p></li>
-<li><p>The data flow diagram is derived from <a href="https://github.com/simondlevy/gym-copter/blob/00dc4e6e5e2574d569ad941d064fc0f0efb1d348/heuristic/pidcontrollers.py#L14"><code>AltitudeHoldPidController</code></a>.</p></li>
-<li><p>Each vertex in the diagram represents a value and the computation that calculates the value.</p></li>
-<li><p>Each directed edge in the diagram represents a value flow from one vertex to another</p></li>
-</ul>
-<p>Think of the data flow diagram as specifying an electronic analog computer where the vertices correspond to function blocks and the edges correspond to wires.</p>
-<p><em>Data flow diagram goes here</em></p>
-<p><em>Data flow table goes here</em></p>
-<p><em>There is a very minor technical question of whether it is better to represent the external signal sources and sinks by vertices in the data flow diagram or whether those data flows should be represented by edges with only one vertex.</em></p>
-</div>
-<div id="interfacing" class="section level1">
-<h1>Interfacing</h1>
+<div id="design-issues" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> Design issues</h1>
+<div id="interfacing" class="section level2" number="2.1">
+<h2><span class="header-section-number">2.1</span> Interfacing</h2>
+<p>How do we interface between the VSA components and the classical
+components?</p>
 <ul>
 <li><p>VSA values are very high dimensional vectors.</p></li>
-<li><p>The values in the classical implementation of the data flow diagram are very low dimensional vectors (typically scalars).</p></li>
-<li><p>The surrounding machinery of the multicopter simulation assumes that the inputs to and outputs from the altitude hold are classical values. Therefore interfaces are need to convert between the classical and VSA representations.</p></li>
-<li><p>The interfaces between the classical and VSA are essentially projections between low and high dimensional vector spaces.</p></li>
+<li><p>The values in the classical implementation of the data flow diagram
+are very low dimensional vectors (typically scalars).</p></li>
+<li><p>The surrounding machinery of the multicopter simulation assumes that
+the inputs to and outputs from the altitude hold are classical
+values. Therefore interfaces are need to convert between the
+classical and VSA representations.</p></li>
+<li><p>The interfaces between the classical and VSA are essentially
+projections between low and high dimensional vector spaces.</p></li>
 </ul>
 </div>
-<div id="minimal-collapse-scenario" class="section level1">
-<h1>Minimal Collapse Scenario</h1>
+<div id="representation-of-scalars" class="section level2" number="2.2">
+<h2><span class="header-section-number">2.2</span> Representation of scalars</h2>
+<ul>
+<li><p>Magnitude vs. spatial</p></li>
+<li><p>Range limits</p></li>
+<li><p>Noise/resolution</p></li>
+</ul>
+</div>
+<div id="temporal-issues" class="section level2" number="2.3">
+<h2><span class="header-section-number">2.3</span> Temporal issues</h2>
+<ul>
+<li><p>Standard VSA is point-in-time/static (some implementations may be
+inherently temporal)</p></li>
+<li><p>Embedded in discrete-time simulation. Compatibility of time scales.</p></li>
+<li><p>Temporal resolution of signals?</p></li>
+<li><p>Low-pass filters on everything?</p></li>
+</ul>
+</div>
+<div id="initialisation" class="section level2" number="2.4">
+<h2><span class="header-section-number">2.4</span> Initialisation</h2>
+<ul>
+<li>Classical implementation has explicit initialisation. Do we need
+special VSA circuits to guarantee orderly turn-on? Could we have an
+“always-on” VSA design?</li>
+</ul>
+</div>
+</div>
+<div id="design-01---no-vsa" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> Design 01 - No VSA</h1>
+<p>This section deals with the altitude hold controller before the
+introduction of any VSA components.</p>
+<div id="data-flow-diagram" class="section level2" number="3.1">
+<h2><span class="header-section-number">3.1</span> Data Flow Diagram</h2>
+<ul>
+<li><p>The data flow diagram represents the desired calculation for
+altitude hold.</p></li>
+<li><p>The data flow diagram is derived from
+<a href="https://github.com/simondlevy/gym-copter/blob/00dc4e6e5e2574d569ad941d064fc0f0efb1d348/heuristic/pidcontrollers.py#L14"><code>AltitudeHoldPidController</code></a>.</p></li>
+<li><p>Each vertex in the diagram represents a value and the computation
+that calculates the value.</p></li>
+<li><p>Each directed edge in the diagram represents a value flow from one
+vertex to another</p></li>
+</ul>
+<p>Think of the data flow diagram as specifying an electronic analog
+computer where the vertices correspond to function blocks and the edges
+correspond to wires.</p>
+<div class="figure">
+<img src="assets/alt-hold.png" alt="" />
+<p class="caption">Data flow diagram supplied by Simon D. Levy</p>
+</div>
+<ul>
+<li><p>What is the difference between the rectangular nodes and the unboxed
+nodes? Unboxed appear to be arguments to <code>__init__</code>, so does that
+mean they are constant parameters over the life of the system?</p></li>
+<li><p>For each value (node) , what is it’s type? I presume they are all
+real scalars.</p></li>
+<li><p>For each value (node) , what is it’s range? A physical
+implementation necessarily has limits. This may render <span class="math inline">\(k_{windup}\)</span>
+and <code>constrain</code> redundant.</p></li>
+<li><p>For each value (node) , what is it’s value resolution? This is
+equivalent asking the noise level that can be tolerated.</p></li>
+<li><p>For each value (node) , what is it’s temporal resolution? This is
+equivalent how rapidly we expect the value to change. Some nodes may
+be constant parameters. For time-varying signals do we expect them
+to alternate between the extreme values on successive samples.</p></li>
+<li><p>A related point: this is a discrete-time simulation, is the time
+step fixed? What is the time step? The simplest VSA approach is
+point-in-time. However, it may be possible to dream up some VSA
+representation that is essentially temporal, in which case it needs
+to be compatible with the time-scales of the implementation.</p></li>
+<li><p>Are there better descriptions for the internal nodes? Something with
+intuitive meaning of their function would be good.</p></li>
+<li><p>Does the integrated error needs to be initialised to zero? Does this
+imply the need for “turn-on” circuitry? Would it be better to have
+an “always-on” design? Should there be some error correction for
+cumulative errors?</p></li>
+</ul>
+<p><em>There is a very minor technical question of whether it is better to
+represent the external signal sources and sinks by vertices in the data
+flow diagram or whether those data flows should be represented by edges
+with only one vertex.</em></p>
+</div>
+<div id="data-flow-tables" class="section level2" number="3.2">
+<h2><span class="header-section-number">3.2</span> Data flow tables</h2>
+<p>These table record more detail about the data flow diagram tthan can be
+reasonably displayed on the data flow graph.</p>
+<p><em>Node and edge data flow tables go here</em></p>
+<div id="htmlwidget-ba66f800db736633e5bd" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-ba66f800db736633e5bd">{"x":{"filter":"none","data":[["k_p","k_i","k_tgt","k_windup","z","dz","u","e","ei_t","ei_t1","i1","i2","i3","i4","i5","i6","i7"],["k_p","k_i","k_tgt","k_windup","z","dz","u","e","ei_t","ei_t-1","-","-","*","+","()","*","+"],["input","input","input","input","input","input","output","internal","internal","internal","internal","internal","internal","internal","internal","internal","internal"],[null,null,"target altitude",null,"altitude","vertical velocity","motor command","vertical error","error integral @ t","error integral @ t-1","k_tgt – z","(k_tgt – z) – dz","k_p * e","e +e ei_t-1","constrain(ei_t, k_windup)","k_i * i5","I3 * i6"],["real","real","real","real","real","real","real","real","real","real","real","real","real","real","real","real","real"],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[0.2,3,5,0.2,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,"Needs an initial value (0). Needs a mechanism to initialise it?",null,null,null,null,null,null,null,null]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>nodes<\/th>\n      <th>label<\/th>\n      <th>role<\/th>\n      <th>desc<\/th>\n      <th>type<\/th>\n      <th>range<\/th>\n      <th>value_resolution<\/th>\n      <th>time_resolution<\/th>\n      <th>def_val<\/th>\n      <th>note<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":8}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<div id="design-02---no-vsa-tidied" class="section level1" number="4">
+<h1><span class="header-section-number">4</span> Design 02 - No VSA (tidied)</h1>
+<p>This is the previous design tidied slightly to be more compatible with the VSA changes which will be introduced later.</p>
+</div>
+<div id="extreme-designs" class="section level1" number="5">
+<h1><span class="header-section-number">5</span> Extreme designs</h1>
+<p>Digress briefly to consider the extremes of where we might go with incoirporating VSA components into the design of the altitude hold circuit.</p>
+<div id="minimal-collapse" class="section level2" number="5.1">
+<h2><span class="header-section-number">5.1</span> Minimal collapse</h2>
 <ul>
 <li><p>Replace all the edges in the data flow diagram with VSA equivalents.</p></li>
 <li><p>Leave all the vertices in classical form.</p></li>
 </ul>
-<p>The edges are equivalent to wires. A value is inserted at one end and retrieved at the other end. This would require a classical to VSA interface at the input of the edge and a VSA to classical interface at the output end.</p>
-<p>This would seem to be an almost pointless thing to do. However, the classical values are assumed to absolutely accurate as mathematical idealisations. Different physical realisations will be inaccurate to some extent. A software implementation would likely represent the values as <a href="https://en.wikipedia.org/wiki/Double-precision_floating-point_format">double-precision floating-point</a>. A very constrained computer might represent the values with <a href="https://en.wikipedia.org/wiki/8-bit_computing">8-bit integers</a>. An analog computer might represent the values as voltages in some constrained range and with noise present in the signal.</p>
-<p>Analogously, there can be range, distortion, and noise effects present in VSA representations. There can also be implementation noise, for example if VSA representations are implemented with simulated spiking neurons.</p>
+<p>The edges are equivalent to wires. A value is inserted at one end and
+retrieved at the other end. This would require a classical to VSA
+interface at the input of the edge and a VSA to classical interface at
+the output end.</p>
+<p>This would seem to be an almost pointless thing to do. However, the
+classical values are assumed to absolutely accurate as mathematical
+idealisations. Different physical realisations will be inaccurate to
+some extent. A software implementation would likely represent the values
+as <a href="https://en.wikipedia.org/wiki/Double-precision_floating-point_format">double-precision
+floating-point</a>.
+A very constrained computer might represent the values with <a href="https://en.wikipedia.org/wiki/8-bit_computing">8-bit
+integers</a>. An analog
+computer might represent the values as voltages in some constrained
+range and with noise present in the signal.</p>
+<p>Analogously, there can be range, distortion, and noise effects present
+in VSA representations. There can also be implementation noise, for
+example if VSA representations are implemented with simulated spiking
+neurons.</p>
 <ul>
-<li>The minimal collapse scenario would be useful for investigating the effects of VSA representation inaccuracy on the behaviour of the otherwise unaltered altitude hold circuit. This could indicate which values require high fidelity representations.</li>
+<li>The minimal collapse scenario would be useful for investigating the
+effects of VSA representation inaccuracy on the behaviour of the
+otherwise unaltered altitude hold circuit. This could indicate which
+values require high fidelity representations.</li>
 </ul>
 </div>
-<div id="maximal-collapse-scenario" class="section level1">
-<h1>Maximal Collapse Scenario</h1>
+<div id="maximal-collapse" class="section level2" number="5.2">
+<h2><span class="header-section-number">5.2</span> Maximal collapse</h2>
 <ul>
-<li>Replace the entire set of vertices of the data flow diagram (with the exception of external sources and sinks) with a single vertex. That is, altitude hold is treated as a single, complicated function with no discernible internal data flows. For example, it might be possible to implement the altitude hold as effectively an interpolating lookup table.</li>
+<li>Replace the entire set of vertices of the data flow diagram (with
+the exception of external sources and sinks) with a single vertex.
+That is, altitude hold is treated as a single, complicated function
+with no discernible internal data flows. For example, it might be
+possible to implement the altitude hold as effectively an
+interpolating lookup table.</li>
 </ul>
-<p>Such a model might have advantages depending on the implementation technology.</p>
+<p>Such a model might have advantages depending on the implementation
+technology.</p>
 </div>
-<div id="option-1--" class="section level1">
-<h1>Option 1 -</h1>
 </div>
-<div id="option-2--" class="section level1">
-<h1>Option 2 -</h1>
+<div id="design-03--" class="section level1" number="6">
+<h1><span class="header-section-number">6</span> Design 03 -</h1>
 </div>
-<div id="etc." class="section level1">
-<h1>Etc.</h1>
+<div id="design-04--" class="section level1" number="7">
+<h1><span class="header-section-number">7</span> Design 04 -</h1>
+</div>
+<div id="etc." class="section level1" number="8">
+<h1><span class="header-section-number">8</span> Etc.</h1>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre><code>R version 4.1.0 (2021-05-18)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: Ubuntu 21.04
+
+Matrix products: default
+BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.9.0
+LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.9.0
+
+locale:
+ [1] LC_CTYPE=en_AU.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_AU.UTF-8        LC_COLLATE=en_AU.UTF-8    
+ [5] LC_MONETARY=en_AU.UTF-8    LC_MESSAGES=en_AU.UTF-8   
+ [7] LC_PAPER=en_AU.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_AU.UTF-8 LC_IDENTIFICATION=C       
+
+attached base packages:
+[1] stats     graphics  grDevices datasets  utils     methods   base     
+
+other attached packages:
+[1] DT_0.18      readxl_1.3.1 here_1.0.1  
+
+loaded via a namespace (and not attached):
+ [1] Rcpp_1.0.6        pillar_1.6.1      compiler_4.1.0    cellranger_1.1.0 
+ [5] later_1.2.0       git2r_0.28.0      workflowr_1.6.2   tools_4.1.0      
+ [9] digest_0.6.27     jsonlite_1.7.2    evaluate_0.14     lifecycle_1.0.0  
+[13] tibble_3.1.2      pkgconfig_2.0.3   rlang_0.4.11      crosstalk_1.1.1  
+[17] yaml_2.2.1        xfun_0.24         stringr_1.4.0     knitr_1.33       
+[21] fs_1.5.0          vctrs_0.3.8       htmlwidgets_1.5.3 rprojroot_2.0.2  
+[25] glue_1.4.2        R6_2.5.0          fansi_0.5.0       rmarkdown_2.9    
+[29] bookdown_0.22     magrittr_2.0.1    whisker_0.4       promises_1.2.0.1 
+[33] ellipsis_0.3.2    htmltools_0.5.1.1 renv_0.13.2       httpuv_1.6.1     
+[37] utf8_1.2.1        stringi_1.6.2     crayon_1.4.1     </code></pre>
+</div>
 </div>
 
 
@@ -660,7 +984,7 @@ $(document).ready(function ()  {
 
     // establish options
     var options = {
-      selectors: "h1,h2,h3",
+      selectors: "h1,h2,h3,h4,h5",
       theme: "bootstrap3",
       context: '.toc-content',
       hashGenerator: function (text) {

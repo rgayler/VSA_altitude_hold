@@ -9,10 +9,20 @@ editor_options:
     wrap: 72
 ---
 
-## Introduction
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
 
-This notebook records the thinking behind implementing altitude hold in
-[VSA](https://www.hd-computing.com/).
+suppressPackageStartupMessages(
+  {
+    library(here)
+    library(readxl)
+    library(DT)
+  }
+)
+```
+
+This notebook records the design considerations behind implementing
+altitude hold in [VSA](https://www.hd-computing.com/).
 
 # Strategy
 
@@ -21,17 +31,65 @@ This notebook records the thinking behind implementing altitude hold in
     is done to simplify the problem as much as possible.
 
 -   Treat the VSA components as drop-in replacements for standard
-    control circuitry.
+    control circuitry. This reduces the probability that we will hit an
+    obstacle requiring us to completely reconceptualise how altitude
+    hold is done. On the other hand, it means that we will parallel the
+    classical altitude hold computation, so we may miss seeing some
+    (hypothetical) VSA-centric solution that has no classical analogue.
 
-This reduces the probability that we will hit an obstacle requiring us
-to completely reconceptualise how altitude hold is done. On the other
-hand, it means that we will parallel the classical altitude hold
-computation, so we may miss seeing some (hypothetical) VSA-centric
-solution that has no classical analogue.
+# Design issues
 
-# Data Flow Diagram
+## Interfacing
 
--   The data floww diagram represents the desired calculation for
+How do we interface between the VSA components and the classical
+components?
+
+-   VSA values are very high dimensional vectors.
+
+-   The values in the classical implementation of the data flow diagram
+    are very low dimensional vectors (typically scalars).
+
+-   The surrounding machinery of the multicopter simulation assumes that
+    the inputs to and outputs from the altitude hold are classical
+    values. Therefore interfaces are need to convert between the
+    classical and VSA representations.
+
+-   The interfaces between the classical and VSA are essentially
+    projections between low and high dimensional vector spaces.
+
+## Representation of scalars
+
+-   Magnitude vs. spatial
+
+-   Range limits
+
+-   Noise/resolution
+
+## Temporal issues
+
+-   Standard VSA is point-in-time/static (some implementations may be
+    inherently temporal)
+
+-   Embedded in discrete-time simulation. Compatibility of time scales.
+
+-   Temporal resolution of signals?
+
+-   Low-pass filters on everything?
+
+## Initialisation
+
+-   Classical implementation has explicit initialisation. Do we need
+    special VSA circuits to guarantee orderly turn-on? Could we have an
+    "always-on" VSA design?
+
+# Design 01 - No VSA
+
+This section deals with the altitude hold controller before the
+introduction of any VSA components.
+
+## Data Flow Diagram
+
+-   The data flow diagram represents the desired calculation for
     altitude hold.
 
 -   The data flow diagram is derived from
@@ -47,31 +105,70 @@ Think of the data flow diagram as specifying an electronic analog
 computer where the vertices correspond to function blocks and the edges
 correspond to wires.
 
-*Data flow diagram goes here*
+![Data flow diagram supplied by Simon D. Levy](assets/alt-hold.png)
 
-*Data flow table goes here*
+-   What is the difference between the rectangular nodes and the unboxed
+    nodes? Unboxed appear to be arguments to `__init__`, so does that
+    mean they are constant parameters over the life of the system?
+
+-   For each value (node) , what is it's type? I presume they are all
+    real scalars.
+
+-   For each value (node) , what is it's range? A physical
+    implementation necessarily has limits. This may render $k_{windup}$
+    and `constrain` redundant.
+
+-   For each value (node) , what is it's value resolution? This is
+    equivalent asking the noise level that can be tolerated.
+
+-   For each value (node) , what is it's temporal resolution? This is
+    equivalent how rapidly we expect the value to change. Some nodes may
+    be constant parameters. For time-varying signals do we expect them
+    to alternate between the extreme values on successive samples.
+
+-   A related point: this is a discrete-time simulation, is the time
+    step fixed? What is the time step? The simplest VSA approach is
+    point-in-time. However, it may be possible to dream up some VSA
+    representation that is essentially temporal, in which case it needs
+    to be compatible with the time-scales of the implementation.
+
+-   Are there better descriptions for the internal nodes? Something with
+    intuitive meaning of their function would be good.
+
+-   Does the integrated error needs to be initialised to zero? Does this
+    imply the need for "turn-on" circuitry? Would it be better to have
+    an "always-on" design? Should there be some error correction for
+    cumulative errors?
 
 *There is a very minor technical question of whether it is better to
 represent the external signal sources and sinks by vertices in the data
 flow diagram or whether those data flows should be represented by edges
 with only one vertex.*
 
-# Interfacing
+## Data flow tables
 
--   VSA values are very high dimensional vectors.
+These table record more detail about the data flow diagram tthan can be
+reasonably displayed on the data flow graph.
 
--   The values in the classical implementation of the data flow diagram
-    are very low dimensional vectors (typically scalars).
+*Node and edge data flow tables go here*
 
--   The surrounding machinery of the multicopter simulation assumes that
-    the inputs to and outputs from the altitude hold are classical
-    values. Therefore interfaces are need to convert between the
-    classical and VSA representations.
+```{r}
+d_n <- readxl::read_xlsx(here::here("data", "nodes01.xlsx"))
+d_n %>% 
+  DT::datatable(rownames = FALSE)
+```
 
--   The interfaces between the classical and VSA are essentially
-    projections between low and high dimensional vector spaces.
 
-# Minimal Collapse Scenario
+# Design 02 - No VSA (tidied)
+
+This is the previous design tidied slightly to be more compatible with the VSA changes which will be introduced later.
+
+
+# Extreme designs
+
+Digress briefly to consider the extremes of where we might go with incoirporating VSA components into the design of the altitude hold circuit.
+
+## Minimal collapse
 
 -   Replace all the edges in the data flow diagram with VSA equivalents.
 
@@ -103,7 +200,7 @@ neurons.
     otherwise unaltered altitude hold circuit. This could indicate which
     values require high fidelity representations.
 
-# Maximal Collapse Scenario
+## Maximal collapse
 
 -   Replace the entire set of vertices of the data flow diagram (with
     the exception of external sources and sinks) with a single vertex.
@@ -115,8 +212,8 @@ neurons.
 Such a model might have advantages depending on the implementation
 technology.
 
-# Option 1 -
+# Design 03 -
 
-# Option 2 -
+# Design 04 -
 
 # Etc.

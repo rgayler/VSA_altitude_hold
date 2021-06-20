@@ -16,9 +16,13 @@ suppressPackageStartupMessages(
   {
     library(here)
     library(readxl)
+    library(DiagrammeR)
+    library(dplyr)
     library(DT)
   }
 )
+
+source(here::here("R", "functions.R"))
 ```
 
 This notebook records the design considerations behind implementing
@@ -95,24 +99,71 @@ introduction of any VSA components.
 -   The data flow diagram is derived from
     [`AltitudeHoldPidController`](https://github.com/simondlevy/gym-copter/blob/00dc4e6e5e2574d569ad941d064fc0f0efb1d348/heuristic/pidcontrollers.py#L14).
 
--   Each vertex in the diagram represents a value and the computation
-    that calculates the value.
+-   Each node in the diagram represents a potentially inspectable value
+    or the application of a function
 
 -   Each directed edge in the diagram represents a value flow from one
-    vertex to another
+    node to another
 
 Think of the data flow diagram as specifying an electronic analog
-computer where the vertices correspond to function blocks and the edges
+computer where the nodes correspond to function blocks and the edges
 correspond to wires.
 
-![Data flow diagram supplied by Simon D. Levy](assets/alt-hold.png)
+This is the diagram supplied by Simon Levy.
 
--   What is the difference between the rectangular nodes and the unboxed
-    nodes? Unboxed appear to be arguments to `__init__`, so does that
-    mean they are constant parameters over the life of the system?
+![](assets/alt-hold.png)
 
--   For each value (node) , what is it's type? I presume they are all
-    real scalars.
+This is the diagram reformatted to be consistent with later data flow
+diagrams.
+
+```{r}
+# Create a DFD graph
+# The specifications are stored in a spreadsheet
+dfd01 <- here::here("data", "dfd01.xlsx") %>% mk_dfd_graph()
+
+dfd01 %>% DiagrammeR::render_graph()
+```
+
+-   Parameter nodes are coloured grey. These are constant values.
+
+-   Input nodes are coloured yellow. These are variable values over
+    time.
+
+-   Output nodes are coloured orange. These are variable values over
+    time.
+
+-   Internal value nodes are coloured light blue. These are variable
+    values over time.
+
+-   Function nodes are coloured deep sky blue (the darker shade of
+    blue). These are variable values over time.
+
+-   This data flow diagram represents the classically implemented
+    computation, so each value is a scalar real.
+
+-   Each node is labelled so that they can be referred to.
+
+    -   The function nodes are labelled with the function name, then a
+        unique label in parentheses.
+
+-   Each node should be interpreted as being implicitly subscripted by
+    *time*. Only the *ei* nodes are explicitly subscripted by time.
+
+## Data flow tables
+
+The data flow diagram is specified in an external spreadsheet.
+This allows extra attributes to be associated with the nodes and edges
+and provides a tolerable user interface for editing the specifications.
+These tables record more detail about the data flow diagram than can be
+reasonably displayed on the data flow graph.
+
+```{r}
+# Display the complete node and edge data frames
+# These contain more information than can be displayed in the gfraph
+
+dfd01 %>% DiagrammeR::get_node_df() %>% DT::datatable(rownames = FALSE, caption = "Nodes")
+dfd01 %>% DiagrammeR::get_edge_df() %>% DT::datatable(rownames = FALSE, caption = "Edges")
+```
 
 -   For each value (node) , what is it's range? A physical
     implementation necessarily has limits. This may render $k_{windup}$
@@ -122,11 +173,11 @@ correspond to wires.
     equivalent asking the noise level that can be tolerated.
 
 -   For each value (node) , what is it's temporal resolution? This is
-    equivalent how rapidly we expect the value to change. Some nodes may
-    be constant parameters. For time-varying signals do we expect them
-    to alternate between the extreme values on successive samples.
+    equivalent how rapidly we expect the value to change. Some nodes are
+    constant parameters. For time-varying signals do we expect them
+    to alternate between the extreme values on successive samples?
 
--   A related point: this is a discrete-time simulation, is the time
+-   A related point: this is a discrete-time simulation - is the time
     step fixed? What is the time step? The simplest VSA approach is
     point-in-time. However, it may be possible to dream up some VSA
     representation that is essentially temporal, in which case it needs
@@ -140,33 +191,16 @@ correspond to wires.
     an "always-on" design? Should there be some error correction for
     cumulative errors?
 
-*There is a very minor technical question of whether it is better to
-represent the external signal sources and sinks by vertices in the data
-flow diagram or whether those data flows should be represented by edges
-with only one vertex.*
-
-## Data flow tables
-
-These table record more detail about the data flow diagram tthan can be
-reasonably displayed on the data flow graph.
-
-*Node and edge data flow tables go here*
-
-```{r}
-d_n <- readxl::read_xlsx(here::here("data", "nodes01.xlsx"))
-d_n %>% 
-  DT::datatable(rownames = FALSE)
-```
-
-
 # Design 02 - No VSA (tidied)
 
-This is the previous design tidied slightly to be more compatible with the VSA changes which will be introduced later.
-
+This is the previous design modified to be more compatible with the VSA
+changes which will be introduced later.
 
 # Extreme designs
 
-Digress briefly to consider the extremes of where we might go with incoirporating VSA components into the design of the altitude hold circuit.
+Digress briefly to consider the extremes of where we might go with
+incoirporating VSA components into the design of the altitude hold
+circuit.
 
 ## Minimal collapse
 

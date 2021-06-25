@@ -28,7 +28,7 @@ source(here::here("R", "functions.R"))
 This notebook records the design considerations behind implementing
 altitude hold in [VSA](https://www.hd-computing.com/).
 
-# Strategy
+# Drop-in strategy {#dropin-strategy}
 
 -   Limit the initial problem to altitude hold because this is
     one-dimensional (as opposed to fully general flight control). This
@@ -42,6 +42,86 @@ altitude hold in [VSA](https://www.hd-computing.com/).
     (hypothetical) VSA-centric solution that has no classical analogue.
 
 # Design issues
+
+## PID controller
+
+-   The existing classically implemented computation is a [PID
+    controller](https://en.wikipedia.org/wiki/PID_controller)
+
+-   By my reading there is no claim to the optimality of PID
+    controllers. Rather, they are simple and in widespread use.
+
+-   My reading also suggests there are plenty of PID variants that are
+    engineering solutions to issues with basic PID.
+
+-   I conclude there is nothing sacrosanct about PID control, and it is
+    possible that other PID variants or completely different approaches
+    to process control *may* be more amenable to VSA implementation.
+
+-   Nonetheless, I will stick with attempting a VSA implementation of
+    the existing PID controller because of the commitment to a [drop-in
+    replacement strategy](#dropin-strategy).
+
+    -   The concept of drop-in replacement makes most sense when
+        replacing individual components of the data flow graph.
+
+    -   VSA replacement of larger components of the data flow graph (in
+        the extreme, treating the entire PID controller as a single VSA
+        function) arguably loses the PID structure, because those
+        components no longer exist as separable mechanisms.
+
+## Parameterisation
+
+-   The classically implemented PID controller has four parameters:
+    $k_{tgt}$, $k_p$, $k_i$, $k_{windup}$
+
+-   $k_{tgt}$, the target holding altitude, should arguably be a
+    variable rather than a parameter. In the current implementation it
+    is set to the constant value of 5 metres. A more general
+    implementation would allow the hold altitude to be set arbitrarily.
+
+    -   If this is treated as a variable it will need to be explicitly
+        represented as a VSA value even if the value is held constant
+        during simulations.
+    -   Parameters which are treated as constants do not *need* to be
+        explicitly represented as VSA values and their effect can be
+        absorbed into the surrounding function (like
+        [currying](https://en.wikipedia.org/wiki/Currying))
+
+-   The remaining three parameters are for tuning the PID process to
+    minimise overshoot and other undesired behaviours.
+
+-   There are interactions between the parameters (in terms of their
+    joint effect on the system behaviour).
+
+    -   For example, $k_i$ is relatively large in the classically
+        implemented system at least in part to compensate for
+        $k_{windup}$ being relatively small.
+
+-   VSA representations of scalar values have a limited range, which
+    must be specified.
+
+    -   Consequently, I have guessed what might be plausible ranges for
+        the parameters if they were to be treated as variables. Don't
+        takes these ranges too seriously.
+
+    -   The values of some variables in the data flow graph are
+        functions of the parameters, so the ranges of these variables
+        depend in part on the ranges I have guessed for the parameters.
+
+-   The specific parameterisation of the classically implemented PID
+    controller may not be the most amenable to VSA implementation. For
+    example, the wide value range for some variables caused by the
+    (guessed) wide value range for some parameters may have the effect
+    of making the computation more noisy.
+
+    -   The parameters $k_p$ and $k_i$ effectively control the relativel
+        contribution of the error and integrated error terms to the
+        motor demand. If the error and integrated error variables were
+        scaled to have identical ranges and $k_p$ scaled to the range
+        $[0, 1]$ then the two terms could be weighted by $k_p$ and
+        $1 - k_p$ respectively, which would probably be better for VSA
+        implementation.
 
 ## Interfacing
 
@@ -91,7 +171,7 @@ components?
 This section deals with the altitude hold controller before the
 introduction of any VSA components.
 
-## Data Flow Diagram
+## Data Flow Diagram {#dfd-01}
 
 -   The data flow diagram represents the desired calculation for
     altitude hold.
@@ -113,6 +193,18 @@ This is the diagram supplied by Simon Levy.
 
 ![](assets/alt-hold.png)
 
+-   Each node should be interpreted as being implicitly subscripted by
+    *time*. Only the *ei* nodes are explicitly subscripted by time.
+
+-   The value of the *u* node is constrained to the range [0, 1]. This
+    can be interpreted as implying that there should be an application
+    of a function to constrain the value to that range. This will be
+    inserted in the diagram below.
+
+-   The integrated error $ei_t$ is actually implemented as the
+    integration *after* the clipping by by $k_{windup}$ is applied.
+    (This is corrected in the following diagram.
+
 This is the diagram reformatted to be consistent with later data flow
 diagrams.
 
@@ -124,7 +216,7 @@ dfd01 <- here::here("data", "dfd01.xlsx") %>% mk_dfd_graph()
 dfd01 %>% DiagrammeR::render_graph()
 ```
 
--   Parameter nodes are coloured grey. These are constant values.
+-   Parameter nodes are coloured white. These are constant values.
 
 -   Input nodes are coloured yellow. These are variable values over
     time.
@@ -138,6 +230,14 @@ dfd01 %>% DiagrammeR::render_graph()
 -   Function nodes are coloured deep sky blue (the darker shade of
     blue). These are variable values over time.
 
+    -   All functions except subtraction are commutative, so the mapping
+        from input edges to function arguments is irrelevant.
+
+    -   Because the subtraction function is non-commutative, the two
+        input edges must be mapped to the correct function arguments.
+        The edges are labelled "+" (first argument) and "-" (second
+        argument).
+
 -   This data flow diagram represents the classically implemented
     computation, so each value is a scalar real.
 
@@ -147,13 +247,13 @@ dfd01 %>% DiagrammeR::render_graph()
         unique label in parentheses.
 
 -   Each node should be interpreted as being implicitly subscripted by
-    *time*. Only the *ei* nodes are explicitly subscripted by time.
+    *time*.
 
 ## Data flow tables
 
-The data flow diagram is specified in an external spreadsheet.
-This allows extra attributes to be associated with the nodes and edges
-and provides a tolerable user interface for editing the specifications.
+The data flow diagram is specified in an external spreadsheet. This
+allows extra attributes to be associated with the nodes and edges and
+provides a tolerable user interface for editing the specifications.
 These tables record more detail about the data flow diagram than can be
 reasonably displayed on the data flow graph.
 
@@ -169,13 +269,18 @@ dfd01 %>% DiagrammeR::get_edge_df() %>% DT::datatable(rownames = FALSE, caption 
     implementation necessarily has limits. This may render $k_{windup}$
     and `constrain` redundant.
 
+-   I have guessed values for the ranges of the variables (informed by
+    the analysis of the simulation data).
+
+\_ The ranges for the parameters are truly plucked from the air.
+
 -   For each value (node) , what is it's value resolution? This is
     equivalent asking the noise level that can be tolerated.
 
 -   For each value (node) , what is it's temporal resolution? This is
     equivalent how rapidly we expect the value to change. Some nodes are
-    constant parameters. For time-varying signals do we expect them
-    to alternate between the extreme values on successive samples?
+    constant parameters. For time-varying signals do we expect them to
+    alternate between the extreme values on successive samples?
 
 -   A related point: this is a discrete-time simulation - is the time
     step fixed? What is the time step? The simplest VSA approach is

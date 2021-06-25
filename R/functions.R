@@ -28,7 +28,7 @@ mk_dfd_graph <- function(
         fontcolor = "black",
         # set node aesthetic attributes based on imported node properties
         fillcolor = case_when(
-          role == "parameter" ~ "LightGray",
+          role == "parameter" ~ "white",
           role == "input"     ~ "yellow",
           role == "output"    ~ "orange",
           role == "internal"  ~ "LightBlue",

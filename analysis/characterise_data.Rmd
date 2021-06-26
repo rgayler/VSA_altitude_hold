@@ -18,6 +18,7 @@ suppressPackageStartupMessages(
     library(here)
     library(vroom)
     library(dplyr)
+    library(DT)
     library(stringr)
     library(skimr)
     library(forcats)
@@ -140,6 +141,90 @@ dplyr::glimpse(d_wide)
 
 ## Check data
 
+Check the data for consistency.
+
+### Initial values
+
+The different starting conditions correspond to the multicopter being
+dropped/released at different altitudes. At the moment of release the
+multicopter should be at exactly the starting altitude and have zero
+vertical velocity. Check that this is true.
+
+```{r}
+d_wide %>% 
+  dplyr::group_by(file) %>% 
+  dplyr::slice_head(n = 1) %>% 
+  dplyr::ungroup() %>% 
+  dplyr::arrange(k_start) %>% 
+  dplyr::select(k_start, z, dz) %>% 
+  DT::datatable(rownames = FALSE)
+```
+
+-   The initial vertical velocities ($dz$) are nonzero. The most likely
+    interpretation is that the $z$ and $dz$ values are skewed by one
+    time step. An alternative interpretation is that the multicopter was
+    released one time step earlier and a little higher than the target
+    altitude so that it passes through the target altitude exactly one
+    time step after release.
+
+This apparent skew probably doesn't make any substantial difference to
+the qualitative performance of the system. However, it makes some of the
+graphs messier because the trajectory doesn't start at zero. It *may*
+also lead to the altitude converging slightly off the target altitude
+because the "perceived" altitude is not quite time-aligned with the
+error signal.
+
+### Check $z$ and $dz$
+
+The altitude ($z$) and vertical velocity ($dz$) are input values fro the
+simulation data files. Given only a single point in time, they are
+independent variables. However, we are given a time series of values and
+the vertical velocity should be a function of the time series of
+altitude.
+
+Given that the multicopter simulation is a discrete time simulation, the
+most likely interpretation is that $dz$ is calculated as the difference
+between successive $z$ values. Check whether that is the case.
+
+```{r}
+d_wide %>% 
+  dplyr::group_by(file) %>% 
+  dplyr::mutate(
+    dz_est = z - lag(z, n = 1, default = NA),
+  ) %>% 
+  ggplot() +
+  geom_point(aes(x = dz_est, y = dz))
+```
+
+-   The supplied $dz$ is a linear transform of estimated vertical
+    velocity (difference between successive altitude values).
+
+    -   I am prepared to believe that the inacurracy is due to the low
+        precision of the values in the files.
+
+-   But, the scaling is **very** different: $dz = 100 dz_{est}$. The
+    time step is 10 ms, so it looks like like $dz$ is in units of metres
+    per second and $dz_{est}$ is in units of metres per time step.
+
+Looking at the PID calculation of error ($e$): $$
+\begin{aligned}
+  e &= k_{tgt} - z - dz \\
+    &= k_{tgt} - (z + dz)
+\end{aligned}
+$$\
+The term $(z + dz)$ is effectively a prediction of the altitude at the
+next time step based on the altitude $z$ and vertical velocity $dz$ at
+the previous time step. Thus, the error $e$ is the difference between
+the target altitude and the predicted altitude. This requires $z$ and
+$dz$ to be measured in compatible units for the prediction $(z + dz)$ to
+make sense. Both quantities must be measured in metres and $dz$ must be
+metres over the relevant time period, which is one time step.
+
+Consequently, I believe $dz$ is scaled wrongly because the prediction
+$(z + dz)$ is the prediction for a point 100 time steps in the future.
+
+### Check calculated values
+
 Where possible compare the calculated values with the values recorded
 from the simulator.
 
@@ -175,9 +260,9 @@ skimr::skim(d_wide)
 
 # Plots
 
-Plot the relationships between the major nodes.
-This is not necessarily of immediate use in deciding the design fo VSA components,
-but gives a feel for the dynamics of the system.
+Plot the relationships between the major nodes. This is not necessarily
+of immediate use in deciding the design fo VSA components, but gives a
+feel for the dynamics of the system.
 
 ## Time explicit
 
@@ -186,12 +271,14 @@ Show the values of the major nodes as a function of time.
 ```{r}
 p <- d_wide %>% 
   dplyr::mutate(
-    k_start = k_start %>% forcats::as_factor()
+    k_start = k_start %>% forcats::as_factor(),
+    d2z = dz - lag(dz, n = 1, default = NA) # get vertical acceleration
   ) %>% 
   ggplot(aes(x = t, group = k_start, colour = k_start))
 
 p + geom_path(aes(y = z))
 p + geom_path(aes(y = dz))
+p + geom_path(aes(y = d2z))
 p + geom_path(aes(y = e))
 p + geom_path(aes(y = ei))
 p + geom_path(aes(y = u))
@@ -205,18 +292,25 @@ time implicit).
 ```{r}
 p <- d_wide %>% 
   dplyr::mutate(
-    k_start = k_start %>% forcats::as_factor()
+    k_start = k_start %>% forcats::as_factor(),
+    d2z = dz - lag(dz, n = 1, default = NA) # get vertical acceleration
   ) %>% 
   ggplot(aes(group = k_start, colour = k_start))
 
 p + geom_path(aes(x = z, y = dz))
+p + geom_path(aes(x = z, y = d2z))
 p + geom_path(aes(x = z, y = e))
 p + geom_path(aes(x = z, y = ei))
 p + geom_path(aes(x = z, y = u))
 
+p + geom_path(aes(x = dz, y = d2z))
 p + geom_path(aes(x = dz, y = e))
 p + geom_path(aes(x = dz, y = ei))
 p + geom_path(aes(x = dz, y = u))
+
+p + geom_path(aes(x = d2z, y = e))
+p + geom_path(aes(x = d2z, y = ei))
+p + geom_path(aes(x = d2z, y = u))
 
 p + geom_path(aes(x = e, y = ei))
 p + geom_path(aes(x = e, y = u))

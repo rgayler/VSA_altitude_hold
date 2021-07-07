@@ -29,15 +29,16 @@ mk_dfd_graph <- function(
         # set node aesthetic attributes based on imported node properties
         fillcolor = case_when(
           role == "parameter" ~ "white",
-          role == "input"     ~ "yellow",
-          role == "output"    ~ "orange",
-          role == "internal"  ~ "LightBlue",
-          role == "function"  ~ "DeepSkyBlue",
+          role == "input"     ~ "yellow1",
+          role == "output"    ~ "yellow2",
+          role == "function"  ~ "cyan",
+          role == "reference" ~ "magenta",
           role == "post"      ~ "white",
+          role == "internal"  ~ "green",
           TRUE                ~ "red" # ERROR
         ),
-        shape = if_else(role == "post", "plaintext", "circle"),
-        peripheries = if_else(vsa == "TRUE", 3, 1)
+        shape = if_else(role == "post", "plaintext", "circle", missing = "circle"),
+        peripheries = if_else(vsa == "TRUE", 3, 1, missing = 1)
       )
   }
   
@@ -66,20 +67,22 @@ mk_dfd_graph <- function(
       # set edge aesthetic attributes from imported properties
       dplyr::mutate( # add some edge aesthetic attributes
         # set constant node aesthetic attributes
-        color = linecolor,
-        arrowsize = 1,
+        arrowsize = 2,
+        fontsize = 24,
         # set edge aesthetic attributes based on imported edge properties
-        penwidth = if_else(vsa == "TRUE", 5, 1)
+        penwidth = if_else(vsa == "TRUE", 5, 1),
+        dir = if_else(label == "=", "none", "forward", missing = "forward"),
+        color = if_else(label == "=", "magenta", linecolor, missing = linecolor)
       )
   }
   
   # create edge data frame from spreadsheet 
-  d_edf <- readxl::read_xlsx(f, sheet = "edges") %>% 
+  d_edf <- readxl::read_xlsx(f, sheet = "edges") %>%
     # translate character node IDs to integer node IDs
-    dplyr::left_join(d_translate, by = c("from" = "node")) %>% 
-    dplyr::rename(id_from = id) %>% 
-    dplyr::left_join(d_translate, by = c("to" = "node")) %>% 
-    dplyr::rename(id_to = id) %>% 
+    dplyr::left_join(d_translate, by = c("from" = "node")) %>%
+    dplyr::rename(id_from = id) %>%
+    dplyr::left_join(d_translate, by = c("to" = "node")) %>%
+    dplyr::rename(id_to = id) %>%
     mk_edges()
   
   # create graph

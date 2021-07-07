@@ -397,7 +397,7 @@ Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></sp
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2021-06-26
+<strong>Last updated:</strong> 2021-07-07
 </p>
 <p>
 <strong>Checks:</strong>
@@ -525,20 +525,20 @@ makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomrgaylerVSAaltitudeholdtreed6f3405f930fdd5ca84873383650d075b51b1202targetblankd6f3405a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomrgaylerVSAaltitudeholdtreea683bb1ef7edd5547cf06d0653d38b770330b6catargetblanka683bb1a">
 <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
-<strong>Repository version:</strong> <a href="https://github.com/rgayler/VSA_altitude_hold/tree/d6f3405f930fdd5ca84873383650d075b51b1202" target="_blank">d6f3405</a>
+<strong>Repository version:</strong> <a href="https://github.com/rgayler/VSA_altitude_hold/tree/a683bb1ef7edd5547cf06d0653d38b770330b6ca" target="_blank">a683bb1</a>
 </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomrgaylerVSAaltitudeholdtreed6f3405f930fdd5ca84873383650d075b51b1202targetblankd6f3405a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomrgaylerVSAaltitudeholdtreea683bb1ef7edd5547cf06d0653d38b770330b6catargetblanka683bb1a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and
 connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/rgayler/VSA_altitude_hold/tree/d6f3405f930fdd5ca84873383650d075b51b1202" target="_blank">d6f3405</a>.
+The results in this page were generated with repository version <a href="https://github.com/rgayler/VSA_altitude_hold/tree/a683bb1ef7edd5547cf06d0653d38b770330b6ca" target="_blank">a683bb1</a>.
 See the <em>Past versions</em> tab to see a history of the changes made to the
 R Markdown and HTML files.
 </p>
@@ -605,7 +605,41 @@ Message
 Rmd
 </td>
 <td>
-<a href="https://github.com/rgayler/VSA_altitude_hold/blob/d6f3405f930fdd5ca84873383650d075b51b1202/analysis/characterise_data.Rmd" target="_blank">d6f3405</a>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/a683bb1ef7edd5547cf06d0653d38b770330b6ca/analysis/characterise_data.Rmd" target="_blank">a683bb1</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-07-07
+</td>
+<td>
+Complete investigation of simulation data
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/rgayler/VSA_altitude_hold/a683bb1ef7edd5547cf06d0653d38b770330b6ca/docs/characterise_data.html" target="_blank">a683bb1</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-07-07
+</td>
+<td>
+Complete investigation of simulation data
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/7eae4c3d9ecc6c2f49833e180e92e41240419c88/analysis/characterise_data.Rmd" target="_blank">7eae4c3</a>
 </td>
 <td>
 Ross Gayler
@@ -614,7 +648,24 @@ Ross Gayler
 2021-06-26
 </td>
 <td>
-wflow_publish("analysis/*.Rmd", republish = TRUE)
+Check simulation data: initial values and z versus dz
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/rgayler/VSA_altitude_hold/7eae4c3d9ecc6c2f49833e180e92e41240419c88/docs/characterise_data.html" target="_blank">7eae4c3</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-06-26
+</td>
+<td>
+Check simulation data: initial values and z versus dz
 </td>
 </tr>
 <tr>
@@ -667,36 +718,77 @@ the nodes in the <a href="design_notes.html#dfd-01">data flow diagram for Design
 01</a>.</p>
 <div id="data" class="section level1" number="1">
 <h1><span class="header-section-number">1</span> Data</h1>
-<p>The data is generated from runs of the classically implemented
-simulation.</p>
-<p>The data files are stored in the <code>data</code> directory.</p>
-<p>The data is supplied as CSV files, each file corresponding to a
-different run of the simulation.</p>
-<p>Each run of the simulation corresponds to a set of starting conditions
-and parameters.</p>
-<p>The only starting condition that varies between runs is the initial
-altitude. In effect, the multicopter is dropped from some height, with
-the motors stopped and the drone must command the motors to attain the
-target altitude.</p>
-<p>The name of each data file contains the values of all the parameters. In
-this work the target altitude is always constant at 5 metres, but more
-generally this should be treated as a demand which can vary with time.</p>
-<p>Each row of the data file corresponds to a point in time and successive
-rows correspond to successive points in time. (This is a discrete time
-simulation with fixed time steps.)</p>
-<p>Each file contains 500 time steps.</p>
-<p>Each columns of the data file corresponds to a node of the data flow
-diagram.</p>
-<p>Only a subset of the nodes are supplied (the nodes in rectangular boxes
-in the DFD supplied by Simon Levy) and the values of the other nodes can
-be reconstructed mathematically.</p>
-<p>The values supplied from the input files are recorded to three decimal
-places, so there is scope for approximation error due to the limited
-precision.</p>
-<p>Where a node value is supplied from the input file use that value and
-can also be mathematically reconstructed from upstream values, us the
-input value (rather than the reconstructed value) as input to downstream
-calculations. This is to avoid propagating approximation errors.</p>
+<ul>
+<li><p>The data is generated from runs of the classically implemented
+simulation.</p></li>
+<li><p>The data files are stored in the <code>data</code> directory.</p></li>
+<li><p>The data is supplied as CSV files, each file corresponding to a
+different run of the simulation.</p></li>
+<li><p>Each run of the simulation corresponds to a set of starting
+conditions, parameters, and program details.</p></li>
+<li><p>The name of each data file contains the values of all the starting
+conditions, parameters, and program details.</p></li>
+<li><p>The only starting condition that varies between runs is the initial
+altitude. The multicopter is released at the starting height and the
+multicopter must command the motors to attain the target altitude.</p></li>
+<li><p>In this work the target altitude parameter is always 5 metres and
+constant over the duration of the simulation. More generally this
+should be treated as a demand which can vary with time.</p></li>
+<li><p>The other parameters are tuning constants (<span class="math inline">\(k_p\)</span>, <span class="math inline">\(k_i\)</span>, and
+<span class="math inline">\(k_{windup}\)</span>) for the PID controller and are constant across runs of
+the simulation.</p></li>
+<li><p>The program details that vary between simulation runs correspond to
+our evolving understanding of the details of the system and the
+requirements of this analysis.</p>
+<ul>
+<li><p>The <span class="math inline">\(uclip\)</span> program detail indicates whether the motor demand
+value (<span class="math inline">\(u\)</span>) has been clipped to the the range <span class="math inline">\([0, 1]\)</span> prior to
+export. The clipped value is what is used to drive command the
+motors. However, the unclipped value is more useful for
+comparing to the mathematically reconstructed value of the other
+nodes.</p>
+<ul>
+<li>The <span class="math inline">\(uclip\)</span> program detail can be interpreted as indicating
+whether the clipped or unclipped value has been exported.
+<span class="math inline">\(uclip = TRUE\)</span> corresponds to exporting the value of the <span class="math inline">\(u\)</span>
+node of <a href="design_notes.html#dfd-01">the data flow diagram for Design
+01</a>. <span class="math inline">\(uclip = FALSE\)</span> corresponds
+to exporting the value of the node <span class="math inline">\(i7\)</span>.</li>
+</ul></li>
+<li><p>The <span class="math inline">\(dz0\)</span> program detail indicates whether the vertical velocity
+(<span class="math inline">\(dz\)</span>) is zero on the first recorded time step.</p>
+<ul>
+<li>The simulation is based on <a href="https://gym.openai.com/">OpenAI
+Gym</a> which has a “convention of
+having the reset() function call the step() function, which
+updates the state and returns the new state, reward, and a
+flag for whether the game is over”. This was used to
+intialise the simulations (<span class="math inline">\(dz0 = FALSE\)</span>), with the result
+that the state update was run as part of the initialisation.
+This isn’t particularly significant except that the starting
+state of the simulation is not quite what you might expect.
+This was fixed in later simulation runs (<span class="math inline">\(dz0 = TRUE\)</span>).</li>
+</ul></li>
+</ul></li>
+<li><p>Each row of the data file corresponds to a point in time and
+successive rows correspond to successive points in time. (This is a
+discrete time simulation with fixed time steps of 10ms.)</p></li>
+<li><p>Each file contains 500 time steps of 10ms (i.e. 5s total).</p></li>
+<li><p>Each columns of the data file corresponds to a node of the data flow
+diagram.</p></li>
+<li><p>Only a subset of the nodes are supplied (<span class="math inline">\(z\)</span>, <span class="math inline">\(dz\)</span>, <span class="math inline">\(e\)</span>, <span class="math inline">\(ei\)</span>, and
+<span class="math inline">\(u\)</span> - the nodes in rectangular boxes in the DFD supplied by Simon
+Levy) and the values of the other nodes can be reconstructed
+mathematically.</p></li>
+<li><p>The values supplied from the input files are recorded to three
+decimal places, so there is scope for approximation error due to the
+limited precision.</p></li>
+<li><p>Where a node value is supplied from the input file use that value
+and can also be mathematically reconstructed from upstream values,
+us the input value (rather than the reconstructed value) as input to
+downstream calculations. This is to avoid propagating approximation
+errors.</p></li>
+</ul>
 <div id="read-data" class="section level2" number="1.1">
 <h2><span class="header-section-number">1.1</span> Read data</h2>
 <p>Read the data from the simulations and mathematically reconstruct the
@@ -706,13 +798,13 @@ clip &lt;- function(
   x, # numeric
   x_min, # numeric[1] - minimum output value
   x_max  # numeric[1] - maximum output value
-) # value # numeric - x constrrained to the range [x_min, x_max]
+) # value # numeric - x constrained to the range [x_min, x_max]
   {
   x %&gt;% pmax(x_min) %&gt;% pmin(x_max)
 }
 
-# function to extract a parametr value from the file name
-get_param &lt;- function(
+# function to extract a numeric parameter value from the file name
+get_param_num &lt;- function(
   file, # character - vector of file names
   regexp # character[1] - regular expression for &quot;param=value&quot;
          # use a capture group to get the value part
@@ -722,22 +814,43 @@ get_param &lt;- function(
       subset(select = 2) %&gt;% as.numeric()
 }
 
+# function to extract a logical parameter value from the file name
+get_param_log &lt;- function(
+  file, # character - vector of file names
+  regexp # character[1] - regular expression for &quot;param=value&quot;
+  # use a capture group to get the value part
+  # value *must* be T or F
+) # value # logical - vector of logical parameter values
+{
+  file %&gt;% str_match(regexp) %&gt;% 
+    subset(select = 2) %&gt;% as.character() %&gt;% &quot;==&quot;(&quot;T&quot;)
+}
+
 # read the data
 d_wide &lt;- fs::dir_ls(path = here::here(&quot;data&quot;), regexp = &quot;/k_start=.*\\.csv$&quot;) %&gt;% # get file paths
   vroom::vroom(id = &quot;file&quot;) %&gt;% # read files
   dplyr::mutate( # add extra columns
     file = file %&gt;% fs::path_ext_remove() %&gt;% fs::path_file(), # get file name
     # get parameters
-    k_start  = file %&gt;% get_param(&quot;k_start=([.0-9]+)&quot;), 
-    k_p      = file %&gt;% get_param(&quot;kp=([.0-9]+)&quot;),
-    k_i      = file %&gt;% get_param(&quot;Ki=([.0-9]+)&quot;),
-    k_tgt    = file %&gt;% get_param(&quot;k_tgt=([.0-9]+)&quot;),
-    k_windup = file %&gt;% get_param(&quot;k_windup=([.0-9]+)&quot;),
+    k_start  = file %&gt;% get_param_num(&quot;k_start=([.0-9]+)&quot;), 
+    k_p      = file %&gt;% get_param_num(&quot;kp=([.0-9]+)&quot;),
+    k_i      = file %&gt;% get_param_num(&quot;Ki=([.0-9]+)&quot;),
+    k_tgt    = file %&gt;% get_param_num(&quot;k_tgt=([.0-9]+)&quot;),
+    k_windup = file %&gt;% get_param_num(&quot;k_windup=([.0-9]+)&quot;),
+    uclip    = file %&gt;% get_param_log(&quot;_uclip=([TF])&quot;),
+    dz0      = file %&gt;% get_param_log(&quot;_dz0=([TF])&quot;),
+    # Deal with the fact that the interpretation of the imported u value
+    # depends on the uclip parameter
+    u_import = u, # keep a copy of the imported value to one side
+    u = dplyr::if_else(uclip, # make u the &quot;correct&quot; value
+                       u_import, 
+                       clip(u_import, 0, 1)
+                       ),
     # reconstruct the missing nodes
     i1 = k_tgt - z,
     i2 = i1 - dz,
     i3 = e * k_p,
-    i9 = lag(ei, n = 1, default = 0),
+    i9 = lag(ei, n = 1, default = 0), # initialised to zero
     i4 = e + i9,
     i5 = i4 %&gt;% clip(-k_windup, k_windup),
     i6 = ei * k_i,
@@ -748,7 +861,7 @@ d_wide &lt;- fs::dir_ls(path = here::here(&quot;data&quot;), regexp = &quot;/k_s
   dplyr::group_by(file) %&gt;% 
   dplyr::mutate(t = 1:n()) %&gt;% 
   dplyr::ungroup()</code></pre>
-<pre><code>Rows: 1500 Columns: 6</code></pre>
+<pre><code>Rows: 3500 Columns: 6</code></pre>
 <pre><code>── Column specification ────────────────────────────────────────────────────────
 Delimiter: &quot;,&quot;
 dbl (5): z, dz, e, ei, u</code></pre>
@@ -756,9 +869,9 @@ dbl (5): z, dz, e, ei, u</code></pre>
 ℹ Use `spec()` to retrieve the full column specification for this data.
 ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
 <pre class="r"><code>dplyr::glimpse(d_wide)</code></pre>
-<pre><code>Rows: 1,500
-Columns: 21
-$ file     &lt;chr&gt; &quot;k_start=10.00_k_tgt=5.00_kp=0.20_Ki=3.00_k_windup=0.20&quot;, &quot;k_…
+<pre><code>Rows: 3,500
+Columns: 24
+$ file     &lt;chr&gt; &quot;k_start=10.00_k_tgt=5.00_kp=0.20_Ki=3.00_k_windup=0.20_uclip…
 $ z        &lt;dbl&gt; 10.000, 9.999, 9.998, 9.995, 9.992, 9.987, 9.982, 9.975, 9.96…
 $ dz       &lt;dbl&gt; -0.058, -0.156, -0.254, -0.352, -0.450, -0.548, -0.646, -0.74…
 $ e        &lt;dbl&gt; -4.942, -4.843, -4.744, -4.643, -4.542, -4.439, -4.335, -4.23…
@@ -769,6 +882,9 @@ $ k_p      &lt;dbl&gt; 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.
 $ k_i      &lt;dbl&gt; 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3…
 $ k_tgt    &lt;dbl&gt; 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5…
 $ k_windup &lt;dbl&gt; 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0…
+$ uclip    &lt;lgl&gt; TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, T…
+$ dz0      &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE…
+$ u_import &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
 $ i1       &lt;dbl&gt; -5.000, -4.999, -4.998, -4.995, -4.992, -4.987, -4.982, -4.97…
 $ i2       &lt;dbl&gt; -4.942, -4.843, -4.744, -4.643, -4.542, -4.439, -4.336, -4.23…
 $ i3       &lt;dbl&gt; -0.9884, -0.9686, -0.9488, -0.9286, -0.9084, -0.8878, -0.8670…
@@ -786,104 +902,1448 @@ $ t        &lt;int&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17
 <div id="initial-values" class="section level3" number="1.2.1">
 <h3><span class="header-section-number">1.2.1</span> Initial values</h3>
 <p>The different starting conditions correspond to the multicopter being
-dropped/released at different altitudes. At the moment of release the
-multicopter should be at exactly the starting altitude and have zero
-vertical velocity. Check that this is true.</p>
-<div id="htmlwidget-5f0c7fd9f919f044d9b4" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-5f0c7fd9f919f044d9b4">{"x":{"filter":"none","data":[[2,8,10],[2,8,10],[-0.27,-0.282,-0.058]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>k_start<\/th>\n      <th>z<\/th>\n      <th>dz<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[0,1,2]}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+dropped/released at different altitudes.</p>
+<p>Time <span class="math inline">\(t = 1\)</span> should correspond to the moment of release. At that time
+the altitude should be exactly the starting altitude and the vertical
+velocity (<span class="math inline">\(dz\)</span>) should be exactly zero (but we know it wasn’t in the
+<span class="math inline">\(dz0 = FALSE\)</span> simulations).</p>
+<p>Treating propagation through the DFD as instantaneous, we can calculate
+the values of the internal nodes as a function of the imposed initial
+values of the imported nodes. The internal nodes are generally functions
+of the values at the same time. However, the nodes involved in the
+calculation of the integrated errors (<span class="math inline">\(ei\)</span>) are functions of the
+integrated error at the previous time step. This means that there is a
+dependency on the initial value of <span class="math inline">\(ei\)</span> (which is initialised to zero in
+the <a href="https://github.com/simondlevy/gym-copter/blob/5462e0de915a8e7cea402cce6d94b9cd7a4aec22/heuristic/pidcontrollers.py#L16">simulation
+code</a>)</p>
+<p>Check the initial node values imported from the simulations.</p>
+<pre class="r"><code>d_wide %&gt;% 
+  dplyr::filter(t == 1) %&gt;% # get initial time step
+  dplyr::arrange(k_start, dz0, uclip) %&gt;% 
+  dplyr::select(file, k_start, z, dz0, dz, e, ei, u) %&gt;% 
+  DT::datatable(rownames = FALSE)</code></pre>
+<div id="htmlwidget-ba66f800db736633e5bd" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-ba66f800db736633e5bd">{"x":{"filter":"none","data":[["k_start=2.00_k_tgt=5.00_kp=0.20_Ki=3.00_k_windup=0.20_uclip=F_dz0=F","k_start=2.00_k_tgt=5.00_kp=0.20_Ki=3.00_k_windup=0.20_uclip=T_dz0=F","k_start=3.00_k_tgt=5.00_kp=0.20_Ki=3.00_k_windup=0.20_uclip=F_dz0=T","k_start=8.00_k_tgt=5.00_kp=0.20_Ki=3.00_k_windup=0.20_uclip=F_dz0=F","k_start=8.00_k_tgt=5.00_kp=0.20_Ki=3.00_k_windup=0.20_uclip=T_dz0=F","k_start=8.00_k_tgt=5.00_kp=0.20_Ki=3.00_k_windup=0.20_uclip=F_dz0=T","k_start=10.00_k_tgt=5.00_kp=0.20_Ki=3.00_k_windup=0.20_uclip=T_dz0=F"],[2,2,3,8,8,8,10],[2,2,3,8,8,8,10],[false,false,true,false,false,true,false],[-0.322,-0.27,-0,0.276,-0.282,-0,-0.058],[3.322,3.27,2,-3.276,-2.718,-3,-4.942],[0.2,0.2,0.2,-0.2,-0.2,-0.2,-0.2],[1,1,1,0,0,0,0]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>file<\/th>\n      <th>k_start<\/th>\n      <th>z<\/th>\n      <th>dz0<\/th>\n      <th>dz<\/th>\n      <th>e<\/th>\n      <th>ei<\/th>\n      <th>u<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[1,2,4,5,6,7]}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 <ul>
-<li>The initial vertical velocities (<span class="math inline">\(dz\)</span>) are nonzero. The most likely
-interpretation is that the <span class="math inline">\(z\)</span> and <span class="math inline">\(dz\)</span> values are skewed by one
-time step. An alternative interpretation is that the multicopter was
-released one time step earlier and a little higher than the target
-altitude so that it passes through the target altitude exactly one
-time step after release.</li>
+<li><p>As expected, the initial altitude (<span class="math inline">\(z\)</span>) is equal to (<span class="math inline">\(k_{start}\)</span>)
+for all simulations.</p></li>
+<li><p>As expected, The initial vertical velocities (<span class="math inline">\(dz\)</span>) are zero when
+<span class="math inline">\(dz0 = TRUE\)</span> and nonzero otherwise. As explained earlier this is due
+to the use of <code>reset()</code> to initialise the simulations.</p></li>
+<li><p>As expected, the error <span class="math inline">\(e\)</span> and integrated error <span class="math inline">\(ei\)</span> are nonzero at
+the first time step because the starting altitudes are not equal to
+the target altitude and because of the instantaneous propagation of
+values through the DFD. The correctness of the values will be
+checked in the next section.</p></li>
+<li><p>As expected, the motor command <span class="math inline">\(u\)</span> is nonzero when the starting
+altitude is below the target (because the multicopter has to climb
+to the target) and zero when the starting altitude is above the
+target (because the multicopter has to fall to the target). The
+correctness of the values will be checked in the next section.</p></li>
 </ul>
-<p>This apparent skew probably doesn’t make any substantial difference to
-the qualitative performance of the system. However, it makes some of the
-graphs messier because the trajectory doesn’t start at zero. It <em>may</em>
-also lead to the altitude converging slightly off the target altitude
-because the “perceived” altitude is not quite time-aligned with the
-error signal.</p>
 </div>
-<div id="check-z-and-dz" class="section level3" number="1.2.2">
-<h3><span class="header-section-number">1.2.2</span> Check <span class="math inline">\(z\)</span> and <span class="math inline">\(dz\)</span></h3>
-<p>The altitude (<span class="math inline">\(z\)</span>) and vertical velocity (<span class="math inline">\(dz\)</span>) are input values fro the
-simulation data files. Given only a single point in time, they are
-independent variables. However, we are given a time series of values and
-the vertical velocity should be a function of the time series of
-altitude.</p>
-<p>Given that the multicopter simulation is a discrete time simulation, the
-most likely interpretation is that <span class="math inline">\(dz\)</span> is calculated as the difference
-between successive <span class="math inline">\(z\)</span> values. Check whether that is the case.</p>
-<pre><code>Warning: Removed 3 rows containing missing values (geom_point).</code></pre>
-<p><img src="figure/characterise_data.Rmd/unnamed-chunk-3-1.png" width="672" style="display: block; margin: auto;" /></p>
-<ul>
-<li><p>The supplied <span class="math inline">\(dz\)</span> is a linear transform of estimated vertical
-velocity (difference between successive altitude values).</p>
-<ul>
-<li>I am prepared to believe that the inacurracy is due to the low
-precision of the values in the files.</li>
-</ul></li>
-<li><p>But, the scaling is <strong>very</strong> different: <span class="math inline">\(dz = 100 dz_{est}\)</span>. The
-time step is 10 ms, so it looks like like <span class="math inline">\(dz\)</span> is in units of metres
-per second and <span class="math inline">\(dz_{est}\)</span> is in units of metres per time step.</p></li>
-</ul>
-<p>Looking at the PID calculation of error (<span class="math inline">\(e\)</span>): <span class="math display">\[
-\begin{aligned}
-  e &amp;= k_{tgt} - z - dz \\
-    &amp;= k_{tgt} - (z + dz)
-\end{aligned}
-\]</span><br />
-The term <span class="math inline">\((z + dz)\)</span> is effectively a prediction of the altitude at the
-next time step based on the altitude <span class="math inline">\(z\)</span> and vertical velocity <span class="math inline">\(dz\)</span> at
-the previous time step. Thus, the error <span class="math inline">\(e\)</span> is the difference between
-the target altitude and the predicted altitude. This requires <span class="math inline">\(z\)</span> and
-<span class="math inline">\(dz\)</span> to be measured in compatible units for the prediction <span class="math inline">\((z + dz)\)</span> to
-make sense. Both quantities must be measured in metres and <span class="math inline">\(dz\)</span> must be
-metres over the relevant time period, which is one time step.</p>
-<p>Consequently, I believe <span class="math inline">\(dz\)</span> is scaled wrongly because the prediction
-<span class="math inline">\((z + dz)\)</span> is the prediction for a point 100 time steps in the future.</p>
-</div>
-<div id="check-calculated-values" class="section level3" number="1.2.3">
-<h3><span class="header-section-number">1.2.3</span> Check calculated values</h3>
-<p>Where possible compare the calculated values with the values recorded
+<div id="check-calculated-values" class="section level3" number="1.2.2">
+<h3><span class="header-section-number">1.2.2</span> Check calculated values</h3>
+<p>Where possible, compare the calculated values with the values imported
 from the simulator.</p>
 <p>Nodes with a single input edge can be checked against the output of the
 predecessor node.</p>
-<p>The nodes which can be checked are: <em>e</em>, <em>ei</em>, <em>u</em></p>
-<pre><code>      Min.    1st Qu.     Median       Mean    3rd Qu.       Max. 
--1.000e-03  0.000e+00  0.000e+00  1.733e-05  0.000e+00  1.000e-03 </code></pre>
-<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
- -1e-03   0e+00   0e+00  -1e-05   0e+00   1e-03 </code></pre>
-<pre><code>      Min.    1st Qu.     Median       Mean    3rd Qu.       Max. 
--2.000e-03 -8.000e-04  0.000e+00  3.627e-05  1.000e-03  2.000e-03 </code></pre>
+<p>The nodes which can be checked are: <em>e</em>, <em>ei</em>, <em>u</em>.</p>
+<p>The analyses below involve calculating the distribution of values over
+the available time steps. This is a slightly odd interpretation of
+distribution in that the first 500 time steps do not constitute a sample
+from a some stationary distribution. Rather, the values should be
+interpreted as representative of the multicopter’s response to a
+perturbation.</p>
+<div id="e-i2" class="section level4" number="1.2.2.1">
+<h4><span class="header-section-number">1.2.2.1</span> e = i2</h4>
+<p><span class="math inline">\(e\)</span> and <span class="math inline">\(i2\)</span> should be identical (up to approximation error).</p>
+<pre class="r"><code>d_wide %&gt;% 
+  dplyr::group_by(file) %&gt;% 
+  dplyr::summarise(
+    min = min(e - i2) %&gt;% round(3),
+    p01 = quantile(e - i2, probs = 0.01) %&gt;% round(3), #1st percentile
+    p50 = median(e - i2) %&gt;% round(3),
+    p99 = quantile(e - i2, probs = 0.99) %&gt;% round(3), # 99th percentile
+    max = max(e - i2) %&gt;% round(3)
+  ) %&gt;% 
+  DT::datatable(rownames = FALSE, caption = &quot;*** e - i2 ***&quot;)</code></pre>
+<div id="htmlwidget-505a2684d5372cef10c0" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-505a2684d5372cef10c0">{"x":{"filter":"none","caption":"<caption>*** e - i2 ***<\/caption>","data":[["k_start=10.00_k_tgt=5.00_kp=0.20_Ki=3.00_k_windup=0.20_uclip=T_dz0=F","k_start=2.00_k_tgt=5.00_kp=0.20_Ki=3.00_k_windup=0.20_uclip=F_dz0=F","k_start=2.00_k_tgt=5.00_kp=0.20_Ki=3.00_k_windup=0.20_uclip=T_dz0=F","k_start=3.00_k_tgt=5.00_kp=0.20_Ki=3.00_k_windup=0.20_uclip=F_dz0=T","k_start=8.00_k_tgt=5.00_kp=0.20_Ki=3.00_k_windup=0.20_uclip=F_dz0=F","k_start=8.00_k_tgt=5.00_kp=0.20_Ki=3.00_k_windup=0.20_uclip=F_dz0=T","k_start=8.00_k_tgt=5.00_kp=0.20_Ki=3.00_k_windup=0.20_uclip=T_dz0=F"],[-0.001,-0.001,-0.001,-0.001,-0.001,-0.001,-0.001],[-0.001,-0.001,-0.001,-0.001,-0.001,-0.001,-0.001],[0,0,0,-0,0,-0,0],[0.001,0.001,0.001,0.001,0.001,0.001,0.001],[0.001,0.001,0.001,0.001,0.001,0.001,0.001]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>file<\/th>\n      <th>min<\/th>\n      <th>p01<\/th>\n      <th>p50<\/th>\n      <th>p99<\/th>\n      <th>max<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[1,2,3,4,5]}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 <ul>
-<li>The reconstructed values which can be checked against values from
-the simulation are correct except for approximation error due to the
-low precision of the numbers in the files.</li>
+<li>The imported and reconstructed values agree except for approximation
+error due to the low precision of the numbers in the files.</li>
+</ul>
+</div>
+<div id="ei-i5" class="section level4" number="1.2.2.2">
+<h4><span class="header-section-number">1.2.2.2</span> ei = i5</h4>
+<p><span class="math inline">\(ei\)</span> and <span class="math inline">\(i5\)</span> should be identical (up to approximation error).</p>
+<pre class="r"><code>d_wide %&gt;% 
+  dplyr::group_by(file) %&gt;% 
+  dplyr::summarise(
+    min = min(ei - i5) %&gt;% round(3),
+    p01 = quantile(ei - i5, probs = 0.01) %&gt;% round(3), #1st percentile
+    p50 = median(ei - i5) %&gt;% round(3),
+    p99 = quantile(ei - i5, probs = 0.99) %&gt;% round(3), # 99th percentile
+    max = max(ei - i5) %&gt;% round(3)
+  ) %&gt;% 
+  DT::datatable(rownames = FALSE, caption = &quot;*** ei - i5 ***&quot;)</code></pre>
+<div id="htmlwidget-2b6ae1babdd1907e2d5f" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-2b6ae1babdd1907e2d5f">{"x":{"filter":"none","caption":"<caption>*** ei - i5 ***<\/caption>","data":[["k_start=10.00_k_tgt=5.00_kp=0.20_Ki=3.00_k_windup=0.20_uclip=T_dz0=F","k_start=2.00_k_tgt=5.00_kp=0.20_Ki=3.00_k_windup=0.20_uclip=F_dz0=F","k_start=2.00_k_tgt=5.00_kp=0.20_Ki=3.00_k_windup=0.20_uclip=T_dz0=F","k_start=3.00_k_tgt=5.00_kp=0.20_Ki=3.00_k_windup=0.20_uclip=F_dz0=T","k_start=8.00_k_tgt=5.00_kp=0.20_Ki=3.00_k_windup=0.20_uclip=F_dz0=F","k_start=8.00_k_tgt=5.00_kp=0.20_Ki=3.00_k_windup=0.20_uclip=F_dz0=T","k_start=8.00_k_tgt=5.00_kp=0.20_Ki=3.00_k_windup=0.20_uclip=T_dz0=F"],[-0.001,-0.001,-0.001,-0.001,-0.001,-0.001,-0.001],[-0.001,-0.001,-0.001,-0.001,-0.001,-0.001,-0.001],[0,0,0,0,0,0,0],[0.001,0.001,0.001,0.001,0.001,0.001,0.001],[0.001,0.001,0.001,0.001,0.001,0.001,0.001]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>file<\/th>\n      <th>min<\/th>\n      <th>p01<\/th>\n      <th>p50<\/th>\n      <th>p99<\/th>\n      <th>max<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[1,2,3,4,5]}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<ul>
+<li>The imported and reconstructed values agree except for approximation
+error due to the low precision of the numbers in the files.</li>
+</ul>
+</div>
+<div id="u-i8-or-i7" class="section level4" number="1.2.2.3">
+<h4><span class="header-section-number">1.2.2.3</span> u = i8 (or i7)</h4>
+<p>When <span class="math inline">\(uclip = TRUE\)</span>, <span class="math inline">\(u\)</span> and <span class="math inline">\(i8\)</span> should be identical (up to
+approximation error).</p>
+<p>When <span class="math inline">\(uclip = FALSE\)</span>, <span class="math inline">\(u\)</span> and <span class="math inline">\(i7\)</span> should be identical (up to
+approximation error).</p>
+<p>Check the <span class="math inline">\(uclip = TRUE\)</span> case, <span class="math inline">\(u = i8\)</span>.</p>
+<pre class="r"><code>d_wide %&gt;% 
+  dplyr::filter(uclip) %&gt;% 
+  dplyr::group_by(file) %&gt;% 
+  dplyr::summarise(
+    min = min(u_import - i8) %&gt;% round(3),
+    p01 = quantile(u_import - i8, probs = 0.01) %&gt;% round(3), #1st percentile
+    p50 = median(u_import - i8) %&gt;% round(3),
+    p99 = quantile(u_import - i8, probs = 0.99) %&gt;% round(3), # 99th percentile
+    max = max(u_import - i8) %&gt;% round(3)
+  ) %&gt;% 
+  DT::datatable(rownames = FALSE, caption = &quot;*** u_import - i8 ***&quot;)</code></pre>
+<div id="htmlwidget-0c7fd9f919f044d9b464" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-0c7fd9f919f044d9b464">{"x":{"filter":"none","caption":"<caption>*** u_import - i8 ***<\/caption>","data":[["k_start=10.00_k_tgt=5.00_kp=0.20_Ki=3.00_k_windup=0.20_uclip=T_dz0=F","k_start=2.00_k_tgt=5.00_kp=0.20_Ki=3.00_k_windup=0.20_uclip=T_dz0=F","k_start=8.00_k_tgt=5.00_kp=0.20_Ki=3.00_k_windup=0.20_uclip=T_dz0=F"],[-0.002,-0.002,-0.002],[-0.001,-0.002,-0.002],[0,0,0],[0.001,0.002,0.001],[0.002,0.002,0.002]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>file<\/th>\n      <th>min<\/th>\n      <th>p01<\/th>\n      <th>p50<\/th>\n      <th>p99<\/th>\n      <th>max<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[1,2,3,4,5]}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<ul>
+<li><p>The imported and reconstructed values agree except for approximation
+error due to the low precision of the numbers in the files.</p>
+<ul>
+<li>I am prepared to believe that the larger approximation error in
+this case is due to the accumulation of errors over the longer
+path through the DFD.</li>
+</ul></li>
+</ul>
+<p>Look at the rows where the largest approximation errors occur.</p>
+<pre class="r"><code>d_wide %&gt;% 
+  dplyr::filter(uclip) %&gt;% 
+  dplyr::filter(abs(u_import - i8) &gt;= 0.0017) %&gt;% 
+  dplyr::arrange(file, u_import - i8) %&gt;% 
+  dplyr::select(file, t, u_import, i8, i7, i3, i6, ei) %&gt;% 
+  DT::datatable(rownames = FALSE)</code></pre>
+<div id="htmlwidget-8b34a06a8eb474f473e2" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-8b34a06a8eb474f473e2">{"x":{"filter":"none","data":[["k_start=10.00_k_tgt=5.00_kp=0.20_Ki=3.00_k_windup=0.20_uclip=T_dz0=F","k_start=10.00_k_tgt=5.00_kp=0.20_Ki=3.00_k_windup=0.20_uclip=T_dz0=F","k_start=10.00_k_tgt=5.00_kp=0.20_Ki=3.00_k_windup=0.20_uclip=T_dz0=F","k_start=10.00_k_tgt=5.00_kp=0.20_Ki=3.00_k_windup=0.20_uclip=T_dz0=F","k_start=10.00_k_tgt=5.00_kp=0.20_Ki=3.00_k_windup=0.20_uclip=T_dz0=F","k_start=2.00_k_tgt=5.00_kp=0.20_Ki=3.00_k_windup=0.20_uclip=T_dz0=F","k_start=2.00_k_tgt=5.00_kp=0.20_Ki=3.00_k_windup=0.20_uclip=T_dz0=F","k_start=2.00_k_tgt=5.00_kp=0.20_Ki=3.00_k_windup=0.20_uclip=T_dz0=F","k_start=2.00_k_tgt=5.00_kp=0.20_Ki=3.00_k_windup=0.20_uclip=T_dz0=F","k_start=2.00_k_tgt=5.00_kp=0.20_Ki=3.00_k_windup=0.20_uclip=T_dz0=F","k_start=2.00_k_tgt=5.00_kp=0.20_Ki=3.00_k_windup=0.20_uclip=T_dz0=F","k_start=8.00_k_tgt=5.00_kp=0.20_Ki=3.00_k_windup=0.20_uclip=T_dz0=F","k_start=8.00_k_tgt=5.00_kp=0.20_Ki=3.00_k_windup=0.20_uclip=T_dz0=F","k_start=8.00_k_tgt=5.00_kp=0.20_Ki=3.00_k_windup=0.20_uclip=T_dz0=F","k_start=8.00_k_tgt=5.00_kp=0.20_Ki=3.00_k_windup=0.20_uclip=T_dz0=F"],[406,167,113,123,87,49,113,66,42,92,202,111,55,60,79],[0.526,0.553,0.574,0.571,0.589,0.486,0.5,0.459,0.393,0.496,0.512,0.55,0.59,0.584,0.556],[0.528,0.555,0.5758,0.5728,0.5872,0.4878,0.5018,0.4608,0.3912,0.4942,0.51,0.552,0.5918,0.5858,0.5578],[0.528,0.555,0.5758,0.5728,0.5872,0.4878,0.5018,0.4608,0.3912,0.4942,0.51,0.552,0.5918,0.5858,0.5578],[-0,-0,-0.0002,-0.0002,-0.0008,0.0048,0.0008,0.0018,0.0012,-0.0008,0,-0,0.0008,0.0008,-0.0002],[0.528,0.555,0.576,0.573,0.588,0.483,0.501,0.459,0.39,0.495,0.51,0.552,0.591,0.585,0.558],[0.176,0.185,0.192,0.191,0.196,0.161,0.167,0.153,0.13,0.165,0.17,0.184,0.197,0.195,0.186]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>file<\/th>\n      <th>t<\/th>\n      <th>u_import<\/th>\n      <th>i8<\/th>\n      <th>i7<\/th>\n      <th>i3<\/th>\n      <th>i6<\/th>\n      <th>ei<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[1,2,3,4,5,6,7]}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<ul>
+<li>The larger approximation errors only occur when <span class="math inline">\(u\)</span> is in the middle
+of its range. Approximation errors can’t occur at the extremes
+because of clipping.</li>
+</ul>
+<p>Check the <span class="math inline">\(uclip = FALSE\)</span> case, <span class="math inline">\(u = i7\)</span>.</p>
+<pre class="r"><code>d_wide %&gt;% 
+  dplyr::filter(!uclip) %&gt;% 
+  dplyr::group_by(file) %&gt;% 
+  dplyr::summarise(
+    min = min(u_import - i7) %&gt;% round(3),
+    p01 = quantile(u_import - i7, probs = 0.01) %&gt;% round(3), #1st percentile
+    p50 = median(u_import - i7) %&gt;% round(3),
+    p99 = quantile(u_import - i7, probs = 0.99) %&gt;% round(3), # 99th percentile
+    max = max(u_import - i7) %&gt;% round(3)
+  ) %&gt;% 
+  DT::datatable(rownames = FALSE, caption = &quot;*** u_import - i7 ***&quot;)</code></pre>
+<div id="htmlwidget-b9ef065d0ab7263a3761" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-b9ef065d0ab7263a3761">{"x":{"filter":"none","caption":"<caption>*** u_import - i7 ***<\/caption>","data":[["k_start=2.00_k_tgt=5.00_kp=0.20_Ki=3.00_k_windup=0.20_uclip=F_dz0=F","k_start=3.00_k_tgt=5.00_kp=0.20_Ki=3.00_k_windup=0.20_uclip=F_dz0=T","k_start=8.00_k_tgt=5.00_kp=0.20_Ki=3.00_k_windup=0.20_uclip=F_dz0=F","k_start=8.00_k_tgt=5.00_kp=0.20_Ki=3.00_k_windup=0.20_uclip=F_dz0=T"],[-0.002,-0.002,-0.002,-0.002],[-0.001,-0.001,-0.001,-0.001],[0,0,0,0],[0.002,0.002,0.001,0.001],[0.002,0.002,0.002,0.002]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>file<\/th>\n      <th>min<\/th>\n      <th>p01<\/th>\n      <th>p50<\/th>\n      <th>p99<\/th>\n      <th>max<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[1,2,3,4,5]}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<ul>
+<li><p>The imported and reconstructed values agree except for approximation
+error due to the low precision of the numbers in the files.</p>
+<ul>
+<li>I am prepared to believe that the larger approximation error in
+this case is due to the accumulation of errors over the longer
+path through the DFD.</li>
+</ul></li>
+</ul>
+<p>Look at the rows where the largest approximation errors occur.</p>
+<pre class="r"><code>d_wide %&gt;% 
+  dplyr::filter(!uclip) %&gt;% 
+  dplyr::filter(abs(u_import - i7) &gt;= 0.0017) %&gt;% 
+  dplyr::arrange(file, u_import - i7) %&gt;% 
+  dplyr::select(file, t, u_import, i7, i3, i6, ei) %&gt;% 
+  DT::datatable(rownames = FALSE)</code></pre>
+<div id="htmlwidget-f7bb6b8e4daab2381bb0" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-f7bb6b8e4daab2381bb0">{"x":{"filter":"none","data":[["k_start=2.00_k_tgt=5.00_kp=0.20_Ki=3.00_k_windup=0.20_uclip=F_dz0=F","k_start=2.00_k_tgt=5.00_kp=0.20_Ki=3.00_k_windup=0.20_uclip=F_dz0=F","k_start=2.00_k_tgt=5.00_kp=0.20_Ki=3.00_k_windup=0.20_uclip=F_dz0=F","k_start=2.00_k_tgt=5.00_kp=0.20_Ki=3.00_k_windup=0.20_uclip=F_dz0=F","k_start=2.00_k_tgt=5.00_kp=0.20_Ki=3.00_k_windup=0.20_uclip=F_dz0=F","k_start=2.00_k_tgt=5.00_kp=0.20_Ki=3.00_k_windup=0.20_uclip=F_dz0=F","k_start=3.00_k_tgt=5.00_kp=0.20_Ki=3.00_k_windup=0.20_uclip=F_dz0=T","k_start=3.00_k_tgt=5.00_kp=0.20_Ki=3.00_k_windup=0.20_uclip=F_dz0=T","k_start=3.00_k_tgt=5.00_kp=0.20_Ki=3.00_k_windup=0.20_uclip=F_dz0=T","k_start=8.00_k_tgt=5.00_kp=0.20_Ki=3.00_k_windup=0.20_uclip=F_dz0=F","k_start=8.00_k_tgt=5.00_kp=0.20_Ki=3.00_k_windup=0.20_uclip=F_dz0=F","k_start=8.00_k_tgt=5.00_kp=0.20_Ki=3.00_k_windup=0.20_uclip=F_dz0=F","k_start=8.00_k_tgt=5.00_kp=0.20_Ki=3.00_k_windup=0.20_uclip=F_dz0=T","k_start=8.00_k_tgt=5.00_kp=0.20_Ki=3.00_k_windup=0.20_uclip=F_dz0=T","k_start=8.00_k_tgt=5.00_kp=0.20_Ki=3.00_k_windup=0.20_uclip=F_dz0=T"],[23,28,57,120,152,129,188,63,151,56,109,106,65,97,113],[0.282,0.428,0.517,0.506,0.503,0.494,0.514,0.498,0.512,0.567,0.553,0.557,0.575,0.56,0.554],[0.2802,0.4262,0.5152,0.5042,0.5012,0.492,0.516,0.4962,0.5102,0.5688,0.5548,0.5552,0.5768,0.5582,0.5522],[-0.0078,-0.0088,-0.0008,0.0002,0.0002,0,-0,-0.0018,0.0002,-0.0012,-0.0002,0.0002,0.0008,0.0002,0.0002],[0.288,0.435,0.516,0.504,0.501,0.492,0.516,0.498,0.51,0.57,0.555,0.555,0.576,0.558,0.552],[0.096,0.145,0.172,0.168,0.167,0.164,0.172,0.166,0.17,0.19,0.185,0.185,0.192,0.186,0.184]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>file<\/th>\n      <th>t<\/th>\n      <th>u_import<\/th>\n      <th>i7<\/th>\n      <th>i3<\/th>\n      <th>i6<\/th>\n      <th>ei<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[1,2,3,4,5,6]}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<ul>
+<li>The larger approximation errors only occur when <span class="math inline">\(u\)</span> is in the middle
+of its range. Approximation errors can’t occur at the extremes
+because of clipping.</li>
 </ul>
 </div>
 </div>
+<div id="check-z-and-dz" class="section level3" number="1.2.3">
+<h3><span class="header-section-number">1.2.3</span> Check <span class="math inline">\(z\)</span> and <span class="math inline">\(dz\)</span></h3>
+<p>The altitude (<span class="math inline">\(z\)</span>) and vertical velocity (<span class="math inline">\(dz\)</span>) are input values from
+the simulation data files. The simulation calculates the altitude by
+integrating the velocity with respect to time.</p>
+<p>In most PID controllers, the derivative is calculated internally. In our
+project the velocity is supplied as an input to the PID controller
+because it is readily available.</p>
+<p>The altitude (<span class="math inline">\(z\)</span>) is scaled in metres and the vertical velocity (<span class="math inline">\(dz\)</span>)
+is scaled in metres per second. Check that these supplied values are
+consistent by calculating the velocity from altitude at successive time
+steps.</p>
+<p>The altitude is imported to three decimal places precision, so the
+rounding of successive values might generate an approximation error of
+the difference up to magnitude 0.001 (rounding error of 0.0005 on each
+value). The time difference between successive steps is 10ms, so the
+magnitude of the approximation error in metres per second could be up to
+<span class="math inline">\(0.001 / 0.010 = 0.1\)</span>.</p>
+<pre class="r"><code>d &lt;- d_wide %&gt;% 
+  dplyr::group_by(file) %&gt;% 
+  dplyr::arrange(t, by_group = TRUE) %&gt;% 
+  dplyr::mutate(
+    dz_est = (z - lag(z, n = 1, default = NA)) / 0.010, # time step is 0.010 sec
+    d2z_est = (dz - lag(dz, n = 1, default = NA)) / 0.010, # acceleration
+    dz_diff = dz - dz_est # difference between input and estimated values
+  ) %&gt;% 
+  dplyr::ungroup()
+
+# velocity_error ~ velocity
+d %&gt;% ggplot() +
+  geom_hline(yintercept = c(-0.1, 0, 0.1)) +
+  geom_point(aes(x = dz, y = dz_diff, colour = as_factor(file)))</code></pre>
+<pre><code>Warning: Removed 7 rows containing missing values (geom_point).</code></pre>
+<p><img src="figure/characterise_data.Rmd/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-1">
+Past versions of unnamed-chunk-9-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-9-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/a683bb1ef7edd5547cf06d0653d38b770330b6ca/docs/figure/characterise_data.Rmd/unnamed-chunk-9-1.png" target="_blank">a683bb1</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-07-07
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div id="distribution-summary" class="section level1" number="2">
-<h1><span class="header-section-number">2</span> Distribution summary</h1>
-<p>Display a quick summary of the distributions of values of all the nodes.</p>
-<p>Note that these summaries are over all the input files pooled.</p>
+</div>
+<ul>
+<li><p>Most of the estimated velocities are within the calculated range of
+approximation error.</p></li>
+<li><p>There are a modest number of points between the calculated errors
+bound and three times the error bound.</p></li>
+<li><p>There are a few points with error more than three times the error
+bound.</p></li>
+</ul>
+<p>The estimated velocity is likely to have larger estimation errors when
+the acceleration is high, because the velocity is changing more rapidly.
+Take a look at velocity estimation error as a function of acceleration.</p>
+<pre class="r"><code># velocity_error ~ acceleration
+d %&gt;% ggplot() +
+  geom_hline(yintercept = c(-0.1, 0, 0.1)) +
+  geom_smooth(aes(x = d2z_est, y = dz_diff)) +
+  geom_point(aes(x = d2z_est, y = dz_diff, colour = as_factor(file)))</code></pre>
+<pre><code>`geom_smooth()` using method = &#39;gam&#39; and formula &#39;y ~ s(x, bs = &quot;cs&quot;)&#39;</code></pre>
+<pre><code>Warning: Removed 7 rows containing non-finite values (stat_smooth).</code></pre>
+<pre><code>Warning: Removed 7 rows containing missing values (geom_point).</code></pre>
+<p><img src="figure/characterise_data.Rmd/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-1">
+Past versions of unnamed-chunk-10-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-10-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/a683bb1ef7edd5547cf06d0653d38b770330b6ca/docs/figure/characterise_data.Rmd/unnamed-chunk-10-1.png" target="_blank">a683bb1</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-07-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<ul>
+<li>The estimation error is pretty much explained by the acceleration.</li>
+</ul>
+<p>I am happy that the input altitude and velocity are correctly related.</p>
+</div>
+</div>
+</div>
+<div id="plots" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> Plots</h1>
+<p>Plot the relationships between the major nodes. This is not necessarily
+of immediate use in deciding the design fo VSA components, but gives a
+feel for the dynamics of the system.</p>
+<div id="time-explicit" class="section level2" number="2.1">
+<h2><span class="header-section-number">2.1</span> Time explicit</h2>
+<p>Show the values of the major nodes as a function of time.</p>
+<div id="altitude-versus-time" class="section level3" number="2.1.1">
+<h3><span class="header-section-number">2.1.1</span> Altitude versus time:</h3>
+<pre class="r"><code>p &lt;- d_wide %&gt;% 
+  dplyr::mutate(
+    k_start = k_start %&gt;% forcats::as_factor(),
+    d2z = (dz - lag(dz, n = 1, default = NA)) / 0.010 # get vertical acceleration
+  ) %&gt;% 
+  ggplot(aes(x = t, group = file, colour = k_start))
+
+p + geom_path(aes(y = z))</code></pre>
+<p><img src="figure/characterise_data.Rmd/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-1">
+Past versions of unnamed-chunk-11-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-11-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/a683bb1ef7edd5547cf06d0653d38b770330b6ca/docs/figure/characterise_data.Rmd/unnamed-chunk-11-1.png" target="_blank">a683bb1</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-07-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Altitude versus time:</p>
+<ul>
+<li>Looks clean and reasonable.</li>
+</ul>
+</div>
+<div id="velocity-versus-time" class="section level3" number="2.1.2">
+<h3><span class="header-section-number">2.1.2</span> Velocity versus time:</h3>
+<pre class="r"><code>p + geom_path(aes(y = dz))</code></pre>
+<p><img src="figure/characterise_data.Rmd/unnamed-chunk-12-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-12-1">
+Past versions of unnamed-chunk-12-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-12-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/a683bb1ef7edd5547cf06d0653d38b770330b6ca/docs/figure/characterise_data.Rmd/unnamed-chunk-12-1.png" target="_blank">a683bb1</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-07-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Velocity versus time:</p>
+<ul>
+<li>Looks reasonable, but …</li>
+<li>The sharp peaks in all curves indicate that the controller is
+initially heading for the target altitude as fast as possible, then
+suddenly switches into a mode where it tapers off the effort.</li>
+<li>The oscillations visible in the curves for 2 and 3 metre starting
+height are a bit odd. I suspect they mean that the tuning of the PID
+controller could be improved.</li>
+</ul>
+<p>Zoom in on the oscillation in the <span class="math inline">\(k_{start} = 2\)</span> curve to see how the
+oscillation is aligned with the sampling rate.</p>
+<pre class="r"><code>d_wide %&gt;% 
+  dplyr::mutate(
+    k_start = k_start %&gt;% forcats::as_factor(),
+    d2z = (dz - lag(dz, n = 1, default = NA)) / 0.010 # get vertical acceleration
+  ) %&gt;% 
+  dplyr::filter(k_start == 2) %&gt;% 
+  ggplot(aes(x = t, group = file, colour = k_start)) +
+  geom_path(aes(y = dz)) +
+  geom_point(aes(y = dz)) +
+  coord_cartesian(xlim = c(25, 45), ylim = c(2.0, 2.6))</code></pre>
+<p><img src="figure/characterise_data.Rmd/unnamed-chunk-13-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-13-1">
+Past versions of unnamed-chunk-13-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-13-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/a683bb1ef7edd5547cf06d0653d38b770330b6ca/docs/figure/characterise_data.Rmd/unnamed-chunk-13-1.png" target="_blank">a683bb1</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-07-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<ul>
+<li>The cycle length of the oscillation is 6 time steps - so quite
+rapid, but not the maximum that could be observed (2).</li>
+</ul>
+</div>
+<div id="acceleration-versus-time" class="section level3" number="2.1.3">
+<h3><span class="header-section-number">2.1.3</span> Acceleration versus time</h3>
+<p>Note that the acceleration should be directly related to the motor power
+command.</p>
+<pre class="r"><code>p + geom_path(aes(y = d2z))</code></pre>
+<pre><code>Warning: Removed 1 row(s) containing missing values (geom_path).</code></pre>
+<p><img src="figure/characterise_data.Rmd/unnamed-chunk-14-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-14-1">
+Past versions of unnamed-chunk-14-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-14-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/a683bb1ef7edd5547cf06d0653d38b770330b6ca/docs/figure/characterise_data.Rmd/unnamed-chunk-14-1.png" target="_blank">a683bb1</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-07-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Acceleration versus time:</p>
+<ul>
+<li>The large initial spikes look like they might be artifacts of the
+estimation of the acceleration (analogous to the estimation errors
+of the velocity).</li>
+</ul>
+<p>Zoom in on the spikes at the start of the curves.</p>
+<pre class="r"><code>d_wide %&gt;% 
+  dplyr::mutate(
+    k_start = k_start %&gt;% forcats::as_factor(),
+    d2z = (dz - lag(dz, n = 1, default = NA)) / 0.010 # get vertical acceleration
+  ) %&gt;% 
+  ggplot(aes(x = t, group = file, colour = k_start)) +
+  geom_path(aes(y = d2z)) +
+  geom_point(aes(y = d2z)) +
+  coord_cartesian(xlim = c(1, 20))</code></pre>
+<pre><code>Warning: Removed 1 row(s) containing missing values (geom_path).</code></pre>
+<pre><code>Warning: Removed 1 rows containing missing values (geom_point).</code></pre>
+<p><img src="figure/characterise_data.Rmd/unnamed-chunk-15-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-15-1">
+Past versions of unnamed-chunk-15-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-15-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/a683bb1ef7edd5547cf06d0653d38b770330b6ca/docs/figure/characterise_data.Rmd/unnamed-chunk-15-1.png" target="_blank">a683bb1</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-07-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<ul>
+<li><p>The acceleration should be maximum and constant when the motor
+command is 0 or 1. This corresponds to the flat initial segments for
+starting altitude 2 or 8 metres (10 metres is not visible because of
+overplotting).</p>
+<ul>
+<li>The curves for starting altitude above the target have an
+initial acceleration of approximately <span class="math inline">\(-10 ms^{-2}\)</span> which is
+near enough to gravitational acceleration of <span class="math inline">\(-9.8 ms^{-2}\)</span>,
+considering it is being read off a graph. For the simulations
+with starting altitude above the target the multicopter
+initially drops with the motors turned off, so we would expect
+the initial acceleration to match gravitational acceleration.</li>
+<li>The curves for starting altitude 2m (well below the 5m target)
+have an initial acceleration of approximately <span class="math inline">\(+26 ms^{-2}\)</span>. For
+the simulations with starting altitude 2m the multicopter
+initially runs the motors at maximum power. The magnitude of the
+upward acceleration at maximum power relative to the downward
+acceleration when the motors are off implies that the maximum
+thrust is 3.6 times the weight of the multicopter. This seems
+reasonable. , so we would expect</li>
+</ul></li>
+<li><p>The curves look reasonable from time <span class="math inline">\(t = 3\)</span> onwards.</p></li>
+</ul>
+<p>Re-plot the acceleration curve excluding <span class="math inline">\(t &lt; 3\)</span>.</p>
+<pre class="r"><code>p + geom_path(aes(y = d2z)) + 
+  coord_cartesian(xlim = c(3, NA), ylim = c(-10, 30))</code></pre>
+<pre><code>Warning: Removed 1 row(s) containing missing values (geom_path).</code></pre>
+<p><img src="figure/characterise_data.Rmd/unnamed-chunk-16-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-16-1">
+Past versions of unnamed-chunk-16-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-16-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/a683bb1ef7edd5547cf06d0653d38b770330b6ca/docs/figure/characterise_data.Rmd/unnamed-chunk-16-1.png" target="_blank">a683bb1</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-07-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<ul>
+<li>The oscillations are much more visible.</li>
+<li>It is clear that the oscillations “switch on” at a time that varies
+by starting height. We’ll see later that the oscillation turns on
+when the integrated error term (<span class="math inline">\(ei\)</span>) is not being clipped.</li>
+</ul>
+</div>
+<div id="error-versus-time" class="section level3" number="2.1.4">
+<h3><span class="header-section-number">2.1.4</span> Error versus time</h3>
+<pre class="r"><code>p + geom_path(aes(y = e))</code></pre>
+<p><img src="figure/characterise_data.Rmd/unnamed-chunk-17-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-17-1">
+Past versions of unnamed-chunk-17-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-17-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/a683bb1ef7edd5547cf06d0653d38b770330b6ca/docs/figure/characterise_data.Rmd/unnamed-chunk-17-1.png" target="_blank">a683bb1</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-07-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Error versus time:</p>
+<ul>
+<li>The error terms approach zero very rapidly. They are at
+approximately zero long before the multicopter reaches target
+height. This is because the error term includes a velocity
+component, so the error should be interpreted as the predicted error
+in altitude one second in the future, assuming that the current
+velocity is maintained for that period.</li>
+<li>Each curve appears to rapidly approach zero then oscillate around
+zero.</li>
+<li>Each curve appears to eventually settle to zero.</li>
+</ul>
+<p>Zoom in on the heads of the curves to see if they really oscillate
+around zero.</p>
+<pre class="r"><code>p + 
+  geom_hline(yintercept = 0) +
+  geom_path(aes(y = e)) +
+  geom_point(aes(y = e)) +
+  coord_cartesian(xlim = c(10, 100), ylim = c(-0.2, 0.4))</code></pre>
+<p><img src="figure/characterise_data.Rmd/unnamed-chunk-18-1.png" width="672" style="display: block; margin: auto;" /></p>
+<ul>
+<li>The error curves oscillate around zero.</li>
+</ul>
+<p>Zoom in on the tails of the curves to see how close the error term
+approaches zero.</p>
+<pre class="r"><code>p + 
+  geom_hline(yintercept = 0) +
+  geom_path(aes(y = e)) +
+  geom_point(aes(y = e)) +
+  coord_cartesian(xlim = c(100, 250), ylim = c(-0.003, 0.003))</code></pre>
+<p><img src="figure/characterise_data.Rmd/unnamed-chunk-19-1.png" width="672" style="display: block; margin: auto;" /></p>
+<ul>
+<li>The error term gets <em>very</em> close to zero. All the curves have
+reached zero to within the 3 decimal place precision of the import
+files.</li>
+</ul>
+</div>
+<div id="integrated-error-versus-time" class="section level3" number="2.1.5">
+<h3><span class="header-section-number">2.1.5</span> Integrated error versus time</h3>
+<pre class="r"><code>p + geom_path(aes(y = ei))</code></pre>
+<p><img src="figure/characterise_data.Rmd/unnamed-chunk-20-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Integrated error versus time:</p>
+<ul>
+<li>The values are bounded between the clipping limits.</li>
+<li>Some early values jump between the negative and positive clipping
+limits <em>very</em> rapidly.</li>
+<li>Once the curves move into the unclipped value range they oscillate.</li>
+<li>All the curves converge to a value of approximately 0.175.
+Presumably, this corresponds to the motor power level required for
+the multicopter to have zero vertical velocity (hover).</li>
+</ul>
+</div>
+<div id="motor-command-versus-time" class="section level3" number="2.1.6">
+<h3><span class="header-section-number">2.1.6</span> Motor command versus time</h3>
+<pre class="r"><code>p + geom_path(aes(y = u))</code></pre>
+<p><img src="figure/characterise_data.Rmd/unnamed-chunk-21-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Motor command versus time:</p>
+<ul>
+<li>Curves starting below the target altitude have maximum initial motor
+command.</li>
+<li>Curves starting above the target altitude have maximum initial motor
+command.</li>
+<li>All curves show oscillatory behaviour after the initial period of
+extreme command.</li>
+<li>All curves converge to a value of 0.524. Presumably, this
+corresponds to the motor power level required for the multicopter to
+have zero vertical velocity (hover).</li>
+</ul>
+</div>
+</div>
+<div id="time-implicit" class="section level2" number="2.2">
+<h2><span class="header-section-number">2.2</span> Time implicit</h2>
+<p>Show the values of the major nodes (<span class="math inline">\(z\)</span>, <span class="math inline">\(dz\)</span>, <span class="math inline">\(e\)</span>, <span class="math inline">\(ei\)</span>, and <span class="math inline">\(u\)</span>,
+augmented with estimated acceleration: <span class="math inline">\(d2z\)</span>) as a function of each
+other (pair plots) with time implicit. There’s no commentary on these
+graphs - just enjoy the pretty pictures.</p>
+<p>Start the curves at time <span class="math inline">\(t = 3\)</span> to avoid the artifacts in the estimated
+acceleration seen in first two time steps.</p>
+<p>Place an arrow head on each curve to indicate the direction of time.
+Because the curves tend to converge on the same location I have placed
+the arrow head at the <em>beginning</em> of each curve (<span class="math inline">\(t = 3\)</span>). The arrow
+head points in the direction of increasing time.</p>
+<pre class="r"><code>p &lt;- d_wide %&gt;% 
+  dplyr::mutate(
+    k_start = k_start %&gt;% forcats::as_factor(),
+    d2z = (dz - lag(dz, n = 1, default = NA)) / 0.010  # get vertical acceleration
+  ) %&gt;% 
+  dplyr::filter(t &gt;= 3) %&gt;% 
+  ggplot(aes(group = file, colour = k_start))
+
+a &lt;- grid::arrow(ends = &quot;first&quot;, angle = 150, type = &quot;closed&quot;)
+
+###
+
+p + geom_vline(xintercept = 5) + geom_hline(yintercept = 0) +
+  geom_path(aes(x = z, y = dz), arrow = a, alpha = 0.2) + 
+  geom_point(aes(x = z, y = dz), size = 0.1)</code></pre>
+<p><img src="figure/characterise_data.Rmd/unnamed-chunk-22-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-22-1">
+Past versions of unnamed-chunk-22-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-22-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/a683bb1ef7edd5547cf06d0653d38b770330b6ca/docs/figure/characterise_data.Rmd/unnamed-chunk-22-1.png" target="_blank">a683bb1</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-07-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>p + geom_vline(xintercept = 5) + geom_hline(yintercept = 0) +
+  geom_path(aes(x = z, y = d2z), arrow = a, alpha = 0.2) + 
+  geom_point(aes(x = z, y = d2z), size = 0.1)</code></pre>
+<p><img src="figure/characterise_data.Rmd/unnamed-chunk-22-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-22-2">
+Past versions of unnamed-chunk-22-2.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-22-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/a683bb1ef7edd5547cf06d0653d38b770330b6ca/docs/figure/characterise_data.Rmd/unnamed-chunk-22-2.png" target="_blank">a683bb1</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-07-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>p + geom_vline(xintercept = 5) + geom_hline(yintercept = 0) +
+  geom_path(aes(x = z, y = e), arrow = a, alpha = 0.2) + 
+  geom_point(aes(x = z, y = e), size = 0.1)</code></pre>
+<p><img src="figure/characterise_data.Rmd/unnamed-chunk-22-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-22-3">
+Past versions of unnamed-chunk-22-3.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-22-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/a683bb1ef7edd5547cf06d0653d38b770330b6ca/docs/figure/characterise_data.Rmd/unnamed-chunk-22-3.png" target="_blank">a683bb1</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-07-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>p + geom_vline(xintercept = 5) + geom_hline(yintercept = 0.175) +
+  geom_path(aes(x = z, y = ei), arrow = a, alpha = 0.2) + 
+  geom_point(aes(x = z, y = ei), size = 0.1)</code></pre>
+<p><img src="figure/characterise_data.Rmd/unnamed-chunk-22-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-22-4">
+Past versions of unnamed-chunk-22-4.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-22-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/a683bb1ef7edd5547cf06d0653d38b770330b6ca/docs/figure/characterise_data.Rmd/unnamed-chunk-22-4.png" target="_blank">a683bb1</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-07-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>p + geom_vline(xintercept = 5) + geom_hline(yintercept = 0.524) +
+  geom_path(aes(x = z, y = u), arrow = a, alpha = 0.2) + 
+  geom_point(aes(x = z, y = u), size = 0.1)</code></pre>
+<p><img src="figure/characterise_data.Rmd/unnamed-chunk-22-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-22-5">
+Past versions of unnamed-chunk-22-5.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-22-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/a683bb1ef7edd5547cf06d0653d38b770330b6ca/docs/figure/characterise_data.Rmd/unnamed-chunk-22-5.png" target="_blank">a683bb1</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-07-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>###
+
+p + geom_vline(xintercept = 0) + geom_hline(yintercept = 0) +
+  geom_path(aes(x = dz, y = d2z), arrow = a, alpha = 0.2) + 
+  geom_point(aes(x = dz, y = d2z), size = 0.1)</code></pre>
+<p><img src="figure/characterise_data.Rmd/unnamed-chunk-22-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-22-6">
+Past versions of unnamed-chunk-22-6.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-22-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/a683bb1ef7edd5547cf06d0653d38b770330b6ca/docs/figure/characterise_data.Rmd/unnamed-chunk-22-6.png" target="_blank">a683bb1</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-07-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>p + geom_vline(xintercept = 0) + geom_hline(yintercept = 0) +
+  geom_path(aes(x = dz, y = e), arrow = a, alpha = 0.2) + 
+  geom_point(aes(x = dz, y = e), size = 0.1)</code></pre>
+<p><img src="figure/characterise_data.Rmd/unnamed-chunk-22-7.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-22-7">
+Past versions of unnamed-chunk-22-7.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-22-7" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/a683bb1ef7edd5547cf06d0653d38b770330b6ca/docs/figure/characterise_data.Rmd/unnamed-chunk-22-7.png" target="_blank">a683bb1</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-07-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>p + geom_vline(xintercept = 0) + geom_hline(yintercept = 0.175) +
+  geom_path(aes(x = dz, y = ei), arrow = a, alpha = 0.2) + 
+  geom_point(aes(x = dz, y = ei), size = 0.1)</code></pre>
+<p><img src="figure/characterise_data.Rmd/unnamed-chunk-22-8.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-22-8">
+Past versions of unnamed-chunk-22-8.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-22-8" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/a683bb1ef7edd5547cf06d0653d38b770330b6ca/docs/figure/characterise_data.Rmd/unnamed-chunk-22-8.png" target="_blank">a683bb1</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-07-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>p + geom_vline(xintercept = 0) + geom_hline(yintercept = 0.524) +
+  geom_path(aes(x = dz, y = u), arrow = a, alpha = 0.2) + 
+  geom_point(aes(x = dz, y = u), size = 0.1)</code></pre>
+<p><img src="figure/characterise_data.Rmd/unnamed-chunk-22-9.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-22-9">
+Past versions of unnamed-chunk-22-9.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-22-9" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/a683bb1ef7edd5547cf06d0653d38b770330b6ca/docs/figure/characterise_data.Rmd/unnamed-chunk-22-9.png" target="_blank">a683bb1</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-07-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>###
+
+p + geom_vline(xintercept = 0) + geom_hline(yintercept = 0) +
+  geom_path(aes(x = d2z, y = e), arrow = a, alpha = 0.2) + 
+  geom_point(aes(x = d2z, y = e), size = 0.1)</code></pre>
+<p><img src="figure/characterise_data.Rmd/unnamed-chunk-22-10.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-22-10">
+Past versions of unnamed-chunk-22-10.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-22-10" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/a683bb1ef7edd5547cf06d0653d38b770330b6ca/docs/figure/characterise_data.Rmd/unnamed-chunk-22-10.png" target="_blank">a683bb1</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-07-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>p + geom_vline(xintercept = 0) + geom_hline(yintercept = 0.175) +
+  geom_path(aes(x = d2z, y = ei), arrow = a, alpha = 0.2) + 
+  geom_point(aes(x = d2z, y = ei), size = 0.1)</code></pre>
+<p><img src="figure/characterise_data.Rmd/unnamed-chunk-22-11.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-22-11">
+Past versions of unnamed-chunk-22-11.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-22-11" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/a683bb1ef7edd5547cf06d0653d38b770330b6ca/docs/figure/characterise_data.Rmd/unnamed-chunk-22-11.png" target="_blank">a683bb1</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-07-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>p + geom_vline(xintercept = 0) + geom_hline(yintercept = 0.524) +
+  geom_path(aes(x = d2z, y = u), arrow = a, alpha = 0.2) + 
+  geom_point(aes(x = d2z, y = u), size = 0.1)</code></pre>
+<p><img src="figure/characterise_data.Rmd/unnamed-chunk-22-12.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-22-12">
+Past versions of unnamed-chunk-22-12.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-22-12" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/a683bb1ef7edd5547cf06d0653d38b770330b6ca/docs/figure/characterise_data.Rmd/unnamed-chunk-22-12.png" target="_blank">a683bb1</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-07-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>###
+
+p + geom_vline(xintercept = 0) + geom_hline(yintercept = 0.175) +
+  geom_path(aes(x = e, y = ei), arrow = a, alpha = 0.2) + 
+  geom_point(aes(x = e, y = ei), size = 0.1)</code></pre>
+<p><img src="figure/characterise_data.Rmd/unnamed-chunk-22-13.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-22-13">
+Past versions of unnamed-chunk-22-13.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-22-13" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/a683bb1ef7edd5547cf06d0653d38b770330b6ca/docs/figure/characterise_data.Rmd/unnamed-chunk-22-13.png" target="_blank">a683bb1</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-07-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>p + geom_vline(xintercept = 0) + geom_hline(yintercept = 0.524) +
+  geom_path(aes(x = e, y = u), arrow = a, alpha = 0.2) + 
+  geom_point(aes(x = e, y = u), size = 0.1)</code></pre>
+<p><img src="figure/characterise_data.Rmd/unnamed-chunk-22-14.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-22-14">
+Past versions of unnamed-chunk-22-14.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-22-14" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/a683bb1ef7edd5547cf06d0653d38b770330b6ca/docs/figure/characterise_data.Rmd/unnamed-chunk-22-14.png" target="_blank">a683bb1</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-07-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>###
+
+p + geom_vline(xintercept = 0.175) + geom_hline(yintercept = 0.524) +
+  geom_path(aes(x = ei, y = u), arrow = a, alpha = 0.2) + 
+  geom_point(aes(x = ei, y = u), size = 0.1)</code></pre>
+<p><img src="figure/characterise_data.Rmd/unnamed-chunk-22-15.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-22-15">
+Past versions of unnamed-chunk-22-15.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-22-15" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/a683bb1ef7edd5547cf06d0653d38b770330b6ca/docs/figure/characterise_data.Rmd/unnamed-chunk-22-15.png" target="_blank">a683bb1</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-07-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div id="distributions" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> Distributions</h1>
+<p>Look at the distributions of the values of all the nodes of the data
+flow diagram.</p>
+<p>Note that these distributions are calculated over all the input files
+pooled.</p>
+<p>Also note that the concept of a distribution is somewhat suspect when
+applied to an arbitrary selection of nonstationary signals.</p>
+<div id="summary-dsitributions" class="section level2" number="3.1">
+<h2><span class="header-section-number">3.1</span> Summary dsitributions</h2>
+<p>Display a quick summary of the distributions of values of all the nodes
+(except the parameter nodes) and those internal nodes which are
+identical to imported nodes (<span class="math inline">\(i2 := e\)</span>, <span class="math inline">\(i5 := ei\)</span>, and <span class="math inline">\(i8 := u\)</span>).</p>
+<p>The observed minimum (<span class="math inline">\(p0\)</span>) and maximum (<span class="math inline">\(p100\)</span>) will inform the value
+ranges of the corresponding VSA representations.</p>
+<pre class="r"><code>d_wide %&gt;% 
+  dplyr::select(z:u, i1, i3, i4, i6, i7) %&gt;% 
+  skimr::skim()</code></pre>
 <table>
-<caption><span id="tab:unnamed-chunk-5">Table 2.1: </span>Data summary</caption>
+<caption><span id="tab:unnamed-chunk-23">Table 3.1: </span>Data summary</caption>
 <tbody>
 <tr class="odd">
 <td align="left">Name</td>
-<td align="left">d_wide</td>
+<td align="left">Piped data</td>
 </tr>
 <tr class="even">
 <td align="left">Number of rows</td>
-<td align="left">1500</td>
+<td align="left">3500</td>
 </tr>
 <tr class="odd">
 <td align="left">Number of columns</td>
-<td align="left">21</td>
+<td align="left">10</td>
 </tr>
 <tr class="even">
 <td align="left">_______________________</td>
@@ -894,47 +2354,16 @@ low precision of the numbers in the files.</li>
 <td align="left"></td>
 </tr>
 <tr class="even">
-<td align="left">character</td>
-<td align="left">1</td>
+<td align="left">numeric</td>
+<td align="left">10</td>
 </tr>
 <tr class="odd">
-<td align="left">numeric</td>
-<td align="left">20</td>
-</tr>
-<tr class="even">
 <td align="left">________________________</td>
 <td align="left"></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Group variables</td>
 <td align="left">None</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Variable type: character</strong></p>
-<table>
-<thead>
-<tr class="header">
-<th align="left">skim_variable</th>
-<th align="right">n_missing</th>
-<th align="right">complete_rate</th>
-<th align="right">min</th>
-<th align="right">max</th>
-<th align="right">empty</th>
-<th align="right">n_unique</th>
-<th align="right">whitespace</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">file</td>
-<td align="right">0</td>
-<td align="right">1</td>
-<td align="right">53</td>
-<td align="right">54</td>
-<td align="right">0</td>
-<td align="right">3</td>
-<td align="right">0</td>
 </tr>
 </tbody>
 </table>
@@ -960,47 +2389,47 @@ low precision of the numbers in the files.</li>
 <td align="left">z</td>
 <td align="right">0</td>
 <td align="right">1</td>
-<td align="right">5.41</td>
-<td align="right">1.32</td>
+<td align="right">5.22</td>
+<td align="right">1.15</td>
 <td align="right">2.00</td>
-<td align="right">4.92</td>
-<td align="right">5.11</td>
-<td align="right">5.70</td>
+<td align="right">4.85</td>
+<td align="right">5.05</td>
+<td align="right">5.44</td>
 <td align="right">10.00</td>
-<td align="left">▁▇▅▁▁</td>
+<td align="left">▁▇▃▁▁</td>
 </tr>
 <tr class="even">
 <td align="left">dz</td>
 <td align="right">0</td>
 <td align="right">1</td>
-<td align="right">-0.33</td>
-<td align="right">1.10</td>
+<td align="right">-0.17</td>
+<td align="right">0.98</td>
 <td align="right">-4.37</td>
-<td align="right">-0.66</td>
-<td align="right">-0.11</td>
-<td align="right">0.07</td>
-<td align="right">2.70</td>
-<td align="left">▁▂▆▇▁</td>
+<td align="right">-0.43</td>
+<td align="right">-0.05</td>
+<td align="right">0.15</td>
+<td align="right">2.71</td>
+<td align="left">▁▁▅▇▁</td>
 </tr>
 <tr class="odd">
 <td align="left">e</td>
 <td align="right">0</td>
 <td align="right">1</td>
-<td align="right">-0.08</td>
-<td align="right">0.57</td>
+<td align="right">-0.05</td>
+<td align="right">0.46</td>
 <td align="right">-4.94</td>
 <td align="right">0.00</td>
 <td align="right">0.00</td>
 <td align="right">0.00</td>
-<td align="right">3.27</td>
-<td align="left">▁▁▁▇▁</td>
+<td align="right">3.32</td>
+<td align="left">▁▁▇▁▁</td>
 </tr>
 <tr class="even">
 <td align="left">ei</td>
 <td align="right">0</td>
 <td align="right">1</td>
 <td align="right">0.16</td>
-<td align="right">0.08</td>
+<td align="right">0.07</td>
 <td align="right">-0.20</td>
 <td align="right">0.17</td>
 <td align="right">0.17</td>
@@ -1013,167 +2442,63 @@ low precision of the numbers in the files.</li>
 <td align="right">0</td>
 <td align="right">1</td>
 <td align="right">0.51</td>
-<td align="right">0.12</td>
+<td align="right">0.11</td>
 <td align="right">0.00</td>
 <td align="right">0.52</td>
+<td align="right">0.52</td>
 <td align="right">0.53</td>
-<td align="right">0.54</td>
 <td align="right">1.00</td>
 <td align="left">▁▁▇▁▁</td>
 </tr>
 <tr class="even">
-<td align="left">k_start</td>
-<td align="right">0</td>
-<td align="right">1</td>
-<td align="right">6.67</td>
-<td align="right">3.40</td>
-<td align="right">2.00</td>
-<td align="right">2.00</td>
-<td align="right">8.00</td>
-<td align="right">10.00</td>
-<td align="right">10.00</td>
-<td align="left">▇▁▁▇▇</td>
-</tr>
-<tr class="odd">
-<td align="left">k_p</td>
-<td align="right">0</td>
-<td align="right">1</td>
-<td align="right">0.20</td>
-<td align="right">0.00</td>
-<td align="right">0.20</td>
-<td align="right">0.20</td>
-<td align="right">0.20</td>
-<td align="right">0.20</td>
-<td align="right">0.20</td>
-<td align="left">▁▁▇▁▁</td>
-</tr>
-<tr class="even">
-<td align="left">k_i</td>
-<td align="right">0</td>
-<td align="right">1</td>
-<td align="right">3.00</td>
-<td align="right">0.00</td>
-<td align="right">3.00</td>
-<td align="right">3.00</td>
-<td align="right">3.00</td>
-<td align="right">3.00</td>
-<td align="right">3.00</td>
-<td align="left">▁▁▇▁▁</td>
-</tr>
-<tr class="odd">
-<td align="left">k_tgt</td>
-<td align="right">0</td>
-<td align="right">1</td>
-<td align="right">5.00</td>
-<td align="right">0.00</td>
-<td align="right">5.00</td>
-<td align="right">5.00</td>
-<td align="right">5.00</td>
-<td align="right">5.00</td>
-<td align="right">5.00</td>
-<td align="left">▁▁▇▁▁</td>
-</tr>
-<tr class="even">
-<td align="left">k_windup</td>
-<td align="right">0</td>
-<td align="right">1</td>
-<td align="right">0.20</td>
-<td align="right">0.00</td>
-<td align="right">0.20</td>
-<td align="right">0.20</td>
-<td align="right">0.20</td>
-<td align="right">0.20</td>
-<td align="right">0.20</td>
-<td align="left">▁▁▇▁▁</td>
-</tr>
-<tr class="odd">
 <td align="left">i1</td>
 <td align="right">0</td>
 <td align="right">1</td>
-<td align="right">-0.41</td>
-<td align="right">1.32</td>
+<td align="right">-0.22</td>
+<td align="right">1.15</td>
 <td align="right">-5.00</td>
-<td align="right">-0.70</td>
-<td align="right">-0.11</td>
-<td align="right">0.08</td>
+<td align="right">-0.44</td>
+<td align="right">-0.05</td>
+<td align="right">0.15</td>
 <td align="right">3.00</td>
-<td align="left">▁▁▅▇▁</td>
-</tr>
-<tr class="even">
-<td align="left">i2</td>
-<td align="right">0</td>
-<td align="right">1</td>
-<td align="right">-0.08</td>
-<td align="right">0.57</td>
-<td align="right">-4.94</td>
-<td align="right">0.00</td>
-<td align="right">0.00</td>
-<td align="right">0.00</td>
-<td align="right">3.27</td>
-<td align="left">▁▁▁▇▁</td>
+<td align="left">▁▁▃▇▁</td>
 </tr>
 <tr class="odd">
 <td align="left">i3</td>
 <td align="right">0</td>
 <td align="right">1</td>
-<td align="right">-0.02</td>
-<td align="right">0.11</td>
+<td align="right">-0.01</td>
+<td align="right">0.09</td>
 <td align="right">-0.99</td>
 <td align="right">0.00</td>
 <td align="right">0.00</td>
 <td align="right">0.00</td>
-<td align="right">0.65</td>
-<td align="left">▁▁▁▇▁</td>
+<td align="right">0.66</td>
+<td align="left">▁▁▇▁▁</td>
 </tr>
 <tr class="even">
-<td align="left">i9</td>
-<td align="right">0</td>
-<td align="right">1</td>
-<td align="right">0.16</td>
-<td align="right">0.08</td>
-<td align="right">-0.20</td>
-<td align="right">0.17</td>
-<td align="right">0.17</td>
-<td align="right">0.18</td>
-<td align="right">0.20</td>
-<td align="left">▁▁▁▁▇</td>
-</tr>
-<tr class="odd">
 <td align="left">i4</td>
 <td align="right">0</td>
 <td align="right">1</td>
-<td align="right">0.08</td>
-<td align="right">0.64</td>
+<td align="right">0.12</td>
+<td align="right">0.52</td>
 <td align="right">-5.04</td>
 <td align="right">0.17</td>
 <td align="right">0.17</td>
 <td align="right">0.18</td>
-<td align="right">3.44</td>
+<td align="right">3.50</td>
 <td align="left">▁▁▁▇▁</td>
-</tr>
-<tr class="even">
-<td align="left">i5</td>
-<td align="right">0</td>
-<td align="right">1</td>
-<td align="right">0.16</td>
-<td align="right">0.08</td>
-<td align="right">-0.20</td>
-<td align="right">0.17</td>
-<td align="right">0.17</td>
-<td align="right">0.18</td>
-<td align="right">0.20</td>
-<td align="left">▁▁▁▁▇</td>
 </tr>
 <tr class="odd">
 <td align="left">i6</td>
 <td align="right">0</td>
 <td align="right">1</td>
-<td align="right">0.48</td>
-<td align="right">0.24</td>
+<td align="right">0.49</td>
+<td align="right">0.21</td>
 <td align="right">-0.60</td>
 <td align="right">0.52</td>
 <td align="right">0.52</td>
-<td align="right">0.54</td>
+<td align="right">0.53</td>
 <td align="right">0.60</td>
 <td align="left">▁▁▁▁▇</td>
 </tr>
@@ -1181,71 +2506,411 @@ low precision of the numbers in the files.</li>
 <td align="left">i7</td>
 <td align="right">0</td>
 <td align="right">1</td>
-<td align="right">0.46</td>
-<td align="right">0.34</td>
+<td align="right">0.48</td>
+<td align="right">0.29</td>
 <td align="right">-1.59</td>
 <td align="right">0.52</td>
 <td align="right">0.52</td>
-<td align="right">0.54</td>
-<td align="right">1.25</td>
+<td align="right">0.53</td>
+<td align="right">1.26</td>
 <td align="left">▁▁▁▇▁</td>
-</tr>
-<tr class="odd">
-<td align="left">i8</td>
-<td align="right">0</td>
-<td align="right">1</td>
-<td align="right">0.51</td>
-<td align="right">0.12</td>
-<td align="right">0.00</td>
-<td align="right">0.52</td>
-<td align="right">0.52</td>
-<td align="right">0.54</td>
-<td align="right">1.00</td>
-<td align="left">▁▁▇▁▁</td>
-</tr>
-<tr class="even">
-<td align="left">t</td>
-<td align="right">0</td>
-<td align="right">1</td>
-<td align="right">250.50</td>
-<td align="right">144.39</td>
-<td align="right">1.00</td>
-<td align="right">125.75</td>
-<td align="right">250.50</td>
-<td align="right">375.25</td>
-<td align="right">500.00</td>
-<td align="left">▇▇▇▇▇</td>
 </tr>
 </tbody>
 </table>
 </div>
-<div id="plots" class="section level1" number="3">
-<h1><span class="header-section-number">3</span> Plots</h1>
-<p>Plot the relationships between the major nodes. This is not necessarily
-of immediate use in deciding the design fo VSA components, but gives a
-feel for the dynamics of the system.</p>
-<div id="time-explicit" class="section level2" number="3.1">
-<h2><span class="header-section-number">3.1</span> Time explicit</h2>
-<p>Show the values of the major nodes as a function of time.</p>
-<p><img src="figure/characterise_data.Rmd/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /><img src="figure/characterise_data.Rmd/unnamed-chunk-6-2.png" width="672" style="display: block; margin: auto;" /></p>
-<pre><code>Warning: Removed 1 row(s) containing missing values (geom_path).</code></pre>
-<p><img src="figure/characterise_data.Rmd/unnamed-chunk-6-3.png" width="672" style="display: block; margin: auto;" /><img src="figure/characterise_data.Rmd/unnamed-chunk-6-4.png" width="672" style="display: block; margin: auto;" /><img src="figure/characterise_data.Rmd/unnamed-chunk-6-5.png" width="672" style="display: block; margin: auto;" /><img src="figure/characterise_data.Rmd/unnamed-chunk-6-6.png" width="672" style="display: block; margin: auto;" /></p>
+<div id="detailed-distributions" class="section level2" number="3.2">
+<h2><span class="header-section-number">3.2</span> Detailed distributions</h2>
+<p>Look at the detailed distribution of all the nodes (except the parameter
+nodes) and those internal nodes which are identical to imported nodes
+(<span class="math inline">\(i2 := e\)</span>, <span class="math inline">\(i5 := ei\)</span>, and <span class="math inline">\(i8 := u\)</span>).</p>
+<p>The distributions will give some idea about how much different regions
+of the value ranges are used.</p>
+<p>Use a logarithmic scale for the counts to bring out the detail in the
+low density areas.</p>
+<p>Also, divide the ranges into quintiles to give an idea of where range
+boundaries might be if we used a low resolution representation
+(effectively dividing each value range into “high negative”, “medium
+negative”, “neutral”, “medium positive”, “high positive”). This is
+relevant to the question of value resolution.</p>
+<pre class="r"><code>d_node &lt;- d_wide %&gt;% 
+  dplyr::select(z:u, i1, i3, i4, i6, i7) %&gt;% 
+  tidyr::pivot_longer(cols = everything(), names_to = &quot;node&quot;, values_to = &quot;value&quot;)
+
+d_quintile &lt;- d_node %&gt;%  
+  dplyr::group_by(node) %&gt;% 
+  dplyr::summarise(
+    p01 = quantile(value, probs = 0.01, names = FALSE),
+    p02 = quantile(value, probs = 0.02, names = FALSE),
+    p05 = quantile(value, probs = 0.05, names = FALSE),
+    p20 = quantile(value, probs = 0.2, names = FALSE),
+    p40 = quantile(value, probs = 0.4, names = FALSE),
+    p60 = quantile(value, probs = 0.6, names = FALSE),
+    p80 = quantile(value, probs = 0.8, names = FALSE),
+    p95 = quantile(value, probs = 0.95, names = FALSE),
+    p98 = quantile(value, probs = 0.98, names = FALSE),
+    p99 = quantile(value, probs = 0.99, names = FALSE)
+  )
+
+d_node %&gt;% 
+  ggplot(aes(x = value)) +
+  facet_wrap(facets = vars(node), ncol = 2, scales = &quot;free&quot;) +
+  geom_histogram(bins = 50) +
+  scale_y_log10() +
+  geom_vline(data = d_quintile, aes(xintercept = p01), colour = &quot;orange&quot;, linetype = &quot;dotted&quot;) +
+  geom_vline(data = d_quintile, aes(xintercept = p02), colour = &quot;orange&quot;, linetype = &quot;dashed&quot;) +
+  geom_vline(data = d_quintile, aes(xintercept = p05), colour = &quot;orange&quot;, linetype = &quot;solid&quot;) +
+  geom_vline(data = d_quintile, aes(xintercept = p20), colour = &quot;red&quot;, linetype = &quot;dashed&quot;) +
+  geom_vline(data = d_quintile, aes(xintercept = p40), colour = &quot;red&quot;, linetype = &quot;solid&quot;) +
+  geom_vline(data = d_quintile, aes(xintercept = p60), colour = &quot;red&quot;, linetype = &quot;solid&quot;) +
+  geom_vline(data = d_quintile, aes(xintercept = p80), colour = &quot;red&quot;, linetype = &quot;dashed&quot;) +
+  geom_vline(data = d_quintile, aes(xintercept = p95), colour = &quot;orange&quot;, linetype = &quot;solid&quot;) +
+  geom_vline(data = d_quintile, aes(xintercept = p98), colour = &quot;orange&quot;, linetype = &quot;dashed&quot;) +
+  geom_vline(data = d_quintile, aes(xintercept = p99), colour = &quot;orange&quot;, linetype = &quot;dotted&quot;)</code></pre>
+<pre><code>Warning: Transformation introduced infinite values in continuous y-axis</code></pre>
+<pre><code>Warning: Removed 84 rows containing missing values (geom_bar).</code></pre>
+<p><img src="figure/characterise_data.Rmd/unnamed-chunk-24-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-24-1">
+Past versions of unnamed-chunk-24-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-24-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/a683bb1ef7edd5547cf06d0653d38b770330b6ca/docs/figure/characterise_data.Rmd/unnamed-chunk-24-1.png" target="_blank">a683bb1</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-07-07
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div id="time-implicit" class="section level2" number="3.2">
-<h2><span class="header-section-number">3.2</span> Time implicit</h2>
-<p>Show the values of the major nodes as a function of each other (with
-time implicit).</p>
-<p><img src="figure/characterise_data.Rmd/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /></p>
-<pre><code>Warning: Removed 1 row(s) containing missing values (geom_path).</code></pre>
-<p><img src="figure/characterise_data.Rmd/unnamed-chunk-7-2.png" width="672" style="display: block; margin: auto;" /><img src="figure/characterise_data.Rmd/unnamed-chunk-7-3.png" width="672" style="display: block; margin: auto;" /><img src="figure/characterise_data.Rmd/unnamed-chunk-7-4.png" width="672" style="display: block; margin: auto;" /><img src="figure/characterise_data.Rmd/unnamed-chunk-7-5.png" width="672" style="display: block; margin: auto;" /></p>
-<pre><code>Warning: Removed 1 row(s) containing missing values (geom_path).</code></pre>
-<p><img src="figure/characterise_data.Rmd/unnamed-chunk-7-6.png" width="672" style="display: block; margin: auto;" /><img src="figure/characterise_data.Rmd/unnamed-chunk-7-7.png" width="672" style="display: block; margin: auto;" /><img src="figure/characterise_data.Rmd/unnamed-chunk-7-8.png" width="672" style="display: block; margin: auto;" /><img src="figure/characterise_data.Rmd/unnamed-chunk-7-9.png" width="672" style="display: block; margin: auto;" /></p>
-<pre><code>Warning: Removed 1 row(s) containing missing values (geom_path).</code></pre>
-<p><img src="figure/characterise_data.Rmd/unnamed-chunk-7-10.png" width="672" style="display: block; margin: auto;" /></p>
-<pre><code>Warning: Removed 1 row(s) containing missing values (geom_path).</code></pre>
-<p><img src="figure/characterise_data.Rmd/unnamed-chunk-7-11.png" width="672" style="display: block; margin: auto;" /></p>
-<pre><code>Warning: Removed 1 row(s) containing missing values (geom_path).</code></pre>
-<p><img src="figure/characterise_data.Rmd/unnamed-chunk-7-12.png" width="672" style="display: block; margin: auto;" /><img src="figure/characterise_data.Rmd/unnamed-chunk-7-13.png" width="672" style="display: block; margin: auto;" /><img src="figure/characterise_data.Rmd/unnamed-chunk-7-14.png" width="672" style="display: block; margin: auto;" /><img src="figure/characterise_data.Rmd/unnamed-chunk-7-15.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<ul>
+<li><p>Values which are driven to a target (<span class="math inline">\(z\)</span>, <span class="math inline">\(i1\)</span>, <span class="math inline">\(dz\)</span>, <span class="math inline">\(e\)</span>, <span class="math inline">\(i3\)</span>)
+have unimodal distributions.</p></li>
+<li><p>Values driven by the integrated error (<span class="math inline">\(ei\)</span>, <span class="math inline">\(i6\)</span>, <span class="math inline">\(i7\)</span>) have
+bimodal distributions.</p>
+<ul>
+<li><span class="math inline">\(i4\)</span> is part of the calculation of integrated error, but is
+dominated by <span class="math inline">\(e\)</span>, so has a unimodal distribution.</li>
+</ul></li>
+<li><p>The values of motor command (<span class="math inline">\(u\)</span>) have a trimodal distribution (full
+on, full off, hovering).</p></li>
+<li><p>The quintiles are very closely clustered around the principal mode
+of each distribution. This indicates that a quintile-based
+resolution would not be very useful.</p>
+<ul>
+<li>This suggests that an encoding would either need to be based on
+the values rather than quantiles, or quantiles would have to be
+defined with respect to when the system dynamics is doing
+something interesting.</li>
+</ul></li>
+</ul>
+</div>
+</div>
+<div id="value-resolution" class="section level1" number="4">
+<h1><span class="header-section-number">4</span> Value resolution</h1>
+<p>VSA representations, like any physical implementation have limited value
+resolution. In this section I would <em>like</em> find the value resolution
+that is required by the PID controller in order to work satisfactorily.
+I won’t be doing that because that is probably more effort than is
+justified at this stage. A proper answer to that question would probably
+involve something like injecting noise into the value at each node to
+see how PID performance decreases as noise is increased.</p>
+<p>Instead, I will try to get some feel for the effective value resolution
+in the classically implemented PID controller. I will do this by looking
+at the distribution of the differences between successive values. The
+intuition behind this is that the differences between successive values
+represent the increments in which the state of the dynamic system
+evolves.</p>
+<p>This analysis will not provide any conclusive answers. Rather, it will
+provide some context for later thinking about the VSA designs.</p>
+<p>I expect that the initial VSA designs will be thoroughly over-resourced,
+so that they have far more value resolution than is required for
+implementation of the PID controller.</p>
+<p>Look at the distributions of absolute differences of successive values
+at each node.</p>
+<p>Exclude observations where the successive difference is zero, because
+eventually all node values will converge to a steady state which is
+uninteresting and can be arbitrarily prolonged.</p>
+<pre class="r"><code># function to calculate the absolute successive difference
+abs_diff &lt;- function(
+  x # numeric - vector of values at successive time steps
+) # value # numeric - vector of absolute values of first differences
+{
+  (x - dplyr::lag(x)) %&gt;% abs()
+}
+
+d_node &lt;- d_wide %&gt;% 
+  dplyr::select(file, t, z:u, i1, i3, i4, i6, i7) %&gt;% 
+  dplyr::arrange(file, t) %&gt;% # guarantee correct order for successive differences
+  dplyr::group_by(file) %&gt;% 
+  dplyr::mutate(
+    across(z:i7, abs_diff)
+  ) %&gt;% 
+  dplyr::ungroup() %&gt;% 
+  dplyr::select(-file, -t) %&gt;% 
+  tidyr::pivot_longer(cols = everything(), names_to = &quot;node&quot;, values_to = &quot;value&quot;) %&gt;% 
+  dplyr::filter(!is.na(value) &amp; value &gt; 0) # exclude rows with zero change
+
+# calculate quantiles for each node
+d_quintile &lt;- d_node %&gt;%  
+  dplyr::group_by(node) %&gt;% 
+  dplyr::summarise(
+    p01 = quantile(value, probs = 0.01, names = FALSE),
+    p02 = quantile(value, probs = 0.02, names = FALSE),
+    p05 = quantile(value, probs = 0.05, names = FALSE),
+    p20 = quantile(value, probs = 0.2, names = FALSE),
+    p40 = quantile(value, probs = 0.4, names = FALSE),
+    p60 = quantile(value, probs = 0.6, names = FALSE),
+    p80 = quantile(value, probs = 0.8, names = FALSE),
+    p95 = quantile(value, probs = 0.95, names = FALSE),
+    p98 = quantile(value, probs = 0.98, names = FALSE),
+    p99 = quantile(value, probs = 0.99, names = FALSE)
+  )
+
+d_node %&gt;% 
+  ggplot(aes(x = value)) +
+  facet_wrap(facets = vars(node), ncol = 2, scales = &quot;free&quot;) +
+  geom_histogram(bins = 50) +
+  scale_x_log10() +
+  scale_y_log10() +
+  geom_vline(data = d_quintile, aes(xintercept = p01), colour = &quot;orange&quot;, linetype = &quot;dotted&quot;) +
+  geom_vline(data = d_quintile, aes(xintercept = p02), colour = &quot;orange&quot;, linetype = &quot;dashed&quot;) +
+  geom_vline(data = d_quintile, aes(xintercept = p05), colour = &quot;orange&quot;, linetype = &quot;solid&quot;) +
+  geom_vline(data = d_quintile, aes(xintercept = p20), colour = &quot;red&quot;, linetype = &quot;dashed&quot;) +
+  geom_vline(data = d_quintile, aes(xintercept = p40), colour = &quot;red&quot;, linetype = &quot;solid&quot;) +
+  geom_vline(data = d_quintile, aes(xintercept = p60), colour = &quot;red&quot;, linetype = &quot;solid&quot;) +
+  geom_vline(data = d_quintile, aes(xintercept = p80), colour = &quot;red&quot;, linetype = &quot;dashed&quot;) +
+  geom_vline(data = d_quintile, aes(xintercept = p95), colour = &quot;orange&quot;, linetype = &quot;solid&quot;) +
+  geom_vline(data = d_quintile, aes(xintercept = p98), colour = &quot;orange&quot;, linetype = &quot;dashed&quot;) +
+  geom_vline(data = d_quintile, aes(xintercept = p99), colour = &quot;orange&quot;, linetype = &quot;dotted&quot;)</code></pre>
+<pre><code>Warning: Transformation introduced infinite values in continuous y-axis</code></pre>
+<pre><code>Warning: Removed 149 rows containing missing values (geom_bar).</code></pre>
+<p><img src="figure/characterise_data.Rmd/unnamed-chunk-25-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-25-1">
+Past versions of unnamed-chunk-25-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-25-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/a683bb1ef7edd5547cf06d0653d38b770330b6ca/docs/figure/characterise_data.Rmd/unnamed-chunk-25-1.png" target="_blank">a683bb1</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-07-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<ul>
+<li><p>The pattern of separated bars is due to the values being quantised
+to three decimal places.</p></li>
+<li><p>Successive differences are <em>very heavily</em> concentrated near zero for
+all nodes.</p></li>
+<li><p>Some nodes (<span class="math inline">\(dz\)</span>, <span class="math inline">\(e\)</span>, <span class="math inline">\(i3\)</span>, <span class="math inline">\(i4\)</span>) have a secondary mode that is
+clearly nonzero.</p></li>
+<li><p>Node <span class="math inline">\(i7\)</span> has a possibly bimodal distribution.</p></li>
+</ul>
+<p>I don’t know that I would draw any conclusions from that analysis, other
+than that most values evolve in small increments, and when the
+increments are large it is probably in the initial stages of detecting
+and reacting to a large mismatch to the target.</p>
+</div>
+<div id="temporal-resolution" class="section level1" number="5">
+<h1><span class="header-section-number">5</span> Temporal resolution</h1>
+<p>Temporal resolution is possibly even more problematic than value
+resolution.</p>
+<p>I will look at the power spectra of the values. The data being analysed
+here is generated by the classically implemented simulation. So the
+frequencies with relatively higher power will be interpreted as
+important to the dynamics of the classically implemented PID controller.</p>
+<p>Looking at the earlier plots of values as a function of time, I would
+expect the low frequencies to be prominent as many of the curves show a
+slow and smooth approach to a target value.</p>
+<p>However, there will be some high frequency components corresponding to
+the sudden turning on or off of the motors.</p>
+<p>I also expect to see some frequency component corresponding to the
+observed oscillatory behaviour. However, this might not be essential to
+the dynamics of the PID as I suspect the oscillation is an undesired
+behaviour that could be removed by tuning.</p>
+<p>I will look at the power spectrum for each node, for each simulation
+file.</p>
+<pre class="r"><code># function to spectral analyse one time series as a frame
+spec_an &lt;- function(
+  d # data frame - contains a &quot;value&quot; column
+) # value # spectrum object - result of spectral analysis of d
+{
+  spec_obj &lt;- d %&gt;% 
+    dplyr::pull(value) %&gt;% # get the time series of values
+    scale() %&gt;% # centre and standardise the time series
+    spectrum(
+      method = &quot;pgram&quot;, detrend = FALSE, plot = FALSE
+    ) # return a spectrum object
+  
+  tibble(freq = spec_obj[[&quot;freq&quot;]], spec = spec_obj[[&quot;spec&quot;]])
+}
+
+d_wide %&gt;% 
+  dplyr::select(file, k_start, t, z:u, i1, i3, i4, i6, i7) %&gt;% 
+  dplyr::arrange(file, t) %&gt;% # guarantee correct order
+  tidyr::pivot_longer(cols = z:i7, names_to = &quot;node&quot;, values_to = &quot;value&quot;) %&gt;% 
+  tidyr::nest(file_node = c(t, value)) %&gt;%  # analysis per file x node
+  dplyr::mutate(
+    spectrum = file_node %&gt;% map(spec_an), # calculate the spectra
+    file = file %&gt;% forcats::fct_reorder(k_start), # reorder levels of file by k_start
+    k_start = k_start %&gt;% forcats::as_factor(), # make k_start a factor in numeric order
+    node = node %&gt;% forcats::fct_relevel(
+      c(&quot;z&quot;, &quot;i1&quot;, &quot;dz&quot;, &quot;e&quot;, &quot;i3&quot;, &quot;i4&quot;, &quot;ei&quot;, &quot;i6&quot;, &quot;i7&quot;, &quot;u&quot;)
+      ) # reorder levels of node
+  ) %&gt;% 
+  dplyr::select(file, k_start, node, spectrum) %&gt;% 
+  dplyr::filter(node %in% # keep non-redundant nodes
+                  c(&quot;z&quot;, &quot;dz&quot;, &quot;e&quot;, &quot;i4&quot;, &quot;ei&quot;, &quot;i7&quot;, &quot;u&quot;)
+                ) %&gt;% 
+  tidyr::unnest(cols = spectrum) %&gt;% 
+  ggplot() +
+  geom_path(aes(x = freq, y = spec, colour = k_start)) +
+  scale_y_log10() +
+  facet_grid(rows = vars(file), cols = vars(node))</code></pre>
+<p><img src="figure/characterise_data.Rmd/unnamed-chunk-26-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-26-1">
+Past versions of unnamed-chunk-26-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-26-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/a683bb1ef7edd5547cf06d0653d38b770330b6ca/docs/figure/characterise_data.Rmd/unnamed-chunk-26-1.png" target="_blank">a683bb1</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-07-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<ul>
+<li><p>Some nodes are redundant because they have identical spectra to
+other nodes. The redundant nodes have been removed from the plot.</p>
+<ul>
+<li><span class="math inline">\(i1\)</span> (= <span class="math inline">\(z\)</span> minus constant)</li>
+<li><span class="math inline">\(i3\)</span> (= <span class="math inline">\(e\)</span> times constant)</li>
+<li><span class="math inline">\(i6\)</span> (= <span class="math inline">\(ei\)</span> times constant)</li>
+</ul></li>
+<li><p>The frequency scale is linear and the maximum corresponds to 50Hz.</p></li>
+<li><p>The <span class="math inline">\(z\)</span> (altitude) spectra are very similar across all starting
+heights (files).</p>
+<ul>
+<li><p>They show the greatest (across nodes) concentration of energy at
+low frequencies.</p>
+<ul>
+<li>Most of the energy is below 10Hz.</li>
+</ul></li>
+<li><p>This is expected because the altitude trajectories showed a
+smooth approach to the target.</p></li>
+</ul></li>
+<li><p>The spectra of the remaining nodes show a lesser concentration of
+energy at low frequencies.</p></li>
+<li><p>There is a general trend for the spectrum to become flatter as the
+node gets closer in the data flow diagram to the motor command <span class="math inline">\(u\)</span>.</p>
+<ul>
+<li>This suggests that the nodes can be thought of as constituting a
+series fo filters that emphasise higher frequency components
+that will eventually be the motor commands.</li>
+</ul></li>
+<li><p>The spectra of the remaining nodes show different patterns depending
+on whether the starting height is below (2m, 3m) or above (8m, 10m)
+the target height.</p>
+<ul>
+<li><p>Simulations starting below the target show a distinct spectral
+peak at ~18Hz (a cycle duration of ~5.6 time steps). This
+corresponds to the oscillations which are prominent in the
+trajectories of the simulations starting below the target
+height.</p></li>
+<li><p>For the simulations starting above the target height there is a
+hint of a peak at ~19Hz (a cycle duration of ~5.3 time steps).
+Presumably, this corresponds to the same oscillation mechanism,
+which is only barely activated when starting above the target
+height.</p></li>
+</ul></li>
+<li><p>For the simulations starting below the target height there is a
+slight peak at ~34Hz (a cycle duration of ~2.9 time steps).
+Presumably, this is related to the 18Hz oscillation.</p>
+<ul>
+<li>This is quite a high frequency signal, but the absolute
+magnitude of this peak is very small.</li>
+</ul></li>
+</ul>
+<p>If I am going to draw any tentative conclusions from this it is that:</p>
+<ul>
+<li>Most of the action in the system happens relatively slowly, but …</li>
+<li>Things get faster as you get closer to the motor command.</li>
+</ul>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -1254,6 +2919,7 @@ Session information
 </button>
 </p>
 <div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
 <pre><code>R version 4.1.0 (2021-05-18)
 Platform: x86_64-pc-linux-gnu (64-bit)
 Running under: Ubuntu 21.04
@@ -1274,26 +2940,26 @@ attached base packages:
 [1] stats     graphics  grDevices datasets  utils     methods   base     
 
 other attached packages:
-[1] ggplot2_3.3.4 forcats_0.5.1 skimr_2.1.3   stringr_1.4.0 DT_0.18      
-[6] dplyr_1.0.7   vroom_1.5.1   here_1.0.1    fs_1.5.0     
+ [1] purrr_0.3.4   tidyr_1.1.3   ggplot2_3.3.5 forcats_0.5.1 skimr_2.1.3  
+ [6] stringr_1.4.0 DT_0.18       dplyr_1.0.7   vroom_1.5.1   here_1.0.1   
+[11] fs_1.5.0     
 
 loaded via a namespace (and not attached):
- [1] tidyselect_1.1.1  xfun_0.24         repr_1.1.3        purrr_0.3.4      
- [5] colorspace_2.0-2  vctrs_0.3.8       generics_0.1.0    htmltools_0.5.1.1
- [9] yaml_2.2.1        base64enc_0.1-3   utf8_1.2.1        rlang_0.4.11     
-[13] later_1.2.0       pillar_1.6.1      glue_1.4.2        withr_2.4.2      
-[17] bit64_4.0.5       lifecycle_1.0.0   munsell_0.5.0     gtable_0.3.0     
-[21] workflowr_1.6.2   htmlwidgets_1.5.3 evaluate_0.14     labeling_0.4.2   
-[25] knitr_1.33        tzdb_0.1.1        crosstalk_1.1.1   httpuv_1.6.1     
-[29] parallel_4.1.0    fansi_0.5.0       highr_0.9         Rcpp_1.0.6       
-[33] renv_0.13.2       promises_1.2.0.1  scales_1.1.1      jsonlite_1.7.2   
-[37] farver_2.1.0      bit_4.0.4         digest_0.6.27     stringi_1.6.2    
-[41] bookdown_0.22     rprojroot_2.0.2   grid_4.1.0        cli_2.5.0        
-[45] tools_4.1.0       magrittr_2.0.1    tibble_3.1.2      tidyr_1.1.3      
-[49] crayon_1.4.1      whisker_0.4       pkgconfig_2.0.3   ellipsis_0.3.2   
-[53] rmarkdown_2.9     rstudioapi_0.13   R6_2.5.0          git2r_0.28.0     
-[57] compiler_4.1.0   </code></pre>
-</div>
+ [1] tidyselect_1.1.1  xfun_0.24         repr_1.1.3        lattice_0.20-44  
+ [5] splines_4.1.0     colorspace_2.0-2  vctrs_0.3.8       generics_0.1.0   
+ [9] htmltools_0.5.1.1 mgcv_1.8-36       yaml_2.2.1        base64enc_0.1-3  
+[13] utf8_1.2.1        rlang_0.4.11      later_1.2.0       pillar_1.6.1     
+[17] glue_1.4.2        withr_2.4.2       bit64_4.0.5       lifecycle_1.0.0  
+[21] munsell_0.5.0     gtable_0.3.0      workflowr_1.6.2   htmlwidgets_1.5.3
+[25] evaluate_0.14     labeling_0.4.2    knitr_1.33        tzdb_0.1.1       
+[29] crosstalk_1.1.1   httpuv_1.6.1      parallel_4.1.0    fansi_0.5.0      
+[33] highr_0.9         Rcpp_1.0.6        renv_0.13.2       promises_1.2.0.1 
+[37] scales_1.1.1      jsonlite_1.7.2    farver_2.1.0      bit_4.0.4        
+[41] digest_0.6.27     stringi_1.6.2     bookdown_0.22     rprojroot_2.0.2  
+[45] grid_4.1.0        cli_3.0.0         tools_4.1.0       magrittr_2.0.1   
+[49] tibble_3.1.2      crayon_1.4.1      whisker_0.4       pkgconfig_2.0.3  
+[53] Matrix_1.3-4      ellipsis_0.3.2    rstudioapi_0.13   rmarkdown_2.9    
+[57] R6_2.5.0          nlme_3.1-152      git2r_0.28.0      compiler_4.1.0   </code></pre>
 </div>
 </div>
 

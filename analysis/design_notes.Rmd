@@ -7,6 +7,8 @@ editor_options:
   chunk_output_type: console
   markdown: 
     wrap: 72
+bibliography: references.bib
+csl: apa-single-spaced.csl
 ---
 
 ```{r setup, include=FALSE}
@@ -41,6 +43,118 @@ altitude hold in [VSA](https://www.hd-computing.com/).
     classical altitude hold computation, so we may miss seeing some
     (hypothetical) VSA-centric solution that has no classical analogue.
 
+-   Drop-in replacement, taken literally, implies replacement of
+    individual functions (single nodes) of the data flow diagram. These
+    are generally simple functions, so could reasonably be designed
+    (rather than learned). However, it is also possible to replace
+    larger subsets of the data flow diagram. As these subsets get larger
+    the function computed becomes more complex and design becomes less
+    attractive relative to learning.
+
+-   The initial intent is to build the system by design, which implies
+    one for one replacement of the PID components with VSA equivalents.
+    If there is time (or necessity) we will try to learn the replacement
+    VSA components and move from one for one replacement to a holistic
+    re-implementation of the PID controller.
+
+## Idealisation versus implementation
+
+A drop-in replacement strategy is not necessarily as straight-forward as
+it sounds. This is primarily due to the unnoticed heavy lifting that is
+done by the idealised mathematical abstractions we habitually use.
+
+### Range and resolution
+
+The values manipulated by the PID controller are modelled mathematically
+as real numbers, which are unbounded and have arbitrarily fine
+resolution (infinite precision). However, any physical implementation
+will have limited range and resolution.
+
+An implementation on a digital computer would probably represent the
+real scalars with floating point numbers. These have a sufficiently wide
+range and sufficiently fine resolution that the limitations relative to
+real numbers can generally be ignored. However, as the representational
+and computational resources are reduced the probability that the
+limitations will have visible effects on the behaviour of the PID
+controller increases.
+
+One of the purposes of using a VSA approach in robotics is to attempt to
+achieve computation with fewer resources, which may mean we are
+operating in the regime where representational limits are relevant.
+While it is possible we may never approach those limits in this work it
+is appropriate to always keep in mind that those limits do exist for
+VSAs. In particular, we will treat all scalar values as being bounded.
+
+### Scaling
+
+In a mathematical model the the quantities are unscaled, they are just
+numbers (e.g. see the first paragraph of the preface of
+<https://hplgit.github.io/scaling-book/doc/pub/book/pdf/scaling-book-4screen-sol.pdf>).
+However, in an implementation the numbers (especially coming from
+sensors) are necessarily scaled. (Is the vertical velocity measured in
+metres per second or [furlongs per
+fortnight](https://en.wikipedia.org/wiki/FFF_system#Furlongs_per_fortnight)?)
+Quantities to be combined by some function need to be scaled compatibly.
+For example, if we are adding two vertical velocities they should be
+identically scaled for standard addition to have the desired effect.
+
+In a VSA system we are close to the mathematical idealisation, in that
+the VSA representation of a magnitude carries no indication of the
+scaling. If we had a VSA implementation of the standard addition
+operator we would need to ensure that the representations of the
+arguments were compatibly scaled. However, if we are effectively
+*learning* an addition operator to be used in a specific context there
+is no need for the arguments to be compatibly scaled because we learn
+the appropriate scaling of the arguments as part of learning the
+addition operator.
+
+Consider an extended example by looking at the PID calculation of error
+($e$): $$
+\begin{aligned}
+  e &= k_{tgt} - z - dz \\
+    &= k_{tgt} - (z + dz)
+\end{aligned}
+$$\
+
+The term $(z + dz)$ is effectively a prediction of the altitude at some
+time in the future. The altitude $z$ happens to be supplied scaled as
+metres and the vertical velocity happens to be supplied scaled in metres
+per second. In order for $z$ and $dz$ to be scaled compatibly, so they
+can be combined with the standard addition operator we can take the
+implied prediction interval to be one second, so that $dz$ is
+interpreted as the distance in metres that will be covered in the next
+second. (The mathematical notation is arguably misleading and should
+contain an explicit multiplication of the vertical velocity by the
+prediction period, however that just illustrates that the mathematical
+idealisation makes it possible to ignore implementation details.)
+
+So, $e$ can be interpreted as the predicted altitude error in one second
+assuming no change in vertical velocity. However, the whole point of the
+PID controller is to vary the vertical velocity of the multicopter,
+eventually bring it to zero. In addition, the response rate of the
+system is sufficiently high (100 time steps per second) that the
+vertical velocity of the multicopter is likely to vary significantly
+over the one second prediction interval, thus invalidating the
+prediction.
+
+Consequently, the one second prediction horizon implied by the scaling
+of the inputs is likely to be rather longer than appropriate for optimal
+control. Presumably this gets compensated for by the tuning parameters
+of the PID controller. So if the VSA version is designed (rather than
+learned) it will be limited by the quality of the tuning of the
+controller. On the other hand if the VSA functions are learned, there is
+an opportunity for the optimal scaling to be learned to best match the
+response rate of the system.
+
+### Propagation delays
+
+Treating the PID controller as a mathematical idealisation it is
+simplest to assume that values propagate instantaneously through the
+DFD. This means that the functional input/output relations of the nodes
+can be treated as equations. A physical implementation would necessarily
+have propagation delays. In a neuromorphic implementation the
+propagation delays are probably essential to the dynamics of the system.
+
 # Design issues
 
 ## PID controller
@@ -49,10 +163,12 @@ altitude hold in [VSA](https://www.hd-computing.com/).
     controller](https://en.wikipedia.org/wiki/PID_controller)
 
 -   By my reading there is no claim to the optimality of PID
-    controllers. Rather, they are simple and in widespread use.
+    controllers. Rather, they are simple, do not require a model of the
+    controlled system, and are in widespread use.
 
 -   My reading also suggests there are plenty of PID variants that are
-    engineering solutions to issues with basic PID.
+    pragmatic engineering solutions to issues with the idealised basic
+    PID.
 
 -   I conclude there is nothing sacrosanct about PID control, and it is
     possible that other PID variants or completely different approaches
@@ -145,9 +261,33 @@ components?
 
 -   Magnitude vs. spatial
 
--   Range limits
+### Range limits
 
--   Noise/resolution
+### Value resolution and noise
+
+-   VSA representations, like any physical implementation have limited
+    value resolution (i.e. two scalar values which are sufficiently
+    close will be indistinguishable).
+
+-   Value resolution hasn't been investigated in the VSA literature, but
+    it is clear that it won't be a sharp distinction (e.g. as in binary
+    representations). Rather, it is more likely to be a probabilistic
+    effect - the closer the two values, the higher the probability that
+    their two VSA representations are indistinguishable. If this is the
+    case, then the value resolution can be thought of as equivalent to
+    adding random noise to the value, making the "true" value
+    unobservable and uncertain.
+
+-   I expect VSA resolution to be increased by increasing the
+    dimensionality of the vector space.
+
+-   I also expect VSA resolution to be increased by using the ensemble
+    averaging technique used in the multiset intersection circuit
+    [@gaylerDistributedBasisAnalogical2009].
+
+-   I expect that the initial VSA designs will be thoroughly
+    over-resourced, so that they have far finer value resolution than is
+    necessary for implementation of the PID controller.
 
 ## Temporal issues
 
@@ -202,10 +342,10 @@ This is the diagram supplied by Simon Levy.
     inserted in the diagram below.
 
 -   The integrated error $ei_t$ is actually implemented as the
-    integration *after* the clipping by by $k_{windup}$ is applied.
-    (This is corrected in the following diagram.
+    integration *after* the clipping by $k_{windup}$ is applied.
+    (This is corrected in the following diagram.)
 
-This is the diagram reformatted to be consistent with later data flow
+The following diagram has been reformatted to be consistent with later data flow
 diagrams.
 
 ```{r}
@@ -218,17 +358,17 @@ dfd01 %>% DiagrammeR::render_graph()
 
 -   Parameter nodes are coloured white. These are constant values.
 
--   Input nodes are coloured yellow. These are variable values over
+-   Input nodes are coloured light yellow. These are variable values
+    over time.
+
+-   Output nodes are coloured dark yellow These are variable values over
     time.
 
--   Output nodes are coloured orange. These are variable values over
+-   Internal nodes are coloured cyan. These are variable values over
     time.
 
--   Internal value nodes are coloured light blue. These are variable
-    values over time.
-
--   Function nodes are coloured deep sky blue (the darker shade of
-    blue). These are variable values over time.
+-   All the internal nodes and the output node implement functions with
+    variable values over time.
 
     -   All functions except subtraction are commutative, so the mapping
         from input edges to function arguments is irrelevant.
@@ -246,8 +386,18 @@ dfd01 %>% DiagrammeR::render_graph()
     -   The function nodes are labelled with the function name, then a
         unique label in parentheses.
 
--   Each node should be interpreted as being implicitly subscripted by
-    *time*.
+-   Each node should be interpreted as being a value implicitly
+    subscripted by *time*.
+
+-   The magenta coloured nodes represent reference values. These are
+    imported from the classically implemented simulations which are
+    equivalent to a corresponding node in the data flow diagram. The
+    values of the reference node and the corresponding node should be
+    identical (up to approximation error).
+
+-   The edge between a reference node and the corresponding node is
+    labelled "=" to indicate that it is only intended for testing the
+    calculation and is not actually part of the datat flow diagram.
 
 ## Data flow tables
 
@@ -259,7 +409,7 @@ reasonably displayed on the data flow graph.
 
 ```{r}
 # Display the complete node and edge data frames
-# These contain more information than can be displayed in the gfraph
+# These contain more information than can be displayed in the graph
 
 dfd01 %>% DiagrammeR::get_node_df() %>% DT::datatable(rownames = FALSE, caption = "Nodes")
 dfd01 %>% DiagrammeR::get_edge_df() %>% DT::datatable(rownames = FALSE, caption = "Edges")
@@ -272,7 +422,7 @@ dfd01 %>% DiagrammeR::get_edge_df() %>% DT::datatable(rownames = FALSE, caption 
 -   I have guessed values for the ranges of the variables (informed by
     the analysis of the simulation data).
 
-\_ The ranges for the parameters are truly plucked from the air.
+-   The ranges for the parameters are truly plucked from the air.
 
 -   For each value (node) , what is it's value resolution? This is
     equivalent asking the noise level that can be tolerated.
@@ -304,7 +454,7 @@ changes which will be introduced later.
 # Extreme designs
 
 Digress briefly to consider the extremes of where we might go with
-incoirporating VSA components into the design of the altitude hold
+incorporating VSA components into the design of the altitude hold
 circuit.
 
 ## Minimal collapse
@@ -356,3 +506,5 @@ technology.
 # Design 04 -
 
 # Etc.
+
+# References {.unnumbered}

@@ -116,10 +116,10 @@
     },
     "cli": {
       "Package": "cli",
-      "Version": "2.5.0",
+      "Version": "3.0.0",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "a94ba44cee3ea571e813721e64184172"
+      "Hash": "096829b701eec2d2b4538be63de97e75"
     },
     "clipr": {
       "Package": "clipr",
@@ -137,10 +137,10 @@
     },
     "cpp11": {
       "Package": "cpp11",
-      "Version": "0.2.7",
+      "Version": "0.3.1",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "730eebcc741a5c36761f7d4d0f5e37b8"
+      "Hash": "e02edab2bc389c5e4b12949b13df44f2"
     },
     "crayon": {
       "Package": "crayon",
@@ -212,6 +212,13 @@
       "Repository": "CRAN",
       "Hash": "c98eb5133d9cb9e1622b8691487f11bb"
     },
+    "forcats": {
+      "Package": "forcats",
+      "Version": "0.5.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "81c3244cab67468aac4c60550832655d"
+    },
     "fs": {
       "Package": "fs",
       "Version": "1.5.0",
@@ -235,10 +242,10 @@
     },
     "ggplot2": {
       "Package": "ggplot2",
-      "Version": "3.3.4",
+      "Version": "3.3.5",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "53ed0e82132d7f6ade8428f494d175e1"
+      "Hash": "d7566c471c7b17e095dd023b9ef155ad"
     },
     "git2r": {
       "Package": "git2r",

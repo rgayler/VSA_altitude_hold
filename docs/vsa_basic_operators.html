@@ -1,0 +1,1922 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Ross Gayler" />
+
+<meta name="date" content="2021-07-11" />
+
+<title>VSA Basic Operators</title>
+
+<script src="site_libs/header-attrs-2.9/header-attrs.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/master/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">VSA_altitude_hold</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/rgayler/VSA_altitude_hold">
+    <span class="fa fa-github"></span>
+     
+    Source code
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">VSA Basic Operators</h1>
+<h4 class="author">Ross Gayler</h4>
+<h4 class="date">2021-07-11</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks">
+Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2021-08-03
+</p>
+<p>
+<strong>Checks:</strong>
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+7
+<span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span>
+0
+</p>
+<p>
+<strong>Knit directory:</strong>
+<code>VSA_altitude_hold/</code>
+<span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/jdblischak/workflowr">workflowr</a> (version
+1.6.2). The <em>Checks</em> tab describes the
+reproducibility checks that were applied when the results were created.
+The <em>Past versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>R Markdown file:</strong> up-to-date
+</a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git repository, you
+know the exact version of the code that produced these results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>Environment:</strong> empty
+</a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the global
+environment can affect the analysis in your R Markdown file in unknown ways.
+For reproduciblity it’s best to always run the code in an empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20210617code">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>Seed:</strong> <code>set.seed(20210617)</code>
+</a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20210617code" class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20210617)</code> was run prior to running the code in the R Markdown file.
+Setting a seed ensures that any results that rely on randomness, e.g.
+subsampling or permutations, are reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>Session information:</strong> recorded
+</a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package versions is
+critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>Cache:</strong> none
+</a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be confident
+that you successfully produced the results during this run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>File paths:</strong> relative
+</a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr project
+makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomrgaylerVSAaltitudeholdtree6a83009b36dfc9838c9f101c3eefdda3e388f25atargetblank6a83009a">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>Repository version:</strong> <a href="https://github.com/rgayler/VSA_altitude_hold/tree/6a83009b36dfc9838c9f101c3eefdda3e388f25a" target="_blank">6a83009</a>
+</a>
+</p>
+</div>
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomrgaylerVSAaltitudeholdtree6a83009b36dfc9838c9f101c3eefdda3e388f25atargetblank6a83009a" class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development and
+connecting the code version to the results is critical for reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version <a href="https://github.com/rgayler/VSA_altitude_hold/tree/6a83009b36dfc9838c9f101c3eefdda3e388f25a" target="_blank">6a83009</a>.
+See the <em>Past versions</em> tab to see a history of the changes made to the
+R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for the
+analysis have been committed to Git prior to generating the results (you can
+use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only
+checks the R Markdown file, but you know if there are other scripts or data
+files that it depends on. Below is the status of the Git repository when the
+results were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    renv/library/
+    Ignored:    renv/local/
+    Ignored:    renv/staging/
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not included in
+this status report because it is ok for generated content to have uncommitted
+changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the repository in which changes were made
+to the R Markdown (<code>analysis/vsa_basic_operators.Rmd</code>) and HTML (<code>docs/vsa_basic_operators.html</code>)
+files. If you’ve configured a remote Git repository (see
+<code>?wflow_git_remote</code>), click on the hyperlinks in the table below to
+view the files as they were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/6a83009b36dfc9838c9f101c3eefdda3e388f25a/analysis/vsa_basic_operators.Rmd" target="_blank">6a83009</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-08-03
+</td>
+<td>
+WIP
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/rgayler/VSA_altitude_hold/6a83009b36dfc9838c9f101c3eefdda3e388f25a/docs/vsa_basic_operators.html" target="_blank">6a83009</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-08-03
+</td>
+<td>
+WIP
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/ebbb063e47bb4ddeedded22c5d1b6bf8cfad2a19/analysis/vsa_basic_operators.Rmd" target="_blank">ebbb063</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-08-02
+</td>
+<td>
+WIP
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/rgayler/VSA_altitude_hold/ebbb063e47bb4ddeedded22c5d1b6bf8cfad2a19/docs/vsa_basic_operators.html" target="_blank">ebbb063</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-08-02
+</td>
+<td>
+WIP
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/4ab6a038932604f9e23988c5d8c2b496f332683e/analysis/vsa_basic_operators.Rmd" target="_blank">4ab6a03</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-08-01
+</td>
+<td>
+WIP
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/rgayler/VSA_altitude_hold/4ab6a038932604f9e23988c5d8c2b496f332683e/docs/vsa_basic_operators.html" target="_blank">4ab6a03</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-08-01
+</td>
+<td>
+WIP
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/2e6b9a95ff9be009a4cbcd839dd9aa647d74c5c2/analysis/vsa_basic_operators.Rmd" target="_blank">2e6b9a9</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-07-31
+</td>
+<td>
+WIP
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/rgayler/VSA_altitude_hold/2e6b9a95ff9be009a4cbcd839dd9aa647d74c5c2/docs/vsa_basic_operators.html" target="_blank">2e6b9a9</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-07-31
+</td>
+<td>
+WIP
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/a55717a526a14526aa24214269ac700a480a0e79/analysis/vsa_basic_operators.Rmd" target="_blank">a55717a</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-07-31
+</td>
+<td>
+WIP
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/rgayler/VSA_altitude_hold/a55717a526a14526aa24214269ac700a480a0e79/docs/vsa_basic_operators.html" target="_blank">a55717a</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-07-31
+</td>
+<td>
+WIP
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/rgayler/VSA_altitude_hold/dcdf3093b79cc56bd5bd5fae3596e46ebcd0d434/docs/vsa_basic_operators.html" target="_blank">dcdf309</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-07-20
+</td>
+<td>
+WIP
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/rgayler/VSA_altitude_hold/5f5c5440fc0479d8054efbab689876170f1eb9ef/docs/vsa_basic_operators.html" target="_blank">5f5c544</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-07-20
+</td>
+<td>
+WIP
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/rgayler/VSA_altitude_hold/3f691b89ac57e7698da620c9f3298d8a08b52306/docs/vsa_basic_operators.html" target="_blank">3f691b8</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-07-20
+</td>
+<td>
+WIP
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/rgayler/VSA_altitude_hold/b2c3085f8877a4ad7a89cbe139e9f89766021c36/docs/vsa_basic_operators.html" target="_blank">b2c3085</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-07-13
+</td>
+<td>
+WIP
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/b57b0299c4d1e426701760d3232ed3a2188e36eb/analysis/vsa_basic_operators.Rmd" target="_blank">b57b029</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-07-13
+</td>
+<td>
+WIP
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/rgayler/VSA_altitude_hold/b57b0299c4d1e426701760d3232ed3a2188e36eb/docs/vsa_basic_operators.html" target="_blank">b57b029</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-07-13
+</td>
+<td>
+WIP
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/2fd00dc15666ea446685d02299bfc2cac384cc76/analysis/vsa_basic_operators.Rmd" target="_blank">2fd00dc</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-07-13
+</td>
+<td>
+WIP
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/rgayler/VSA_altitude_hold/2fd00dc15666ea446685d02299bfc2cac384cc76/docs/vsa_basic_operators.html" target="_blank">2fd00dc</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-07-13
+</td>
+<td>
+WIP
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/eccb5b1e23a5155591c9bace90b376c25bd6fe9e/analysis/vsa_basic_operators.Rmd" target="_blank">eccb5b1</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-07-11
+</td>
+<td>
+WIP
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/rgayler/VSA_altitude_hold/f7a9155b0f5a3d47708d76ca32e969e55876932c/docs/vsa_basic_operators.html" target="_blank">f7a9155</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-07-11
+</td>
+<td>
+WIP
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/e0401575eba5c87e68affa98413ad2da84d3e229/analysis/vsa_basic_operators.Rmd" target="_blank">e040157</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-07-11
+</td>
+<td>
+WIP
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<p>This notebook …</p>
+<p>The reasoning behind the design choices is explained in
+<a href="design_notes.html#dfd-01">XXX</a>.</p>
+<div id="generate-atomic-vectors" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> Generate atomic vectors</h1>
+<p>For this project we are using bipolar vectors (<span class="math inline">\(V \in \{-1, +1\}^D\)</span>).</p>
+<p>The vectors will be dense. That is, there will be no zero elements. We
+will not be investigating the effect of sparsity in this project.</p>
+<p>Define a function to create a randomly selected bipolar VSA vector.</p>
+<pre class="r"><code># function to make an atomic VSA vector
+
+vsa_mk_atom_bipolar &lt;- function(
+  vsa_dim, # integer - dimensionality of VSA vector
+  seed = NULL # integer - seed for random number generator
+) # value # one randomly selected VSA vector of dimension vsa_dim
+{  
+  ### Set up the arguments ###
+  # The OCD error checking is probably more useful as documentation
+  if(missing(vsa_dim))
+    stop(&quot;vsa_dim must be specified&quot;)
+  
+  if(!(is.vector(vsa_dim, mode = &quot;integer&quot;) &amp;&amp; length(vsa_dim) == 1))
+    stop(&quot;vsa_dim must be an integer&quot;)
+  
+  if(vsa_dim &lt; 1)
+    stop(&quot;vsa_dim must be (much) greater than zero&quot;)
+  
+  # check that the specified seed is an integer
+  if(!is.null(seed) &amp;&amp;!(is.vector(seed, mode = &quot;integer&quot;) &amp;&amp; length(seed) == 1))
+    stop(&quot;seed must be an integer&quot;)
+  
+  # if seed is set the the vector is fixed
+  # otherwise it is randomised
+  set.seed(seed)
+  
+  # Construct a random bipolar vector
+  sample(c(-1L, 1L), size = vsa_dim, replace = TRUE)
+}</code></pre>
+<p>The <code>seed</code> argument allows for a reproducible random selection.</p>
+<p>The vector elements are integers rather than floats. This halves the
+required storage space and is a minor gesture towards optimisation. Much
+greater optimisation could be probably be achieved by using bit strings
+rather than integers, but that’s not worth the effort at this stage.</p>
+<p>Where possible all other operations will be defined to accept floats
+<em>and</em> integers to allow moving away from a strictly bipolar
+representation if necessary.</p>
+<p>Do some very small scale testing.</p>
+<pre class="r"><code>v1 &lt;- vsa_mk_atom_bipolar(10L)
+v2 &lt;- vsa_mk_atom_bipolar(10L)
+
+v1</code></pre>
+<pre><code> [1] -1  1  1 -1  1 -1  1 -1  1 -1</code></pre>
+<pre class="r"><code>v2</code></pre>
+<pre><code> [1]  1 -1  1 -1 -1  1  1  1 -1  1</code></pre>
+<pre class="r"><code>all(v1 == v2)</code></pre>
+<pre><code>[1] FALSE</code></pre>
+<ul>
+<li>Multiple calls generate different vectors.</li>
+</ul>
+<pre class="r"><code>v1 &lt;- vsa_mk_atom_bipolar(10L, seed = 1L)
+v2 &lt;- vsa_mk_atom_bipolar(10L, seed = 1L)
+
+v1</code></pre>
+<pre><code> [1] -1  1 -1 -1  1 -1 -1 -1  1  1</code></pre>
+<pre class="r"><code>v2</code></pre>
+<pre><code> [1] -1  1 -1 -1  1 -1 -1 -1  1  1</code></pre>
+<pre class="r"><code>all(v1 == v2)</code></pre>
+<pre><code>[1] TRUE</code></pre>
+<ul>
+<li>Setting the seed to the same value generates the same vector.</li>
+</ul>
+</div>
+<div id="vector-measures" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> Vector measures</h1>
+<p>We really only need the cosine similarity of two vectors. However,
+define functions for the components of the cosine in case they are
+useful.</p>
+<p>These functions will work for any vectors. They do not have to be
+bipolar vectors.</p>
+<div id="vector-magnitude" class="section level2" number="2.1">
+<h2><span class="header-section-number">2.1</span> Vector magnitude</h2>
+<p>Define a function to calculate the of a VSA vector.</p>
+<pre class="r"><code># function to calculate the magnitude of a VSA vector
+# Allow for the possibility that the vector might not be bipolar
+
+vsa_mag &lt;- function(
+  v1 # numeric - VSA vector (not necessarily bipolar)
+) # value # numeric - magnitude of the VSA vector
+{
+  ### Set up the arguments ###
+  # The OCD error checking is probably more useful as documentation
+  
+  if(missing(v1)) 
+    stop(&quot;VSA vector argument (v1) must be specified&quot;)
+  
+  if(!is.vector(v1, mode = &quot;numeric&quot;))
+    stop(&quot;v1 must be an numeric vector&quot;)
+  
+  # No numerical analysis considerations 
+  sqrt(sum(v1*v1))
+}</code></pre>
+<p>I have not taken any numerical analysis considerations into account, so
+don’t hold any strong expectations for accuracy in extreme cases.</p>
+<p>Do some very small scale testing.</p>
+<pre class="r"><code>vsa_mag(0)</code></pre>
+<pre><code>[1] 0</code></pre>
+<pre class="r"><code>vsa_mag(1)</code></pre>
+<pre><code>[1] 1</code></pre>
+<pre class="r"><code>vsa_mag(2)</code></pre>
+<pre><code>[1] 2</code></pre>
+<pre class="r"><code>vsa_mag(-2)</code></pre>
+<pre><code>[1] 2</code></pre>
+<ul>
+<li>The magnitude of a scalar is its absolute value.</li>
+</ul>
+<pre class="r"><code>vsa_mk_atom_bipolar(9L) %&gt;% vsa_mag()</code></pre>
+<pre><code>[1] 3</code></pre>
+<pre class="r"><code>vsa_mk_atom_bipolar(100L) %&gt;% vsa_mag()</code></pre>
+<pre><code>[1] 10</code></pre>
+<pre class="r"><code>vsa_mk_atom_bipolar(1e4L) %&gt;% vsa_mag()</code></pre>
+<pre><code>[1] 100</code></pre>
+<pre class="r"><code>vsa_mk_atom_bipolar(1e8L) %&gt;% vsa_mag()</code></pre>
+<pre><code>[1] 10000</code></pre>
+<ul>
+<li>The magnitude of a bipolar vector is the square root of its
+dimensionality.</li>
+</ul>
+<p>As the vector dimensionality is increased the operations take longer to
+execute and eventually something will break, e.g. you will run out of
+RAM or the dimensionality will be too large to be represented as an
+<code>integer</code>.</p>
+<pre class="r"><code>(vsa_mk_atom_bipolar(100L) * 1L) %&gt;% vsa_mag()</code></pre>
+<pre><code>[1] 10</code></pre>
+<pre class="r"><code>(vsa_mk_atom_bipolar(100L) * 1.3) %&gt;% vsa_mag()</code></pre>
+<pre><code>[1] 13</code></pre>
+<pre class="r"><code>(vsa_mk_atom_bipolar(100L) * -5) %&gt;% vsa_mag()</code></pre>
+<pre><code>[1] 50</code></pre>
+<ul>
+<li>Rescaling the vector is equivalent to rescaling its magnitude
+(<span class="math inline">\(\Vert kV \Vert = \vert k \vert \Vert V \Vert\)</span>).</li>
+</ul>
+</div>
+<div id="vector-dot-product" class="section level2" number="2.2">
+<h2><span class="header-section-number">2.2</span> Vector dot product</h2>
+<p>Define a function to calculate the dot product of two VSA vectors.</p>
+<pre class="r"><code># function to calculate the dot product  of two VSA vectors
+# Allow for the possibility that the vectors might not be bipolar
+
+vsa_dotprod &lt;- function(
+  v1, v2 # numeric - VSA vectors of identical dimension (not necessarily bipolar)
+) # value # numeric - cosine similarity of the VSA vectors
+{
+  ### Set up the arguments ###
+  # The OCD error checking is probably more useful as documentation
+  
+  if(missing(v1) || missing(v2)) 
+    stop(&quot;two VSA vector arguments (v1, v2) must be specified&quot;)
+  
+  if(!is.vector(v1, mode = &quot;numeric&quot;))
+    stop(&quot;v1 must be a numeric vector&quot;)
+  
+  if(!is.vector(v2, mode = &quot;numeric&quot;))
+    stop(&quot;v2 must be a numeric vector&quot;)
+  
+  vsa_dim &lt;- length(v1)
+  
+  if(length(v2) != vsa_dim)
+    stop(&quot;v1 and v2 must be the same length&quot;)
+  
+  # No numerical analysis considerations 
+  sum(v1*v2)
+}</code></pre>
+<p>I have not taken any numerical analysis considerations into account, so
+don’t hold any strong expectations for accuracy in extreme cases.</p>
+<p>Do some very small scale testing.</p>
+<pre class="r"><code>vsa_dotprod(1, 1)</code></pre>
+<pre><code>[1] 1</code></pre>
+<pre class="r"><code>vsa_dotprod(1, 0)</code></pre>
+<pre><code>[1] 0</code></pre>
+<pre class="r"><code>vsa_dotprod(1, 3)</code></pre>
+<pre><code>[1] 3</code></pre>
+<pre class="r"><code>vsa_dotprod(2, 3)</code></pre>
+<pre><code>[1] 6</code></pre>
+<pre class="r"><code>vsa_dotprod(-2, 3)</code></pre>
+<pre><code>[1] -6</code></pre>
+<pre class="r"><code>vsa_dotprod(-2, -3)</code></pre>
+<pre><code>[1] 6</code></pre>
+<ul>
+<li>The dot product of two scalars is their product.</li>
+</ul>
+<pre class="r"><code>vsa_dotprod(vsa_mk_atom_bipolar(9L, seed = 42L), vsa_mk_atom_bipolar(9L, seed = 42L))</code></pre>
+<pre><code>[1] 9</code></pre>
+<pre class="r"><code>vsa_dotprod(vsa_mk_atom_bipolar(100L, seed = 43L), vsa_mk_atom_bipolar(100L, seed = 43L))</code></pre>
+<pre><code>[1] 100</code></pre>
+<pre class="r"><code>vsa_dotprod(vsa_mk_atom_bipolar(1e4L, seed = 44L), vsa_mk_atom_bipolar(1e4L, seed = 44L))</code></pre>
+<pre><code>[1] 10000</code></pre>
+<pre class="r"><code>vsa_dotprod(vsa_mk_atom_bipolar(1e8L, seed = 45L), vsa_mk_atom_bipolar(1e8L, seed = 45L))</code></pre>
+<pre><code>[1] 100000000</code></pre>
+<ul>
+<li>The dot product of a vector with itself is equal to the square of
+its magnitude.</li>
+<li>The dot product of a bipolar vector with itself is equal to its
+dimensionality.</li>
+</ul>
+<pre class="r"><code>vsa_dotprod(vsa_mk_atom_bipolar(1e4L), vsa_mk_atom_bipolar(1e4L))</code></pre>
+<pre><code>[1] -36</code></pre>
+<pre class="r"><code>vsa_dotprod(vsa_mk_atom_bipolar(1e4L), vsa_mk_atom_bipolar(1e4L))</code></pre>
+<pre><code>[1] 192</code></pre>
+<pre class="r"><code>vsa_dotprod(vsa_mk_atom_bipolar(1e4L), vsa_mk_atom_bipolar(1e4L))</code></pre>
+<pre><code>[1] 72</code></pre>
+<pre class="r"><code>vsa_dotprod(vsa_mk_atom_bipolar(1e4L), vsa_mk_atom_bipolar(1e4L))</code></pre>
+<pre><code>[1] -106</code></pre>
+<ul>
+<li>The dot product of two randomly selected high dimensional vectors is
+approximately zero (relative to the dimensionality).</li>
+</ul>
+</div>
+<div id="vector-cosine-similarity" class="section level2" number="2.3">
+<h2><span class="header-section-number">2.3</span> Vector cosine similarity</h2>
+<p>Define a function to calculate the cosine of the angle between two VSA
+vectors.</p>
+<pre class="r"><code># function to calculate the cosine similarity  of two VSA vectors
+# Allow for the possibility that the vectors might not be bipolar
+
+vsa_cos_sim &lt;- function(
+  v1, v2 # numeric - VSA vectors of identical dimension (not necessarily bipolar)
+) # value # numeric - cosine similarity of the VSA vectors
+{
+  ### Set up the arguments ###
+  # The OCD error checking is probably more useful as documentation
+  
+  if(missing(v1) || missing(v2)) 
+    stop(&quot;two VSA vector arguments must be specified&quot;)
+  
+  if(!is.vector(v1, mode = &quot;numeric&quot;))
+    stop(&quot;v1 must be an numeric vector&quot;)
+  
+  if(!is.vector(v2, mode = &quot;numeric&quot;))
+    stop(&quot;v2 must be an numeric vector&quot;)
+  
+  vsa_dim &lt;- length(v1)
+  
+  if(length(v2) != vsa_dim)
+    stop(&quot;v1 and v2 must be the same length&quot;)
+  
+  vsa_dotprod(v1, v2) / (vsa_mag(v1) * vsa_mag(v2))
+}</code></pre>
+<p>I have not taken any numerical analysis considerations into account, so
+don’t hold any strong expectations for accuracy in extreme cases.</p>
+<p>Do some very small scale testing.</p>
+<p>Don’t bother looking at pairs of scalars, because although the cosine of
+the angle between them is defined it is not interesting. (The vectors
+are parallel by definition.)</p>
+<pre class="r"><code>vsa_cos_sim(vsa_mk_atom_bipolar(9L, seed = 42L), vsa_mk_atom_bipolar(9L, seed = 42L))</code></pre>
+<pre><code>[1] 1</code></pre>
+<pre class="r"><code>vsa_cos_sim(vsa_mk_atom_bipolar(100L, seed = 43L), vsa_mk_atom_bipolar(100L, seed = 43L))</code></pre>
+<pre><code>[1] 1</code></pre>
+<pre class="r"><code>vsa_cos_sim(vsa_mk_atom_bipolar(1e4L, seed = 44L), vsa_mk_atom_bipolar(1e4L, seed = 44L))</code></pre>
+<pre><code>[1] 1</code></pre>
+<pre class="r"><code>vsa_cos_sim(vsa_mk_atom_bipolar(1e8L, seed = 45L), vsa_mk_atom_bipolar(1e8L, seed = 45L))</code></pre>
+<pre><code>[1] 1</code></pre>
+<ul>
+<li>The cosine of the angle of a vector with itself is one. (The vectors
+are coincident.)</li>
+</ul>
+<pre class="r"><code>vsa_cos_sim(vsa_mk_atom_bipolar(1e4L, seed = 42L), 1 * vsa_mk_atom_bipolar(1e4L, seed = 42L))</code></pre>
+<pre><code>[1] 1</code></pre>
+<pre class="r"><code>vsa_cos_sim(vsa_mk_atom_bipolar(1e4L, seed = 43L), 2 * vsa_mk_atom_bipolar(1e4L, seed = 43L))</code></pre>
+<pre><code>[1] 1</code></pre>
+<pre class="r"><code>vsa_cos_sim(vsa_mk_atom_bipolar(1e4L, seed = 44L), -2 * vsa_mk_atom_bipolar(1e4L, seed = 44L))</code></pre>
+<pre><code>[1] -1</code></pre>
+<ul>
+<li>Scaling has no effect on the direction of a vector</li>
+<li>The sign of scaling does effect the sign of the direction of a
+vector.</li>
+</ul>
+<pre class="r"><code>vsa_cos_sim(vsa_mk_atom_bipolar(1e4L), vsa_mk_atom_bipolar(1e4L))</code></pre>
+<pre><code>[1] -0.0028</code></pre>
+<pre class="r"><code>vsa_cos_sim(vsa_mk_atom_bipolar(1e4L), vsa_mk_atom_bipolar(1e4L))</code></pre>
+<pre><code>[1] 0.0104</code></pre>
+<pre class="r"><code>vsa_cos_sim(vsa_mk_atom_bipolar(1e4L), vsa_mk_atom_bipolar(1e4L))</code></pre>
+<pre><code>[1] 0.0106</code></pre>
+<pre class="r"><code>vsa_cos_sim(vsa_mk_atom_bipolar(1e4L), vsa_mk_atom_bipolar(1e4L))</code></pre>
+<pre><code>[1] 6e-04</code></pre>
+<ul>
+<li>The dot product of two randomly selected high dimensional vectors is
+approximately zero.</li>
+</ul>
+</div>
+</div>
+<div id="negate-vector" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> Negate vector</h1>
+<p>Define a function to calculate the negation of a VSA vector. This simply
+reverses the direction of the vector.</p>
+<pre class="r"><code># Function to calculate the negation of a VSA vector
+# (Reverse the direction of the vector)
+# Allow for the possibility that the vector might not be bipolar
+
+vsa_negate &lt;- function(
+  v1 # numeric - VSA vector (not necessarily bipolar)
+) # value # negation of input VSA vector
+{
+  ### Set up the arguments ###
+  # The OCD error checking is probably more useful as documentation
+  
+  if(missing(v1)) 
+    stop(&quot;VSA vector argument (v1) must be specified&quot;)
+  
+  if(!is.vector(v1, mode = &quot;numeric&quot;))
+    stop(&quot;v1 must be an numeric vector&quot;)
+  
+  -v1
+}</code></pre>
+<p>This function will work for any vector. It does not have to be a bipolar
+vector.</p>
+<p>Do some very small scale testing.</p>
+<pre class="r"><code># make some example vectors
+v1 &lt;- vsa_mk_atom_bipolar(1e4L)
+v2 &lt;- vsa_mk_atom_bipolar(1e4L)
+
+vsa_mag(v1) == (vsa_negate(v1) %&gt;% vsa_mag())</code></pre>
+<pre><code>[1] TRUE</code></pre>
+<pre class="r"><code>vsa_mag(v2) == (vsa_negate(v2) %&gt;% vsa_mag())</code></pre>
+<pre><code>[1] TRUE</code></pre>
+<ul>
+<li>Negation does not change the magnitude of a vector.</li>
+</ul>
+<pre class="r"><code>vsa_cos_sim(v1, vsa_negate(v1))</code></pre>
+<pre><code>[1] -1</code></pre>
+<pre class="r"><code>vsa_cos_sim(v2, vsa_negate(v2))</code></pre>
+<pre><code>[1] -1</code></pre>
+<pre class="r"><code>vsa_cos_sim(v1, v2)</code></pre>
+<pre><code>[1] -0.0026</code></pre>
+<pre class="r"><code>vsa_cos_sim(v1, vsa_negate(v2))</code></pre>
+<pre><code>[1] 0.0026</code></pre>
+<ul>
+<li>Negation reverses the direction of a vector.</li>
+</ul>
+</div>
+<div id="permute-vector" class="section level1" number="4">
+<h1><span class="header-section-number">4</span> Permute vector</h1>
+<p>Define function to permute a vector.</p>
+<p>These will be functions to:</p>
+<ul>
+<li>Randomly generate the specification of a permutation</li>
+<li>Generate the specification for the inverse of a given permutation</li>
+<li>Apply a permutation to a VSA vector</li>
+</ul>
+<div id="generate-permutation" class="section level2" number="4.1">
+<h2><span class="header-section-number">4.1</span> Generate permutation</h2>
+<p>Define a function to randomly generate the specification of a
+permutation.</p>
+<pre class="r"><code># function to make a permutation
+
+vsa_mk_perm &lt;- function(
+  vsa_dim, # integer - dimensionality of VSA vector
+  seed = NULL # integer - seed for random number generator
+) # value # one randomly generated permutation specification
+  # this is an integer vector of length vsa_dim
+{  
+  ### Set up the arguments ###
+  # The OCD error checking is probably more useful as documentation
+  if(missing(vsa_dim))
+    stop(&quot;vsa_dim must be specified&quot;)
+  
+  if(!(is.vector(vsa_dim, mode = &quot;integer&quot;) &amp;&amp; length(vsa_dim) == 1))
+    stop(&quot;vsa_dim must be an integer&quot;)
+  
+  if(vsa_dim &lt; 1)
+    stop(&quot;vsa_dim must be (much) greater than zero&quot;)
+  
+  # check that the specified seed is an integer
+  if(!is.null(seed) &amp;&amp;!(is.vector(seed, mode = &quot;integer&quot;) &amp;&amp; length(seed) == 1))
+    stop(&quot;seed must be an integer&quot;)
+  
+  # if seed is set the the vector is fixed
+  # otherwise it is randomised
+  set.seed(seed)
+  
+  # Construct a random permutation of 1:vsa_dim
+  sample.int(vsa_dim)
+}</code></pre>
+<p>The <code>seed</code> argument allows for a reproducible random selection.</p>
+<p>The returned value is a vector of integers of length <code>vsa_dim</code>. This is
+a random permutation of the integers <code>1 : vsa_dim</code>. When applied as a
+permutation each element of the specification indicates the input
+element to be copied to that position in the output.</p>
+<p>Do some very small scale testing.</p>
+<pre class="r"><code>p1 &lt;- vsa_mk_perm(10L, seed = 1L)
+p2 &lt;- vsa_mk_perm(10L, seed = 1L)
+
+p1</code></pre>
+<pre><code> [1]  9  4  7  1  2  5  3 10  6  8</code></pre>
+<pre class="r"><code>p2</code></pre>
+<pre><code> [1]  9  4  7  1  2  5  3 10  6  8</code></pre>
+<pre class="r"><code>all(p1 == p2)</code></pre>
+<pre><code>[1] TRUE</code></pre>
+<ul>
+<li>Setting the seed to the same value generates the same permutation.</li>
+</ul>
+<pre class="r"><code>p1 &lt;- vsa_mk_perm(10L)
+p2 &lt;- vsa_mk_perm(10L)
+
+p1</code></pre>
+<pre><code> [1] 10  3  9  1  5  7  2  8  4  6</code></pre>
+<pre class="r"><code>p2</code></pre>
+<pre><code> [1]  9  1  5  2  7  8  6 10  4  3</code></pre>
+<pre class="r"><code>all(p1 == p2)</code></pre>
+<pre><code>[1] FALSE</code></pre>
+<ul>
+<li>Multiple calls generate different permutations</li>
+</ul>
+</div>
+<div id="generate-inverse-permutation" class="section level2" number="4.2">
+<h2><span class="header-section-number">4.2</span> Generate inverse permutation</h2>
+<p>Define a function to generate the inverse of a given permutation.</p>
+<pre class="r"><code># function to make a permutation
+
+vsa_mk_inv_perm &lt;- function(
+  perm # integer vector - specification of a permutation
+) # value # integer vector [length(perm)] - specification of inverse permutation
+{  
+  ### Set up the arguments ###
+  # The OCD error checking is probably more useful as documentation
+  if(missing(perm))
+    stop(&quot;perm must be specified&quot;)
+  
+  if(!is.vector(perm, mode = &quot;integer&quot;))
+    stop(&quot;perm must be an integer vector&quot;)
+  
+  if(!all(sort(perm) == 1:length(perm)))
+    stop(&quot;perm must be a permutation of 1:length(perm)&quot;)
+  
+  # Invert the permutation
+  Matrix::invPerm(perm)
+}</code></pre>
+<p>The returned value is a vector of integers of length <code>length(perm)</code>.
+This is a permutation of the integers <code>1 : length(perm)</code>. When applied
+as a permutation each element of the specification indicates the input
+element to be copied to that position in the output.</p>
+<p>Do some very small scale testing.</p>
+<pre class="r"><code># make some example permutation specifications
+p_identity &lt;- 1L:10L
+p_reverse &lt;- seq(10L, 1L, -1L)
+p_left1 &lt;- c(p_identity[-1], p_identity[1])
+p_right1 &lt;- c(p_identity[10], p_identity[-10])
+p_random &lt;-vsa_mk_perm(10L)
+
+p_identity</code></pre>
+<pre><code> [1]  1  2  3  4  5  6  7  8  9 10</code></pre>
+<pre class="r"><code>vsa_mk_inv_perm(p_identity)</code></pre>
+<pre><code> [1]  1  2  3  4  5  6  7  8  9 10</code></pre>
+<ul>
+<li>The identity permutation is its own inverse.</li>
+</ul>
+<pre class="r"><code>p_reverse</code></pre>
+<pre><code> [1] 10  9  8  7  6  5  4  3  2  1</code></pre>
+<pre class="r"><code>vsa_mk_inv_perm(p_reverse)</code></pre>
+<pre><code> [1] 10  9  8  7  6  5  4  3  2  1</code></pre>
+<pre class="r"><code>vsa_mk_inv_perm(p_reverse) %&gt;% vsa_mk_inv_perm()</code></pre>
+<pre><code> [1] 10  9  8  7  6  5  4  3  2  1</code></pre>
+<ul>
+<li>The reverse permutation is its own inverse.</li>
+</ul>
+<pre class="r"><code>p_left1</code></pre>
+<pre><code> [1]  2  3  4  5  6  7  8  9 10  1</code></pre>
+<pre class="r"><code>vsa_mk_inv_perm(p_left1)</code></pre>
+<pre><code> [1] 10  1  2  3  4  5  6  7  8  9</code></pre>
+<pre class="r"><code>p_right1</code></pre>
+<pre><code> [1] 10  1  2  3  4  5  6  7  8  9</code></pre>
+<pre class="r"><code>vsa_mk_inv_perm(p_left1) %&gt;% vsa_mk_inv_perm()</code></pre>
+<pre><code> [1]  2  3  4  5  6  7  8  9 10  1</code></pre>
+<ul>
+<li>The inverse of left cyclic shift is right cyclic shift.</li>
+<li>The inverse of the inverse transform is the identity transform</li>
+</ul>
+<pre class="r"><code>p_random</code></pre>
+<pre><code> [1]  7  4  2  1  6  8  5 10  9  3</code></pre>
+<pre class="r"><code>vsa_mk_inv_perm(p_random)</code></pre>
+<pre><code> [1]  4  3 10  2  7  5  1  6  9  8</code></pre>
+<pre class="r"><code>vsa_mk_inv_perm(p_random) %&gt;% vsa_mk_inv_perm()</code></pre>
+<pre><code> [1]  7  4  2  1  6  8  5 10  9  3</code></pre>
+<ul>
+<li>The inverse of the inverse transform is the identity transform</li>
+</ul>
+</div>
+<div id="apply-permutation" class="section level2" number="4.3">
+<h2><span class="header-section-number">4.3</span> Apply permutation</h2>
+<p>Define a function to apply the given permutation to a VSA vector.</p>
+<pre class="r"><code># function to apply the specified permutation to the VSA vector
+
+vsa_permute &lt;- function(
+  v1, # numeric - VSA vector (not necessarily bipolar)
+  perm # integer vector - specification of a permutation
+) # value # permutation of input VSA vector
+{  
+  ### Set up the arguments ###
+  # The OCD error checking is probably more useful as documentation
+  
+  if(missing(v1)) 
+    stop(&quot;VSA vector argument (v1) must be specified&quot;)
+  
+  if(!is.vector(v1, mode = &quot;numeric&quot;))
+    stop(&quot;v1 must be an numeric vector&quot;)
+  
+  if(missing(perm))
+    stop(&quot;perm must be specified&quot;)
+  
+  if(!is.vector(perm, mode = &quot;integer&quot;))
+    stop(&quot;perm must be an integer vector&quot;)
+  
+  if(!all(sort(perm) == 1:length(perm)))
+    stop(&quot;perm must be a permutation of 1:length(perm)&quot;)
+  
+  # apply the permutation
+  v1[perm]
+}</code></pre>
+<p>The returned value is the input VSA vector permuted according to the
+specified permutation.</p>
+<p>Do some very small scale testing.</p>
+<pre class="r"><code># make some example VSA vectors
+v1 &lt;- 1L:10L
+v2 &lt;- 101L:110L
+
+v1</code></pre>
+<pre><code> [1]  1  2  3  4  5  6  7  8  9 10</code></pre>
+<pre class="r"><code>v1 %&gt;% vsa_permute(p_identity)</code></pre>
+<pre><code> [1]  1  2  3  4  5  6  7  8  9 10</code></pre>
+<pre class="r"><code>v2</code></pre>
+<pre><code> [1] 101 102 103 104 105 106 107 108 109 110</code></pre>
+<pre class="r"><code>v2 %&gt;% vsa_permute(p_identity)</code></pre>
+<pre><code> [1] 101 102 103 104 105 106 107 108 109 110</code></pre>
+<ul>
+<li>The identity permutation leaves the VSA vectors unchanged.</li>
+</ul>
+<pre class="r"><code>v1</code></pre>
+<pre><code> [1]  1  2  3  4  5  6  7  8  9 10</code></pre>
+<pre class="r"><code>v1 %&gt;% vsa_permute(p_reverse)</code></pre>
+<pre><code> [1] 10  9  8  7  6  5  4  3  2  1</code></pre>
+<pre class="r"><code>v2</code></pre>
+<pre><code> [1] 101 102 103 104 105 106 107 108 109 110</code></pre>
+<pre class="r"><code>v2 %&gt;% vsa_permute(p_reverse)</code></pre>
+<pre><code> [1] 110 109 108 107 106 105 104 103 102 101</code></pre>
+<ul>
+<li>The reverse permutation reverses the VSA vectors.</li>
+</ul>
+<pre class="r"><code>v1</code></pre>
+<pre><code> [1]  1  2  3  4  5  6  7  8  9 10</code></pre>
+<pre class="r"><code>v1 %&gt;% vsa_permute(p_left1)</code></pre>
+<pre><code> [1]  2  3  4  5  6  7  8  9 10  1</code></pre>
+<pre class="r"><code>v2</code></pre>
+<pre><code> [1] 101 102 103 104 105 106 107 108 109 110</code></pre>
+<pre class="r"><code>v2 %&gt;% vsa_permute(p_left1)</code></pre>
+<pre><code> [1] 102 103 104 105 106 107 108 109 110 101</code></pre>
+<ul>
+<li>The left cyclic shift permutation performs a left cyclic shift of
+the VSA vectors.</li>
+</ul>
+<pre class="r"><code>v1</code></pre>
+<pre><code> [1]  1  2  3  4  5  6  7  8  9 10</code></pre>
+<pre class="r"><code>v1 %&gt;% vsa_permute(vsa_mk_inv_perm(p_left1))</code></pre>
+<pre><code> [1] 10  1  2  3  4  5  6  7  8  9</code></pre>
+<pre class="r"><code>v2</code></pre>
+<pre><code> [1] 101 102 103 104 105 106 107 108 109 110</code></pre>
+<pre class="r"><code>v2 %&gt;% vsa_permute(vsa_mk_inv_perm(p_left1))</code></pre>
+<pre><code> [1] 110 101 102 103 104 105 106 107 108 109</code></pre>
+<ul>
+<li>The inverse of the left cyclic shift permutation performs a right
+cyclic shift of the VSA vectors.</li>
+</ul>
+<pre class="r"><code>v1</code></pre>
+<pre><code> [1]  1  2  3  4  5  6  7  8  9 10</code></pre>
+<pre class="r"><code>v1 %&gt;% vsa_permute(p_random)</code></pre>
+<pre><code> [1]  7  4  2  1  6  8  5 10  9  3</code></pre>
+<pre class="r"><code>v1 %&gt;% vsa_permute(p_random) %&gt;% vsa_permute(vsa_mk_inv_perm(p_random))</code></pre>
+<pre><code> [1]  1  2  3  4  5  6  7  8  9 10</code></pre>
+<ul>
+<li>The the composition of a random permutation and its inverse are
+equivalent to the identity permutation.</li>
+</ul>
+</div>
+</div>
+<div id="multiply-vectors" class="section level1" number="5">
+<h1><span class="header-section-number">5</span> Multiply vectors</h1>
+<p>Define a function to multiply an arbitrary number of VSA vectors.</p>
+<pre class="r"><code># function to multiply an arbitrary number of VSA vectors
+
+vsa_multiply &lt;- function(
+  ... # &gt;= 2 VSA vectors of identical dimension as arguments to multiply
+) # value # one VSA vector, the weighted sum (sampled) of the argument vectors
+{
+  ### Set up the arguments ###
+  # The OCD error checking is probably more useful as documentation
+  
+  args_list &lt;- list(...)
+  args_n &lt;- length(args_list)
+  
+  if(args_n &lt; 2) 
+    stop(&quot;number of source VSA vector arguments must be &gt;= 2&quot;)
+  
+  if(!all(sapply(args_list, is.vector, mode = &quot;numeric&quot;)))
+    stop(&quot;all source VSA vectors must be numeric vectors&quot;)
+  
+  vsa_dim &lt;- length(args_list[[1]])
+  
+  if(!all(sapply(args_list, length) == vsa_dim))
+    stop(&quot;all source VSA vectors must be the same length&quot;)
+  
+  ### Construct the result vector
+  # as.data.frame(args_list)
+  purrr::reduce(args_list, `*`)
+}</code></pre>
+<p>Do some very small scale testing.</p>
+<pre class="r"><code>v1 &lt;- 1:5
+v2 &lt;- 2:6
+
+v1</code></pre>
+<pre><code>[1] 1 2 3 4 5</code></pre>
+<pre class="r"><code>v2</code></pre>
+<pre><code>[1] 2 3 4 5 6</code></pre>
+<pre class="r"><code>vsa_multiply(v1, v1)</code></pre>
+<pre><code>[1]  1  4  9 16 25</code></pre>
+<pre class="r"><code>vsa_multiply(v1, v1, v2)</code></pre>
+<pre><code>[1]   2  12  36  80 150</code></pre>
+<ul>
+<li>Multiplication is the element-wise product of the argument vectors.</li>
+</ul>
+<pre class="r"><code>vsa_multiply(1, 1)</code></pre>
+<pre><code>[1] 1</code></pre>
+<pre class="r"><code>vsa_multiply(1, -1)</code></pre>
+<pre><code>[1] -1</code></pre>
+<pre class="r"><code>vsa_multiply(-1, -1)</code></pre>
+<pre><code>[1] 1</code></pre>
+<ul>
+<li>Signs work as expected.</li>
+</ul>
+</div>
+<div id="add-vectors" class="section level1" number="6">
+<h1><span class="header-section-number">6</span> Add vectors</h1>
+<p>Vector addition in this project is performed by randomly sampling
+elements from each of the source VSA vectors. The sampling specification
+(the VSA vector argument to use as the source for each element of the
+output VSA vector) can be randomised per applicatioon of the addition
+function or can be set to a constant across applications of the addition
+function.</p>
+<div id="generate-sampling-specification" class="section level2" number="6.1">
+<h2><span class="header-section-number">6.1</span> Generate sampling specification</h2>
+<p>Define a function to generate a sampling specification for addition of
+an arbitrary number of VSA vectors.</p>
+<p>The VSA vector dimensionality and the number of vectors to be added must
+be specified.</p>
+<p>The sampling weights correspond to the VSA vector arguments to the
+addition. The sampling weights must be non-negative and are normalised to
+sum to one so that the can be treated as probabilities.</p>
+<pre class="r"><code># function to make a sampling specification for adding VSA vectors
+
+vsa_mk_sample_spec &lt;- function(
+  vsa_dim, # integer - dimensionality of VSA vectors
+  sample_wt, # numeric vector - VSA vector sampling weights
+  seed = NULL # integer - seed for random number generator
+) # value # one VSA vector, the weighted sum (sampled) of the argument vectors
+{
+  ### Set up the arguments ###
+  # The OCD error checking is probably more useful as documentation
+  
+  if(missing(vsa_dim))
+    stop(&quot;vsa_dim must be specified&quot;)
+  
+  if(!(is.vector(vsa_dim, mode = &quot;integer&quot;) &amp;&amp; length(vsa_dim) == 1))
+    stop(&quot;vsa_dim must be an integer&quot;)
+  
+  if(vsa_dim &lt; 1)
+    stop(&quot;vsa_dim must be (much) greater than zero&quot;)
+  
+  if(!is.vector(sample_wt, mode = &quot;numeric&quot;))
+    stop(&quot;sample_wt must be a numeric vector&quot;)
+  
+  if(length(sample_wt) &lt; 2)
+    stop(&quot;length(sample_wt) (the number of VSA vectors to be added) must be &gt;= 2&quot;)
+  
+  if(min(sample_wt) &lt; 0)
+    stop(&quot;all weights must be &gt;= 0&quot;)
+  
+  if(max(sample_wt) &lt;= 0)
+    stop(&quot;at least one weight must be &gt; 0&quot;)
+  
+  # check that the specified seed is an integer
+  if(!is.null(seed) &amp;&amp; !(is.vector(seed, mode = &quot;integer&quot;) &amp;&amp; length(seed) == 1))
+    stop(&quot;seed must be an integer&quot;)
+  
+  # if seed is set the sampling specification vector is fixed
+  # otherwise it is randomised
+  set.seed(seed)
+  
+  # For each element of the VSA vectors work out which source VSA vector to sample
+  sample.int(n = length(sample_wt), size = vsa_dim, replace = TRUE, prob = sample_wt)
+}</code></pre>
+<p>Do some very small scale testing.</p>
+<pre class="r"><code>vsa_mk_sample_spec(vsa_dim = 10L, sample_wt = c(1, 1, 1), seed = 42L)</code></pre>
+<pre><code> [1] 1 1 2 1 3 3 1 2 3 1</code></pre>
+<pre class="r"><code>vsa_mk_sample_spec(vsa_dim = 10L, sample_wt = c(1, 1, 1), seed = 42L)</code></pre>
+<pre><code> [1] 1 1 2 1 3 3 1 2 3 1</code></pre>
+<ul>
+<li>Setting the seed makes the sampling sepcification reproducible.</li>
+</ul>
+<pre class="r"><code>vsa_mk_sample_spec(vsa_dim = 10L, sample_wt = c(1, 0))</code></pre>
+<pre><code> [1] 1 1 1 1 1 1 1 1 1 1</code></pre>
+<pre class="r"><code>vsa_mk_sample_spec(vsa_dim = 10L, sample_wt = c(0, 1, 1))</code></pre>
+<pre><code> [1] 3 2 2 2 3 3 2 3 2 3</code></pre>
+<pre class="r"><code>vsa_mk_sample_spec(vsa_dim = 10L, sample_wt = c(1, 3))</code></pre>
+<pre><code> [1] 1 2 2 2 2 2 2 2 2 1</code></pre>
+<ul>
+<li>The sample weights are converted to probabilities of selection.</li>
+</ul>
+</div>
+<div id="apply-sampling-specification" class="section level2" number="6.2">
+<h2><span class="header-section-number">6.2</span> Apply sampling specification</h2>
+<p>Define a function to calculate the weighted sum of an arbitrary number
+of VSA vectors.</p>
+<pre class="r"><code># function to add (weighted sum) an arbitrary number of VSA vectors
+# Weighted add is implemented as weighted sampling from the source vectors
+# If sample_spec is given it specifies which argument vector is the source for each element of the output vector
+# If sample_wt is given the sample specification is generated randomly
+# If neither sample_spec or sample_wt is given then sample_wt is constructed with equal weight for each argument vector
+
+vsa_add &lt;- function(
+  ..., # &gt;= 2 VSA vectors of identical dimension as arguments to add
+  sample_spec, # integer vector - source (argument VSA vector) for each element of result
+  sample_wt # numeric vector - argument vector sampling weights
+) # value # one VSA vector, the weighted sum (sampled) of the argument vectors
+{
+  ### Set up the arguments ###
+  # The OCD error checking is probably more useful as documentation
+  
+  args_list &lt;- list(...)
+  args_n &lt;- length(args_list)
+  
+  if(args_n &lt; 2) 
+    stop(&quot;number of source VSA vector arguments must be &gt;= 2&quot;)
+  
+  if(!all(sapply(args_list, is.vector, mode = &quot;numeric&quot;)))
+    stop(&quot;all source VSA vectors must be numeric vectors&quot;)
+  
+  vsa_dim &lt;- length(args_list[[1]])
+  
+  if(!all(sapply(args_list, length) == vsa_dim))
+    stop(&quot;all source VSA vectors must be the same length&quot;)
+  
+  if(!missing(sample_spec) &amp;&amp; !missing(sample_wt))
+    stop(&quot;at most one of wt and sample_spec can be given&quot;)
+  
+  if(!missing(sample_spec))
+    # sample_spec supplied
+  {
+    if(!is.vector(sample_spec, mode = &quot;integer&quot;))
+      stop(&quot;sample_spec must be an integer vector&quot;)
+    
+    if(length(sample_spec) != vsa_dim)
+      stop(&quot;sample_spec must be same length as source VSA vectors&quot;)
+    
+    if(!all(sample_spec %in% 1:args_n))
+      stop(&quot;each element of sample_spec must be the index of a source VSA vector&quot;)
+  }
+  else
+    # sample spec not supplied - make a new random one
+  {
+    # create a sampling weight vector if not supplied
+    if(missing(sample_wt))
+      sample_wt &lt;- rep(1, length.out = args_n) # equal weighting for all source VSA vectors
+    
+    if(length(sample_wt) != args_n)
+      stop(&quot;number of weights must equal number of source VSA vectors&quot;)
+    
+    if(min(sample_wt) &lt; 0)
+      stop(&quot;all weights must be &gt;= 0&quot;)
+    
+    if(max(sample_wt) &lt;= 0)
+      stop(&quot;at least one weight must be &gt; 0&quot;)
+    
+    # For each element of the result work out which source VSA vector to sample
+    # sample_spec &lt;- sample.int(n = args_n, size = vsa_dim,
+    #                           replace = TRUE, prob = sample_wt)
+    sample_spec &lt;- vsa_mk_sample_spec(vsa_dim, sample_wt)
+  }
+  
+  ### Set up the selection matrix ###
+  # Each row corresponds to an element of the output vector
+  # Each row specifies the (row,col) cell to select from the VSA source vectors
+  sel &lt;- as.matrix(data.frame(row = 1L:vsa_dim, col = sample_spec),
+                   ncol = 2, byrow = FALSE)
+  
+  ### Construct the result vector
+  as.data.frame(args_list)[sel]
+}</code></pre>
+<p>Do some very small scale testing.</p>
+<pre class="r"><code># create vectors to add
+# make unique values so they can be uniquely tracked
+x1 &lt;- 10L:19L
+x2 &lt;- 20L:29L
+x3 &lt;- 30L:39L
+
+# specify the sampling
+vsa_add(x1,x2,x3, sample_spec = c(1L,2L,3L,1L,2L,3L,1L,2L,3L,1L))</code></pre>
+<pre><code> [1] 10 21 32 13 24 35 16 27 38 19</code></pre>
+<pre class="r"><code>vsa_add(x1,x2,x3, sample_spec = c(1L,2L,3L,1L,2L,3L,1L,2L,3L,1L))</code></pre>
+<pre><code> [1] 10 21 32 13 24 35 16 27 38 19</code></pre>
+<ul>
+<li>Sampling is fixed when <code>sample_spec</code> is specified.</li>
+</ul>
+<pre class="r"><code>vsa_add(x1,x2,x3, sample_wt = c(0, 0, 1))</code></pre>
+<pre><code> [1] 30 31 32 33 34 35 36 37 38 39</code></pre>
+<ul>
+<li>Extreme random weighting works as expected.</li>
+</ul>
+<pre class="r"><code>vsa_add(x1,x2,x3)</code></pre>
+<pre><code> [1] 10 11 32 33 14 25 16 17 18 39</code></pre>
+<pre class="r"><code>vsa_add(x1,x2,x3)</code></pre>
+<pre><code> [1] 10 21 32 33 14 25 36 27 18 39</code></pre>
+<pre class="r"><code>vsa_add(x1,x2,x3)</code></pre>
+<pre><code> [1] 30 21 32 13 14 15 16 37 28 19</code></pre>
+<ul>
+<li>Randomised sampling is different on every occasion.</li>
+</ul>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.1.0 (2021-05-18)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: Ubuntu 21.04
+
+Matrix products: default
+BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.9.0
+LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.9.0
+
+locale:
+ [1] LC_CTYPE=en_AU.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_AU.UTF-8        LC_COLLATE=en_AU.UTF-8    
+ [5] LC_MONETARY=en_AU.UTF-8    LC_MESSAGES=en_AU.UTF-8   
+ [7] LC_PAPER=en_AU.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_AU.UTF-8 LC_IDENTIFICATION=C       
+
+attached base packages:
+[1] stats     graphics  grDevices datasets  utils     methods   base     
+
+other attached packages:
+[1] Matrix_1.3-4       purrr_0.3.4        dplyr_1.0.7        DiagrammeR_1.0.6.1
+[5] magrittr_2.0.1     here_1.0.1         fs_1.5.0          
+
+loaded via a namespace (and not attached):
+ [1] Rcpp_1.0.7         pillar_1.6.2       compiler_4.1.0     later_1.2.0       
+ [5] RColorBrewer_1.1-2 git2r_0.28.0       workflowr_1.6.2    tools_4.1.0       
+ [9] digest_0.6.27      lattice_0.20-44    jsonlite_1.7.2     evaluate_0.14     
+[13] lifecycle_1.0.0    tibble_3.1.3       pkgconfig_2.0.3    rlang_0.4.11      
+[17] yaml_2.2.1         xfun_0.24          stringr_1.4.0      knitr_1.33        
+[21] generics_0.1.0     vctrs_0.3.8        htmlwidgets_1.5.3  grid_4.1.0        
+[25] tidyselect_1.1.1   rprojroot_2.0.2    glue_1.4.2         R6_2.5.0          
+[29] fansi_0.5.0        rmarkdown_2.9      bookdown_0.22      whisker_0.4       
+[33] promises_1.2.0.1   ellipsis_0.3.2     htmltools_0.5.1.1  renv_0.14.0       
+[37] httpuv_1.6.1       utf8_1.2.2         stringi_1.7.3      visNetwork_2.0.9  
+[41] crayon_1.4.1      </code></pre>
+</div>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+http://docs.mathjax.org/en/latest/configuration.html.  This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3,h4,h5",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

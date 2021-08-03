@@ -8,6 +8,7 @@ editor_options:
   markdown: 
     wrap: 72
 bibliography: references.bib
+link-citations: true
 csl: apa-single-spaced.csl
 ---
 
@@ -87,12 +88,11 @@ VSAs. In particular, we will treat all scalar values as being bounded.
 
 ### Scaling
 
-In a mathematical model the the quantities are unscaled, they are just
-numbers (e.g. see the first paragraph of the preface of
-<https://hplgit.github.io/scaling-book/doc/pub/book/pdf/scaling-book-4screen-sol.pdf>).
-However, in an implementation the numbers (especially coming from
-sensors) are necessarily scaled. (Is the vertical velocity measured in
-metres per second or [furlongs per
+In a mathematical model the quantities are unscaled, they are just
+numbers (e.g. @langtangenScalingDifferentialEquations2016 first
+paragraph of the preface). However, in an implementation the numbers
+(especially coming from sensors) are necessarily scaled. (Is the
+vertical velocity measured in metres per second or [furlongs per
 fortnight](https://en.wikipedia.org/wiki/FFF_system#Furlongs_per_fortnight)?)
 Quantities to be combined by some function need to be scaled compatibly.
 For example, if we are adding two vertical velocities they should be
@@ -156,6 +156,64 @@ have propagation delays. In a neuromorphic implementation the
 propagation delays are probably essential to the dynamics of the system.
 
 # Design issues
+
+## VSA implementation
+
+**There is much more to follow on the VSA implementation. I will expand
+this later, but wanted to publish the VSA implementation code first.**
+
+Most of the points raised in this section will be directly relevant to
+the design choices in implementing the VSA operations for this project.
+However, some points may be more general observations that are not
+immediately relevant to this project.
+
+### VSA type
+
+-   There are multiple possible VSA implementations, e.g. see
+    [als\@schlegelComparisonVectorSymbolic2020](mailto:als@schlegelComparisonVectorSymbolic2020){.email}
+    and @kleykoVectorSymbolicArchitectures2021 . I need to choose an
+    appropriate implementation.
+
+-   Every vector has a magnitude (a single degree of freedom scalar
+    value) and a direction (a many degree of freedom value)
+
+    -   Construing the vector in terms of magnitude and direction rather
+        than in terms of the basis elements is a choice made by the
+        analyst for task-relevant reasons. The best reasons are where
+        that decomposition relates directly to the functional roles of
+        those components in the operation of the system.
+    -   I am using the 'analog computer' interpretation of VSA systems.
+        The direction of the vector is a systematically constructed
+        label indicating what the vector represents (corresponds to).
+        The magnitude of the vector indicates the degree of *support*
+        for the represented thing in the VSA computation. (Thinking of
+        this as an electronic analog computer, the vector direction
+        corresponds to a wire and the vector magnitude corresponds to
+        the voltage on the wire [@gayler2013].)
+    -   In that 'analog computer' interpretation the vector magnitude is
+        relevant only to the dynamics of the VSA system and not to the
+        representations. That is, the vector magnitude is a
+        computational resource and not a representational resource. So,
+        only the directions of the VSA vectors are representationally
+        relevant.
+
+-   In this project all the quantities of interest are scalars, so
+    modelling functions of scalars is central to the project. Given that
+    we will end up using a regression-like approach to learn functions
+    between scalars I am concerned that the regression might exploit
+    vector magnitudes (rather than vector directions). Consequently, I
+    want to choose a VSA type that reduces the opportunity for
+    regression to depend on the magnitude rather than
+
+-   Use the MAP-B type ([@schlegelComparisonVectorSymbolic2020, Table 1;
+    @gaylerMultiplicativeBindingRepresentation1998]). This is also
+    referred to as bipolar VSA. Each VSA vector $X \in \{-1, 1\}^D$.
+
+### VSA similarity
+
+-   VSA representations are thoroughly distributed, in the sense that,
+    as much as possible, the underlying basis elements should be
+    irrelevant to the operation of the system.
 
 ## PID controller
 
@@ -310,7 +368,7 @@ components?
 
 These are issues that relate to the simulations as software artefacts.
 
-### Relation of VSA and multicopter simulation components
+### Relation of VSA and multicopter simulation components {#sim-vsa-to-multicopter}
 
 -   Ross Gayler will program the initial VSA work in
     [R](https://en.wikipedia.org/wiki/R_(programming_language)) because
@@ -347,7 +405,7 @@ These are issues that relate to the simulations as software artefacts.
         to be embedded in the multicopter simulation or some way of
         coupling the two systems developed.
 
-### Structure of the VSA data flow graph implementation
+### Structure of the VSA data flow graph implementation {#sim-dfg-design}
 
 -   Some initial exploratory VSA work can be done as standalone analyses
     (e.g. exploration of value encoding schemes). However, any
@@ -365,13 +423,14 @@ These are issues that relate to the simulations as software artefacts.
             state trajectory and diagnose problems with the dynamics.
 
     -   Each row of the data frame corresponds to a discrete time step,
-        $t = 1:n$. ($n$ will be fixed for any run of the system, so the
-        storage in the data frame can be pre-allocated if that is needed
-        for efficiency.)
+        $t = 1:n$ ($n$ will be fixed for any run of the system).
+
+        -   There will be an extra initial time step ($t = 0$)
+            corresponding to the initial values of the state variables.
 
     -   Each column of the data frame corresponds to an input variable,
-        an internal state variable of the altitude controller, or an
-        output variable.
+        an internal state variable of the altitude controller, an output
+        variable, or the time variable ($t$).
 
         -   The input and output variables are numeric scalars. The
             internal state variables are scalars in the classical
@@ -382,7 +441,7 @@ These are issues that relate to the simulations as software artefacts.
         in advance for every time.
 
     -   The values of the internal state variables are initially only
-        known for the start time, $t = 1$.
+        known for the start time, $t = 0$.
 
     -   At each time step $t$ a state update function is applied to the
         $t$ row of the state history to calculate the next row of the
@@ -391,12 +450,11 @@ These are issues that relate to the simulations as software artefacts.
         -   The state and output variables are a function of the current
             input variables and the previous state variables.
 
-        -   The details of that accumulation of rows into a data frame
-            have not yet been decided. There are some issues around
-            computational efficiency. It may be best to generate each
-            row as a one-row data frame, accumulate those one-row data
-            frames in a list, then bulk-convert the list to a single
-            data frame (see
+        -   For efficiency reasons, the accumulation of rows into a data
+            frame is implemented by generating each row as a one-row
+            data frame, accumulating those one-row data frames as
+            elements of a list, then bulk-converting the list of one-row
+            data frames to a single data frame (see
             <https://win-vector.com/2015/07/27/efficient-accumulation-in-r/>
             & <https://dplyr.tidyverse.org/reference/rows.html>)
 
@@ -517,7 +575,7 @@ dfd01 %>% DiagrammeR::render_graph()
 
 -   The edge between a reference node and the corresponding node is
     labelled "=" to indicate that it is only intended for testing the
-    calculation and is not actually part of the datat flow diagram.
+    calculation and is not actually part of the data flow diagram.
 
 ## Data flow tables
 

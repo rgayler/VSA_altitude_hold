@@ -1,0 +1,541 @@
+---
+title: "VSA Basic Operators"
+author: "Ross Gayler"
+date: "2021-07-11"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+  markdown: 
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+suppressPackageStartupMessages(
+  {
+    library(fs)
+    library(here)
+    library(magrittr)
+  }
+)
+
+source(here::here("R", "functions.R"))
+```
+
+```{r, include = FALSE, cache = FALSE}
+# Get all the functions defined in "R/functions.R"
+# so we can display the source code in this notebook
+# with a guarantee that they will be identical
+# to the code executed here and in other notebooks
+
+# See https://bookdown.org/yihui/rmarkdown-cookbook/read-chunk.html
+# The argument to read_chunk() *must* be a literal string
+knitr::read_chunk("R/functions.R")
+```
+
+This notebook ...
+
+The reasoning behind the design choices is explained in
+[XXX](design_notes.html#dfd-01).
+
+# Generate atomic vectors
+
+For this project we are using bipolar vectors ($V \in \{-1, +1\}^D$).
+
+The vectors will be dense. That is, there will be no zero elements. We
+will not be investigating the effect of sparsity in this project.
+
+Define a function to create a randomly selected bipolar VSA vector.
+
+```{r, vsa_mk_atom_bipolar, eval = FALSE}
+```
+
+The `seed` argument allows for a reproducible random selection.
+
+The vector elements are integers rather than floats. This halves the
+required storage space and is a minor gesture towards optimisation. Much
+greater optimisation could be probably be achieved by using bit strings
+rather than integers, but that's not worth the effort at this stage.
+
+Where possible all other operations will be defined to accept floats
+*and* integers to allow moving away from a strictly bipolar
+representation if necessary.
+
+Do some very small scale testing.
+
+```{r}
+v1 <- vsa_mk_atom_bipolar(10L)
+v2 <- vsa_mk_atom_bipolar(10L)
+
+v1
+v2
+all(v1 == v2)
+```
+
+-   Multiple calls generate different vectors.
+
+```{r}
+v1 <- vsa_mk_atom_bipolar(10L, seed = 1L)
+v2 <- vsa_mk_atom_bipolar(10L, seed = 1L)
+
+v1
+v2
+all(v1 == v2)
+```
+
+-   Setting the seed to the same value generates the same vector.
+
+# Vector measures
+
+We really only need the cosine similarity of two vectors. However,
+define functions for the components of the cosine in case they are
+useful.
+
+These functions will work for any vectors. They do not have to be
+bipolar vectors.
+
+## Vector magnitude
+
+Define a function to calculate the of a VSA vector.
+
+```{r, vsa_mag, eval = FALSE}
+```
+
+I have not taken any numerical analysis considerations into account, so
+don't hold any strong expectations for accuracy in extreme cases.
+
+Do some very small scale testing.
+
+```{r}
+vsa_mag(0)
+vsa_mag(1)
+vsa_mag(2)
+vsa_mag(-2)
+```
+
+-   The magnitude of a scalar is its absolute value.
+
+```{r}
+vsa_mk_atom_bipolar(9L) %>% vsa_mag()
+vsa_mk_atom_bipolar(100L) %>% vsa_mag()
+vsa_mk_atom_bipolar(1e4L) %>% vsa_mag()
+vsa_mk_atom_bipolar(1e8L) %>% vsa_mag()
+```
+
+-   The magnitude of a bipolar vector is the square root of its
+    dimensionality.
+
+As the vector dimensionality is increased the operations take longer to
+execute and eventually something will break, e.g. you will run out of
+RAM or the dimensionality will be too large to be represented as an
+`integer`.
+
+```{r}
+(vsa_mk_atom_bipolar(100L) * 1L) %>% vsa_mag()
+(vsa_mk_atom_bipolar(100L) * 1.3) %>% vsa_mag()
+(vsa_mk_atom_bipolar(100L) * -5) %>% vsa_mag()
+```
+
+-   Rescaling the vector is equivalent to rescaling its magnitude
+    ($\Vert kV \Vert = \vert k \vert \Vert V \Vert$).
+
+## Vector dot product
+
+Define a function to calculate the dot product of two VSA vectors.
+
+```{r, vsa_dotprod, eval = FALSE}
+```
+
+I have not taken any numerical analysis considerations into account, so
+don't hold any strong expectations for accuracy in extreme cases.
+
+Do some very small scale testing.
+
+```{r}
+vsa_dotprod(1, 1)
+vsa_dotprod(1, 0)
+vsa_dotprod(1, 3)
+vsa_dotprod(2, 3)
+vsa_dotprod(-2, 3)
+vsa_dotprod(-2, -3)
+```
+
+-   The dot product of two scalars is their product.
+
+```{r}
+vsa_dotprod(vsa_mk_atom_bipolar(9L, seed = 42L), vsa_mk_atom_bipolar(9L, seed = 42L))
+vsa_dotprod(vsa_mk_atom_bipolar(100L, seed = 43L), vsa_mk_atom_bipolar(100L, seed = 43L))
+vsa_dotprod(vsa_mk_atom_bipolar(1e4L, seed = 44L), vsa_mk_atom_bipolar(1e4L, seed = 44L))
+vsa_dotprod(vsa_mk_atom_bipolar(1e8L, seed = 45L), vsa_mk_atom_bipolar(1e8L, seed = 45L))
+```
+
+-   The dot product of a vector with itself is equal to the square of
+    its magnitude.
+-   The dot product of a bipolar vector with itself is equal to its
+    dimensionality.
+
+```{r}
+vsa_dotprod(vsa_mk_atom_bipolar(1e4L), vsa_mk_atom_bipolar(1e4L))
+vsa_dotprod(vsa_mk_atom_bipolar(1e4L), vsa_mk_atom_bipolar(1e4L))
+vsa_dotprod(vsa_mk_atom_bipolar(1e4L), vsa_mk_atom_bipolar(1e4L))
+vsa_dotprod(vsa_mk_atom_bipolar(1e4L), vsa_mk_atom_bipolar(1e4L))
+```
+
+-   The dot product of two randomly selected high dimensional vectors is
+    approximately zero (relative to the dimensionality).
+
+## Vector cosine similarity
+
+Define a function to calculate the cosine of the angle between two VSA
+vectors.
+
+```{r, vsa_cos_sim, eval = FALSE}
+```
+
+I have not taken any numerical analysis considerations into account, so
+don't hold any strong expectations for accuracy in extreme cases.
+
+Do some very small scale testing.
+
+Don't bother looking at pairs of scalars, because although the cosine of
+the angle between them is defined it is not interesting. (The vectors
+are parallel by definition.)
+
+```{r}
+vsa_cos_sim(vsa_mk_atom_bipolar(9L, seed = 42L), vsa_mk_atom_bipolar(9L, seed = 42L))
+vsa_cos_sim(vsa_mk_atom_bipolar(100L, seed = 43L), vsa_mk_atom_bipolar(100L, seed = 43L))
+vsa_cos_sim(vsa_mk_atom_bipolar(1e4L, seed = 44L), vsa_mk_atom_bipolar(1e4L, seed = 44L))
+vsa_cos_sim(vsa_mk_atom_bipolar(1e8L, seed = 45L), vsa_mk_atom_bipolar(1e8L, seed = 45L))
+```
+
+-   The cosine of the angle of a vector with itself is one. (The vectors
+    are coincident.)
+
+```{r}
+vsa_cos_sim(vsa_mk_atom_bipolar(1e4L, seed = 42L), 1 * vsa_mk_atom_bipolar(1e4L, seed = 42L))
+vsa_cos_sim(vsa_mk_atom_bipolar(1e4L, seed = 43L), 2 * vsa_mk_atom_bipolar(1e4L, seed = 43L))
+vsa_cos_sim(vsa_mk_atom_bipolar(1e4L, seed = 44L), -2 * vsa_mk_atom_bipolar(1e4L, seed = 44L))
+```
+
+-   Scaling has no effect on the direction of a vector
+-   The sign of scaling does effect the sign of the direction of a
+    vector.
+
+```{r}
+vsa_cos_sim(vsa_mk_atom_bipolar(1e4L), vsa_mk_atom_bipolar(1e4L))
+vsa_cos_sim(vsa_mk_atom_bipolar(1e4L), vsa_mk_atom_bipolar(1e4L))
+vsa_cos_sim(vsa_mk_atom_bipolar(1e4L), vsa_mk_atom_bipolar(1e4L))
+vsa_cos_sim(vsa_mk_atom_bipolar(1e4L), vsa_mk_atom_bipolar(1e4L))
+```
+
+-   The dot product of two randomly selected high dimensional vectors is
+    approximately zero.
+
+# Negate vector
+
+Define a function to calculate the negation of a VSA vector. This simply
+reverses the direction of the vector.
+
+```{r, vsa_negate, eval = FALSE}
+```
+
+This function will work for any vector. It does not have to be a bipolar
+vector.
+
+Do some very small scale testing.
+
+```{r}
+# make some example vectors
+v1 <- vsa_mk_atom_bipolar(1e4L)
+v2 <- vsa_mk_atom_bipolar(1e4L)
+
+vsa_mag(v1) == (vsa_negate(v1) %>% vsa_mag())
+vsa_mag(v2) == (vsa_negate(v2) %>% vsa_mag())
+```
+
+-   Negation does not change the magnitude of a vector.
+
+```{r}
+vsa_cos_sim(v1, vsa_negate(v1))
+vsa_cos_sim(v2, vsa_negate(v2))
+
+vsa_cos_sim(v1, v2)
+vsa_cos_sim(v1, vsa_negate(v2))
+```
+
+-   Negation reverses the direction of a vector.
+
+# Permute vector
+
+Define function to permute a vector.
+
+These will be functions to:
+
+-   Randomly generate the specification of a permutation
+-   Generate the specification for the inverse of a given permutation
+-   Apply a permutation to a VSA vector
+
+## Generate permutation
+
+Define a function to randomly generate the specification of a
+permutation.
+
+```{r, vsa_mk_perm, eval = FALSE}
+```
+
+The `seed` argument allows for a reproducible random selection.
+
+The returned value is a vector of integers of length `vsa_dim`. This is
+a random permutation of the integers `1 : vsa_dim`. When applied as a
+permutation each element of the specification indicates the input
+element to be copied to that position in the output.
+
+Do some very small scale testing.
+
+```{r}
+p1 <- vsa_mk_perm(10L, seed = 1L)
+p2 <- vsa_mk_perm(10L, seed = 1L)
+
+p1
+p2
+all(p1 == p2)
+```
+
+-   Setting the seed to the same value generates the same permutation.
+
+```{r}
+p1 <- vsa_mk_perm(10L)
+p2 <- vsa_mk_perm(10L)
+
+p1
+p2
+all(p1 == p2)
+```
+
+-   Multiple calls generate different permutations
+
+## Generate inverse permutation
+
+Define a function to generate the inverse of a given permutation.
+
+```{r, vsa_mk_inv_perm, eval = FALSE}
+```
+
+The returned value is a vector of integers of length `length(perm)`.
+This is a permutation of the integers `1 : length(perm)`. When applied
+as a permutation each element of the specification indicates the input
+element to be copied to that position in the output.
+
+Do some very small scale testing.
+
+```{r}
+# make some example permutation specifications
+p_identity <- 1L:10L
+p_reverse <- seq(10L, 1L, -1L)
+p_left1 <- c(p_identity[-1], p_identity[1])
+p_right1 <- c(p_identity[10], p_identity[-10])
+p_random <-vsa_mk_perm(10L)
+
+p_identity
+vsa_mk_inv_perm(p_identity)
+```
+
+-   The identity permutation is its own inverse.
+
+```{r}
+p_reverse
+vsa_mk_inv_perm(p_reverse)
+vsa_mk_inv_perm(p_reverse) %>% vsa_mk_inv_perm()
+```
+
+-   The reverse permutation is its own inverse.
+
+```{r}
+p_left1
+vsa_mk_inv_perm(p_left1)
+p_right1
+vsa_mk_inv_perm(p_left1) %>% vsa_mk_inv_perm()
+```
+
+-   The inverse of left cyclic shift is right cyclic shift.
+-   The inverse of the inverse transform is the identity transform
+
+```{r}
+p_random
+vsa_mk_inv_perm(p_random)
+vsa_mk_inv_perm(p_random) %>% vsa_mk_inv_perm()
+```
+
+-   The inverse of the inverse transform is the identity transform
+
+## Apply permutation
+
+Define a function to apply the given permutation to a VSA vector.
+
+```{r, vsa_permute, eval = FALSE}
+```
+
+The returned value is the input VSA vector permuted according to the
+specified permutation.
+
+Do some very small scale testing.
+
+```{r}
+# make some example VSA vectors
+v1 <- 1L:10L
+v2 <- 101L:110L
+
+v1
+v1 %>% vsa_permute(p_identity)
+v2
+v2 %>% vsa_permute(p_identity)
+```
+
+-   The identity permutation leaves the VSA vectors unchanged.
+
+```{r}
+v1
+v1 %>% vsa_permute(p_reverse)
+v2
+v2 %>% vsa_permute(p_reverse)
+```
+
+-   The reverse permutation reverses the VSA vectors.
+
+```{r}
+v1
+v1 %>% vsa_permute(p_left1)
+v2
+v2 %>% vsa_permute(p_left1)
+```
+
+-   The left cyclic shift permutation performs a left cyclic shift of
+    the VSA vectors.
+
+```{r}
+v1
+v1 %>% vsa_permute(vsa_mk_inv_perm(p_left1))
+v2
+v2 %>% vsa_permute(vsa_mk_inv_perm(p_left1))
+```
+
+-   The inverse of the left cyclic shift permutation performs a right
+    cyclic shift of the VSA vectors.
+
+```{r}
+v1
+v1 %>% vsa_permute(p_random)
+v1 %>% vsa_permute(p_random) %>% vsa_permute(vsa_mk_inv_perm(p_random))
+```
+
+-   The the composition of a random permutation and its inverse are
+    equivalent to the identity permutation.
+
+# Multiply vectors
+
+Define a function to multiply an arbitrary number of VSA vectors.
+
+```{r, vsa_multiply, eval = FALSE}
+```
+
+Do some very small scale testing.
+
+```{r}
+v1 <- 1:5
+v2 <- 2:6
+
+v1
+v2
+vsa_multiply(v1, v1)
+vsa_multiply(v1, v1, v2)
+```
+
+-   Multiplication is the element-wise product of the argument vectors.
+
+```{r}
+vsa_multiply(1, 1)
+vsa_multiply(1, -1)
+vsa_multiply(-1, -1)
+```
+
+-   Signs work as expected.
+
+# Add vectors
+
+Vector addition in this project is performed by randomly sampling
+elements from each of the source VSA vectors. The sampling specification
+(the VSA vector argument to use as the source for each element of the
+output VSA vector) can be randomised per applicatioon of the addition
+function or can be set to a constant across applications of the addition
+function.
+
+## Generate sampling specification
+
+Define a function to generate a sampling specification for addition of
+an arbitrary number of VSA vectors.
+
+The VSA vector dimensionality and the number of vectors to be added must
+be specified.
+
+The sampling weights correspond to the VSA vector arguments to the
+addition. The sampling weights must be non-negative and are normalised to
+sum to one so that the can be treated as probabilities.
+
+```{r, vsa_mk_sample_spec, eval = FALSE}
+```
+
+Do some very small scale testing.
+
+```{r}
+vsa_mk_sample_spec(vsa_dim = 10L, sample_wt = c(1, 1, 1), seed = 42L)
+vsa_mk_sample_spec(vsa_dim = 10L, sample_wt = c(1, 1, 1), seed = 42L)
+```
+
+-   Setting the seed makes the sampling sepcification reproducible.
+
+```{r}
+vsa_mk_sample_spec(vsa_dim = 10L, sample_wt = c(1, 0))
+vsa_mk_sample_spec(vsa_dim = 10L, sample_wt = c(0, 1, 1))
+vsa_mk_sample_spec(vsa_dim = 10L, sample_wt = c(1, 3))
+```
+
+-   The sample weights are converted to probabilities of selection.
+
+## Apply sampling specification
+
+Define a function to calculate the weighted sum of an arbitrary number
+of VSA vectors.
+
+```{r, vsa_add, eval = FALSE}
+```
+
+Do some very small scale testing.
+
+```{r}
+# create vectors to add
+# make unique values so they can be uniquely tracked
+x1 <- 10L:19L
+x2 <- 20L:29L
+x3 <- 30L:39L
+
+# specify the sampling
+vsa_add(x1,x2,x3, sample_spec = c(1L,2L,3L,1L,2L,3L,1L,2L,3L,1L))
+vsa_add(x1,x2,x3, sample_spec = c(1L,2L,3L,1L,2L,3L,1L,2L,3L,1L))
+```
+
+-   Sampling is fixed when `sample_spec` is specified.
+
+```{r}
+vsa_add(x1,x2,x3, sample_wt = c(0, 0, 1))
+```
+
+-   Extreme random weighting works as expected.
+
+```{r}
+vsa_add(x1,x2,x3)
+vsa_add(x1,x2,x3)
+vsa_add(x1,x2,x3)
+```
+
+-   Randomised sampling is different on every occasion.

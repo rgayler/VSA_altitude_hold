@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Ross Gayler" />
+
+<meta name="date" content="2021-07-19" />
+
+<title>Simulation Framework</title>
+
+<script src="site_libs/header-attrs-2.9/header-attrs.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/master/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">VSA_altitude_hold</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/rgayler/VSA_altitude_hold">
+    <span class="fa fa-github"></span>
+     
+    Source code
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Simulation Framework</h1>
+<h4 class="author">Ross Gayler</h4>
+<h4 class="date">2021-07-19</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks">
+Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2021-08-03
+</p>
+<p>
+<strong>Checks:</strong>
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+7
+<span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span>
+0
+</p>
+<p>
+<strong>Knit directory:</strong>
+<code>VSA_altitude_hold/</code>
+<span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/jdblischak/workflowr">workflowr</a> (version
+1.6.2). The <em>Checks</em> tab describes the
+reproducibility checks that were applied when the results were created.
+The <em>Past versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>R Markdown file:</strong> up-to-date
+</a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git repository, you
+know the exact version of the code that produced these results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>Environment:</strong> empty
+</a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the global
+environment can affect the analysis in your R Markdown file in unknown ways.
+For reproduciblity it’s best to always run the code in an empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20210617code">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>Seed:</strong> <code>set.seed(20210617)</code>
+</a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20210617code" class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20210617)</code> was run prior to running the code in the R Markdown file.
+Setting a seed ensures that any results that rely on randomness, e.g.
+subsampling or permutations, are reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>Session information:</strong> recorded
+</a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package versions is
+critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>Cache:</strong> none
+</a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be confident
+that you successfully produced the results during this run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>File paths:</strong> relative
+</a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr project
+makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomrgaylerVSAaltitudeholdtree6a83009b36dfc9838c9f101c3eefdda3e388f25atargetblank6a83009a">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>Repository version:</strong> <a href="https://github.com/rgayler/VSA_altitude_hold/tree/6a83009b36dfc9838c9f101c3eefdda3e388f25a" target="_blank">6a83009</a>
+</a>
+</p>
+</div>
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomrgaylerVSAaltitudeholdtree6a83009b36dfc9838c9f101c3eefdda3e388f25atargetblank6a83009a" class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development and
+connecting the code version to the results is critical for reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version <a href="https://github.com/rgayler/VSA_altitude_hold/tree/6a83009b36dfc9838c9f101c3eefdda3e388f25a" target="_blank">6a83009</a>.
+See the <em>Past versions</em> tab to see a history of the changes made to the
+R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for the
+analysis have been committed to Git prior to generating the results (you can
+use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only
+checks the R Markdown file, but you know if there are other scripts or data
+files that it depends on. Below is the status of the Git repository when the
+results were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    renv/library/
+    Ignored:    renv/local/
+    Ignored:    renv/staging/
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not included in
+this status report because it is ok for generated content to have uncommitted
+changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the repository in which changes were made
+to the R Markdown (<code>analysis/simulation_framework.Rmd</code>) and HTML (<code>docs/simulation_framework.html</code>)
+files. If you’ve configured a remote Git repository (see
+<code>?wflow_git_remote</code>), click on the hyperlinks in the table below to
+view the files as they were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/rgayler/VSA_altitude_hold/6a83009b36dfc9838c9f101c3eefdda3e388f25a/docs/simulation_framework.html" target="_blank">6a83009</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-08-03
+</td>
+<td>
+WIP
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/rgayler/VSA_altitude_hold/dcdf3093b79cc56bd5bd5fae3596e46ebcd0d434/docs/simulation_framework.html" target="_blank">dcdf309</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-07-20
+</td>
+<td>
+WIP
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/6c3ace989e2f2494e3c4b3e58521381311db6325/analysis/simulation_framework.Rmd" target="_blank">6c3ace9</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-07-20
+</td>
+<td>
+WIP
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/rgayler/VSA_altitude_hold/6c3ace989e2f2494e3c4b3e58521381311db6325/docs/simulation_framework.html" target="_blank">6c3ace9</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-07-20
+</td>
+<td>
+WIP
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<p>This notebook documents the functions used to simulate the repeated
+updating of the state of the PID controller.</p>
+<p>The general issues around the software interface between the VSA and
+multicopter components are discussed in <a href="design_notes.html#sim-vsa-to-multicopter">Relation of VSA and multicopter
+simulation components</a>.</p>
+<p>The specific software design issues around the simulation of the PID
+controller are discussed in <a href="design_notes.html#sim-dfg-design">Structure of the VSA data flow graph
+implementation</a>.</p>
+<div id="run_simulation" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> <code>run_simulation()</code></h1>
+<p>The function to run the simulation is defined as:</p>
+<pre class="r"><code># Function to run an arbitrary simulation
+run_simulation &lt;- function(
+  input_df, # dataframe[n_steps, n_input_vars] - values of all input variables at all times
+  init_state, # dataframe[1, n_state_vars] - initial values of state variables used by f_update()
+  f_update # function(prev_state, input) - state update function, args are 1-row dataframes
+) # value - dataframe[n_steps, n_input_vars + n_state_vars + 1]
+  # One row per time step
+  # One column for each input variable, state variable, and time (t)
+{
+  # Apply the state update to tghe input values
+  state_df &lt;- input_df %&gt;% 
+    base::split(seq(nrow(.))) %&gt;% # split input into a list of 1-row data frames
+    purrr::accumulate( # accumulate list of simulated states
+      f_update,
+      .init = init_state
+    ) %&gt;% 
+    purrr::discard(.p = seq_along(.) == 1) %&gt;% # discard first element (initial state)
+    dplyr::bind_rows() %&gt;%  # convert list of time step states to a data frame
+    dplyr::bind_cols(input_df, .) %&gt;% # add input variables
+    dplyr::mutate(t = 1:nrow(input_df), .before = everything()) # add time variable
+}
+
+# The input variables data frame is split into a list of one-row data frames
+# because accumulate() requires it. The input variables could have been created
+# in that format, but that&#39;s a much less convenient for general manipulation
+# and the list of rows format is only required for accumulate().
+# That&#39;s why the reformatting occurs on the fly in run_simulation().
+
+# The time and input variables are added to the data frame for convenience.</code></pre>
+<p>The arguments are:</p>
+<ul>
+<li><code>input_df</code> - The history of the input variables.<br />
+This is a data frame with one row for each time step
+(<span class="math inline">\(t = 1 \ldots n_{steps}\)</span>) and one column for each input variable.
+For this project the input variables are numeric scalars, but in
+general they can be arbitrarily complex structures if the column is
+a <a href="https://jennybc.github.io/purrr-tutorial/ls13_list-columns.html">list
+column</a>.</li>
+<li><code>init_state</code> - The initial state of the state variables.<br />
+This is a a one-row date frame. There is one column for each state
+variable. It <em>must</em> contain those state variables where the update
+function depends on the previous value of that variable. Those state
+variables which are VSA vectors <em>must</em> be list columns.</li>
+<li><code>f_update</code> - The state update function.<br />
+This is a function of two arguments. The first argument is a one-row
+data frame containing the previous values of the state variables. The
+second argument is a one-row data frame containing the input
+variables for that time step. The value of the state update function
+is a one-row data frame containing the updated values of the state
+variables.</li>
+</ul>
+<p>The value of the <code>run_simulation()</code> function is a data frame with
+columns for the input variables, state variables, and time (<span class="math inline">\(t\)</span>). There
+is one row for each of the time steps (<span class="math inline">\(t = 1 \ldots n_{steps}\)</span>).</p>
+</div>
+<div id="set-up-example" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> Set up example</h1>
+<p>The following sections set up an example of using <code>run_simulation()</code>. This
+is a drastically scaled down example in that the number of time steps
+and VSA vector dimensions are greatly reduced so that the simulation
+result can be viewed in its entirety.</p>
+<div id="set-global-parameters" class="section level2" number="2.1">
+<h2><span class="header-section-number">2.1</span> Set global parameters</h2>
+<p>Set the dimensionality of the VSA vectors and the number of time steps
+in the simulation.</p>
+<pre class="r"><code>v_dim &lt;- 10 # vector dimension of state variables (in practice = 1e4)
+n_step &lt;- 5 # number of time steps in simulation (in practice = 500)</code></pre>
+</div>
+<div id="input-variables" class="section level2" number="2.2">
+<h2><span class="header-section-number">2.2</span> Input variables</h2>
+<p>Create a data frame to hold the input values. Normally these will be
+from a file exported from the multicopter simulation.</p>
+<p>The input values are contained in a data frame.</p>
+<p>Each of the input variables is a time series - one value per time step.
+The data frame contains as many input variables as you need.</p>
+<p>For this example we are just generating random input data. The input
+data for this project are all numeric scalars, so it could have been
+stored in a matrix, but in general, the inputs might be mixed types or
+complex structures so we use a data frame for generality.</p>
+<pre class="r"><code>input_df &lt;- tibble::tibble(
+  i_x = rnorm(n = n_step),
+  i_y = rnorm(n = n_step)
+)
+
+input_df</code></pre>
+<pre><code># A tibble: 5 × 2
+     i_x     i_y
+   &lt;dbl&gt;   &lt;dbl&gt;
+1 -0.437 -0.634 
+2  0.329  0.628 
+3 -0.447 -0.752 
+4 -0.183  0.0409
+5  1.67  -2.64  </code></pre>
+</div>
+<div id="initial-state" class="section level2" number="2.3">
+<h2><span class="header-section-number">2.3</span> Initial state</h2>
+<p>The initial state consists of whatever state variables the state update
+function refers to as previous state.</p>
+<p>The previous state is represented as a one-row data frame with one
+column for each of the required state variables. The VSA vector
+variables need to be stored in <a href="https://jennybc.github.io/purrr-tutorial/ls13_list-columns.html">list
+columns</a>.</p>
+<p>I expect that we will generally use a function to construct the initial
+state.</p>
+<pre class="r"><code># Function to make the initial state
+mk_init_state &lt;- function(
+  v_dim, # integer[1] - dimension of vector-valued state variables
+  seed = NULL # integer[1] - random generation seed
+) # value - dataframe[1, ] - initial state of system
+{
+  set.seed(seed)
+  
+  # Construct initial state
+  # MUST contain all columns used as previous state by update_state()
+  # Any other state columns are optional
+  tibble::tibble_row(
+    # scalar valued state variables
+    s_x = 0, s_y = 0,
+    # vector valued state variables (each must be wrapped in list())
+    s_0 = sample(c(-1, 1), size = v_dim, replace = TRUE) %&gt;% list(), 
+    s_1 = sample(c(-1, 1), size = v_dim, replace = TRUE) %&gt;% list()
+  )
+}
+
+# Make the initial state
+init_state &lt;- mk_init_state(v_dim, seed = 42)
+
+init_state</code></pre>
+<pre><code># A tibble: 1 × 4
+    s_x   s_y s_0        s_1       
+  &lt;dbl&gt; &lt;dbl&gt; &lt;list&gt;     &lt;list&gt;    
+1     0     0 &lt;dbl [10]&gt; &lt;dbl [10]&gt;</code></pre>
+<pre class="r"><code>str(init_state)</code></pre>
+<pre><code>tibble [1 × 4] (S3: tbl_df/tbl/data.frame)
+ $ s_x: num 0
+ $ s_y: num 0
+ $ s_0:List of 1
+  ..$ : num [1:10] -1 -1 -1 -1 1 1 1 1 -1 1
+ $ s_1:List of 1
+  ..$ : num [1:10] -1 1 -1 1 -1 -1 1 1 1 1</code></pre>
+</div>
+<div id="state-update-function" class="section level2" number="2.4">
+<h2><span class="header-section-number">2.4</span> State update function</h2>
+<p>The state update function takes the previous state and current input
+variables as arguments and returns the current state.</p>
+<p>This specific update function is a gibberish example, but is generically
+the sort of thing I will be doing</p>
+<p>The previous state is given as a one-row data frame. The VSA vector
+values must be stored as <a href="https://jennybc.github.io/purrr-tutorial/ls13_list-columns.html">list
+columns</a>.</p>
+<p>The current input variables are given as a one-row data frame. For this
+project the input variables are numeric scalars which are represented as
+standard columns, but more generally the inputs may be more complex and
+require list columns.</p>
+<p>The value returned by the state update function is a one-row data frame
+containing the updated values of all the state variables.</p>
+<pre class="r"><code># Function to update state from previous state and current input
+update_state &lt;- function(
+  prev_state, # dataframe[1, ] - previous state
+  input # dataframe[1, ] - current input
+) 
+{
+  # Update scalar valued state variables
+  s_x = prev_state$s_x + input$i_x 
+  s_y = prev_state$s_y + input$i_y 
+  
+  # Update vector valued state variables
+  # List columns must be unlisted before use
+  s_0 = unlist(prev_state$s_0) * s_x
+  s_1 = unlist(prev_state$s_1) * s_y
+  s_2 = s_0 * s_1
+  s_3 = s_2 * s_0
+  s_4 = s_2 * s_1
+  s_5 = s_3 + s_4
+  
+  # Construct and return a 1-row dataframe containing the updated state
+  tibble::tibble_row(
+    # Scalar valued state variables
+    s_x, s_y, 
+    # Vector valued state variables
+    # List columns must be wrapped by list()
+    s_0 = list(s_0),
+    s_1 = list(s_1),
+    s_2 = list(s_2),
+    s_3 = list(s_3),
+    s_4 = list(s_4),
+    s_5 = list(s_5)
+  )
+}</code></pre>
+</div>
+</div>
+<div id="run-small-simulation" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> Run small simulation</h1>
+<p>Run the simulation based on the previous settings.</p>
+<pre class="r"><code># Run the simulation, returning the history as a data frame
+history_df &lt;- input_df %&gt;% run_simulation(init_state, update_state)
+
+# Take a look at the shape of the history
+history_df</code></pre>
+<pre><code># A tibble: 5 × 11
+      t    i_x     i_y    s_x      s_y s_0        s_1    s_2   s_3   s_4   s_5  
+  &lt;int&gt;  &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt; &lt;list&gt;     &lt;list&gt; &lt;lis&gt; &lt;lis&gt; &lt;lis&gt; &lt;lis&gt;
+1     1 -0.437 -0.634  -0.437 -0.634   &lt;dbl [10]&gt; &lt;dbl … &lt;dbl… &lt;dbl… &lt;dbl… &lt;dbl…
+2     2  0.329  0.628  -0.109 -0.00641 &lt;dbl [10]&gt; &lt;dbl … &lt;dbl… &lt;dbl… &lt;dbl… &lt;dbl…
+3     3 -0.447 -0.752  -0.555 -0.759   &lt;dbl [10]&gt; &lt;dbl … &lt;dbl… &lt;dbl… &lt;dbl… &lt;dbl…
+4     4 -0.183  0.0409 -0.738 -0.718   &lt;dbl [10]&gt; &lt;dbl … &lt;dbl… &lt;dbl… &lt;dbl… &lt;dbl…
+5     5  1.67  -2.64    0.933 -3.36    &lt;dbl [10]&gt; &lt;dbl … &lt;dbl… &lt;dbl… &lt;dbl… &lt;dbl…</code></pre>
+<pre class="r"><code>str(history_df)</code></pre>
+<pre><code>tibble [5 × 11] (S3: tbl_df/tbl/data.frame)
+ $ t  : int [1:5] 1 2 3 4 5
+ $ i_x: num [1:5] -0.437 0.329 -0.447 -0.183 1.672
+ $ i_y: num [1:5] -0.6343 0.6279 -0.7524 0.0409 -2.6394
+ $ s_x: num [1:5] -0.437 -0.109 -0.555 -0.738 0.933
+ $ s_y: num [1:5] -0.63429 -0.00641 -0.75879 -0.71792 -3.35736
+ $ s_0:List of 5
+  ..$ : num [1:10] 0.437 0.437 0.437 0.437 -0.437 ...
+  ..$ : num [1:10] -0.0475 -0.0475 -0.0475 -0.0475 0.0475 ...
+  ..$ : num [1:10] 0.0264 0.0264 0.0264 0.0264 -0.0264 ...
+  ..$ : num [1:10] -0.0195 -0.0195 -0.0195 -0.0195 0.0195 ...
+  ..$ : num [1:10] -0.0182 -0.0182 -0.0182 -0.0182 0.0182 ...
+ $ s_1:List of 5
+  ..$ : num [1:10] 0.634 -0.634 0.634 -0.634 0.634 ...
+  ..$ : num [1:10] -0.00407 0.00407 -0.00407 0.00407 -0.00407 ...
+  ..$ : num [1:10] 0.00309 -0.00309 0.00309 -0.00309 0.00309 ...
+  ..$ : num [1:10] -0.00222 0.00222 -0.00222 0.00222 -0.00222 ...
+  ..$ : num [1:10] 0.00744 -0.00744 0.00744 -0.00744 0.00744 ...
+ $ s_2:List of 5
+  ..$ : num [1:10] 0.277 -0.277 0.277 -0.277 -0.277 ...
+  ..$ : num [1:10] 0.000193 -0.000193 0.000193 -0.000193 -0.000193 ...
+  ..$ : num [1:10] 8.14e-05 -8.14e-05 8.14e-05 -8.14e-05 -8.14e-05 ...
+  ..$ : num [1:10] 4.31e-05 -4.31e-05 4.31e-05 -4.31e-05 -4.31e-05 ...
+  ..$ : num [1:10] -0.000135 0.000135 -0.000135 0.000135 0.000135 ...
+ $ s_3:List of 5
+  ..$ : num [1:10] 0.121 -0.121 0.121 -0.121 0.121 ...
+  ..$ : num [1:10] -9.17e-06 9.17e-06 -9.17e-06 9.17e-06 -9.17e-06 ...
+  ..$ : num [1:10] 2.15e-06 -2.15e-06 2.15e-06 -2.15e-06 2.15e-06 ...
+  ..$ : num [1:10] -8.4e-07 8.4e-07 -8.4e-07 8.4e-07 -8.4e-07 ...
+  ..$ : num [1:10] 2.46e-06 -2.46e-06 2.46e-06 -2.46e-06 2.46e-06 ...
+ $ s_4:List of 5
+  ..$ : num [1:10] 0.176 0.176 0.176 0.176 -0.176 ...
+  ..$ : num [1:10] -7.86e-07 -7.86e-07 -7.86e-07 -7.86e-07 7.86e-07 ...
+  ..$ : num [1:10] 2.51e-07 2.51e-07 2.51e-07 2.51e-07 -2.51e-07 ...
+  ..$ : num [1:10] -9.56e-08 -9.56e-08 -9.56e-08 -9.56e-08 9.56e-08 ...
+  ..$ : num [1:10] -1.01e-06 -1.01e-06 -1.01e-06 -1.01e-06 1.01e-06 ...
+ $ s_5:List of 5
+  ..$ : num [1:10] 0.2972 0.0547 0.2972 0.0547 -0.0547 ...
+  ..$ : num [1:10] -9.96e-06 8.38e-06 -9.96e-06 8.38e-06 -8.38e-06 ...
+  ..$ : num [1:10] 2.40e-06 -1.89e-06 2.40e-06 -1.89e-06 1.89e-06 ...
+  ..$ : num [1:10] -9.35e-07 7.44e-07 -9.35e-07 7.44e-07 -7.44e-07 ...
+  ..$ : num [1:10] 1.45e-06 -3.46e-06 1.45e-06 -3.46e-06 3.46e-06 ...</code></pre>
+</div>
+<div id="run-large-simulation" class="section level1" number="4">
+<h1><span class="header-section-number">4</span> Run large simulation</h1>
+<p>Increase the parameters to realistic values and run the simulation.</p>
+<pre class="r"><code># Set global parameters
+v_dim &lt;- 1e4 # vector dimension of state variables
+n_step &lt;- 1e3 # number of time steps in simulation
+
+# Generate input variables (random)
+input_df &lt;- tibble::tibble(
+  i_x = rnorm(n = n_step),
+  i_y = rnorm(n = n_step)
+)
+
+# Make the initial state
+init_state &lt;- mk_init_state(v_dim, seed = 42)
+
+# Run the simulation, returning the history as a data frame
+# Time the execution with tictoc::
+tictoc::tic()
+history_df &lt;- input_df %&gt;% run_simulation(init_state, update_state)
+tictoc::toc()</code></pre>
+<pre><code>4.879 sec elapsed</code></pre>
+<pre class="r"><code># Take a look at the history
+history_df</code></pre>
+<pre><code># A tibble: 1,000 × 11
+       t    i_x     i_y    s_x    s_y s_0     s_1    s_2    s_3    s_4    s_5   
+   &lt;int&gt;  &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;list&gt;  &lt;list&gt; &lt;list&gt; &lt;list&gt; &lt;list&gt; &lt;list&gt;
+ 1     1  1.30  -0.298   1.30  -0.298 &lt;dbl [… &lt;dbl … &lt;dbl … &lt;dbl … &lt;dbl … &lt;dbl …
+ 2     2  2.29  -0.284   3.59  -0.582 &lt;dbl [… &lt;dbl … &lt;dbl … &lt;dbl … &lt;dbl … &lt;dbl …
+ 3     3 -1.39   0.870   2.20   0.287 &lt;dbl [… &lt;dbl … &lt;dbl … &lt;dbl … &lt;dbl … &lt;dbl …
+ 4     4 -0.279 -0.544   1.92  -0.257 &lt;dbl [… &lt;dbl … &lt;dbl … &lt;dbl … &lt;dbl … &lt;dbl …
+ 5     5 -0.133  0.629   1.79   0.372 &lt;dbl [… &lt;dbl … &lt;dbl … &lt;dbl … &lt;dbl … &lt;dbl …
+ 6     6  0.636 -1.42    2.43  -1.05  &lt;dbl [… &lt;dbl … &lt;dbl … &lt;dbl … &lt;dbl … &lt;dbl …
+ 7     7 -0.284 -1.23    2.14  -2.28  &lt;dbl [… &lt;dbl … &lt;dbl … &lt;dbl … &lt;dbl … &lt;dbl …
+ 8     8 -2.66  -1.67   -0.514 -3.95  &lt;dbl [… &lt;dbl … &lt;dbl … &lt;dbl … &lt;dbl … &lt;dbl …
+ 9     9 -2.44   0.0844 -2.95  -3.87  &lt;dbl [… &lt;dbl … &lt;dbl … &lt;dbl … &lt;dbl … &lt;dbl …
+10    10  1.32  -0.206  -1.63  -4.07  &lt;dbl [… &lt;dbl … &lt;dbl … &lt;dbl … &lt;dbl … &lt;dbl …
+# … with 990 more rows</code></pre>
+<pre class="r"><code># How much RAM does the history use?
+format(object.size(history_df), standard = &quot;IEC&quot;, units = &quot;GiB&quot;)</code></pre>
+<pre><code>[1] &quot;0.4 GiB&quot;</code></pre>
+<p>That’s adequately fast.</p>
+<p>The size is as expected.</p>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.1.0 (2021-05-18)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: Ubuntu 21.04
+
+Matrix products: default
+BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.9.0
+LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.9.0
+
+locale:
+ [1] LC_CTYPE=en_AU.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_AU.UTF-8        LC_COLLATE=en_AU.UTF-8    
+ [5] LC_MONETARY=en_AU.UTF-8    LC_MESSAGES=en_AU.UTF-8   
+ [7] LC_PAPER=en_AU.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_AU.UTF-8 LC_IDENTIFICATION=C       
+
+attached base packages:
+[1] stats     graphics  grDevices datasets  utils     methods   base     
+
+other attached packages:
+[1] Matrix_1.3-4       DiagrammeR_1.0.6.1 tictoc_1.0.1       ggplot2_3.3.5     
+[5] dplyr_1.0.7        purrr_0.3.4        tibble_3.1.3      
+
+loaded via a namespace (and not attached):
+ [1] Rcpp_1.0.7         RColorBrewer_1.1-2 pillar_1.6.2       compiler_4.1.0    
+ [5] later_1.2.0        git2r_0.28.0       workflowr_1.6.2    tools_4.1.0       
+ [9] digest_0.6.27      lattice_0.20-44    jsonlite_1.7.2     evaluate_0.14     
+[13] lifecycle_1.0.0    gtable_0.3.0       pkgconfig_2.0.3    rlang_0.4.11      
+[17] rstudioapi_0.13    cli_3.0.1          yaml_2.2.1         xfun_0.24         
+[21] withr_2.4.2        stringr_1.4.0      knitr_1.33         htmlwidgets_1.5.3 
+[25] generics_0.1.0     fs_1.5.0           vctrs_0.3.8        rprojroot_2.0.2   
+[29] grid_4.1.0         tidyselect_1.1.1   here_1.0.1         glue_1.4.2        
+[33] R6_2.5.0           fansi_0.5.0        rmarkdown_2.9      bookdown_0.22     
+[37] magrittr_2.0.1     whisker_0.4        scales_1.1.1       promises_1.2.0.1  
+[41] ellipsis_0.3.2     htmltools_0.5.1.1  colorspace_2.0-2   renv_0.14.0       
+[45] httpuv_1.6.1       utf8_1.2.2         stringi_1.7.3      visNetwork_2.0.9  
+[49] munsell_0.5.0      crayon_1.4.1      </code></pre>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+http://docs.mathjax.org/en/latest/configuration.html.  This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3,h4,h5",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

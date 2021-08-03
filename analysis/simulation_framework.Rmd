@@ -1,0 +1,267 @@
+---
+title: "Simulation Framework"
+author: "Ross Gayler"
+date: "2021-07-19"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+  markdown: 
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+suppressPackageStartupMessages(
+  {
+    library(tibble)
+    library(purrr)
+    library(dplyr)
+    library(ggplot2)
+    library(tictoc)
+  }
+)
+
+source(here::here("R", "functions.R"))
+```
+
+```{r, include = FALSE, cache = FALSE}
+# Get all the functions defined in "R/functions.R"
+# so we can display the source code in this notebook
+# with a guarantee that they will be identical
+# to the code executed here and in other notebooks
+
+# See https://bookdown.org/yihui/rmarkdown-cookbook/read-chunk.html
+# The argument to read_chunk() *must* be a literal string
+knitr::read_chunk("R/functions.R")
+```
+
+This notebook documents the functions used to simulate the repeated
+updating of the state of the PID controller.
+
+The general issues around the software interface between the VSA and
+multicopter components are discussed in [Relation of VSA and multicopter
+simulation components](design_notes.html#sim-vsa-to-multicopter).
+
+The specific software design issues around the simulation of the PID
+controller are discussed in [Structure of the VSA data flow graph
+implementation](design_notes.html#sim-dfg-design).
+
+# `run_simulation()`
+
+The function to run the simulation is defined as:
+
+```{r, run_simulation, eval = FALSE}
+```
+
+The arguments are:
+
+-   `input_df` - The history of the input variables.\
+    This is a data frame with one row for each time step
+    ($t = 1 \ldots n_{steps}$) and one column for each input variable.
+    For this project the input variables are numeric scalars, but in
+    general they can be arbitrarily complex structures if the column is
+    a [list
+    column](https://jennybc.github.io/purrr-tutorial/ls13_list-columns.html).
+-   `init_state` - The initial state of the state variables.\
+    This is a a one-row date frame. There is one column for each state
+    variable. It *must* contain those state variables where the update
+    function depends on the previous value of that variable. Those state
+    variables which are VSA vectors *must* be list columns.
+-   `f_update` - The state update function.\
+    This is a function of two arguments. The first argument is a one-row
+    data frame containing the previous values of the state variables. The
+    second argument is a one-row data frame containing the input
+    variables for that time step. The value of the state update function
+    is a one-row data frame containing the updated values of the state
+    variables.
+
+The value of the `run_simulation()` function is a data frame with
+columns for the input variables, state variables, and time ($t$). There
+is one row for each of the time steps ($t = 1 \ldots n_{steps}$).
+
+# Set up example
+
+The following sections set up an example of using `run_simulation()`. This
+is a drastically scaled down example in that the number of time steps
+and VSA vector dimensions are greatly reduced so that the simulation
+result can be viewed in its entirety.
+
+## Set global parameters
+
+Set the dimensionality of the VSA vectors and the number of time steps
+in the simulation.
+
+```{r}
+v_dim <- 10 # vector dimension of state variables (in practice = 1e4)
+n_step <- 5 # number of time steps in simulation (in practice = 500)
+```
+
+## Input variables
+
+Create a data frame to hold the input values. Normally these will be
+from a file exported from the multicopter simulation.
+
+The input values are contained in a data frame.
+
+Each of the input variables is a time series - one value per time step.
+The data frame contains as many input variables as you need.
+
+For this example we are just generating random input data. The input
+data for this project are all numeric scalars, so it could have been
+stored in a matrix, but in general, the inputs might be mixed types or
+complex structures so we use a data frame for generality.
+
+```{r}
+input_df <- tibble::tibble(
+  i_x = rnorm(n = n_step),
+  i_y = rnorm(n = n_step)
+)
+
+input_df
+```
+
+## Initial state
+
+The initial state consists of whatever state variables the state update
+function refers to as previous state.
+
+The previous state is represented as a one-row data frame with one
+column for each of the required state variables. The VSA vector
+variables need to be stored in [list
+columns](https://jennybc.github.io/purrr-tutorial/ls13_list-columns.html).
+
+I expect that we will generally use a function to construct the initial
+state.
+
+```{r}
+# Function to make the initial state
+mk_init_state <- function(
+  v_dim, # integer[1] - dimension of vector-valued state variables
+  seed = NULL # integer[1] - random generation seed
+) # value - dataframe[1, ] - initial state of system
+{
+  set.seed(seed)
+  
+  # Construct initial state
+  # MUST contain all columns used as previous state by update_state()
+  # Any other state columns are optional
+  tibble::tibble_row(
+    # scalar valued state variables
+    s_x = 0, s_y = 0,
+    # vector valued state variables (each must be wrapped in list())
+    s_0 = sample(c(-1, 1), size = v_dim, replace = TRUE) %>% list(), 
+    s_1 = sample(c(-1, 1), size = v_dim, replace = TRUE) %>% list()
+  )
+}
+
+# Make the initial state
+init_state <- mk_init_state(v_dim, seed = 42)
+
+init_state
+str(init_state)
+```
+
+## State update function
+
+The state update function takes the previous state and current input
+variables as arguments and returns the current state.
+
+This specific update function is a gibberish example, but is generically
+the sort of thing I will be doing
+
+The previous state is given as a one-row data frame. The VSA vector
+values must be stored as [list
+columns](https://jennybc.github.io/purrr-tutorial/ls13_list-columns.html).
+
+The current input variables are given as a one-row data frame. For this
+project the input variables are numeric scalars which are represented as
+standard columns, but more generally the inputs may be more complex and
+require list columns.
+
+The value returned by the state update function is a one-row data frame
+containing the updated values of all the state variables.
+
+```{r}
+# Function to update state from previous state and current input
+update_state <- function(
+  prev_state, # dataframe[1, ] - previous state
+  input # dataframe[1, ] - current input
+) 
+{
+  # Update scalar valued state variables
+  s_x = prev_state$s_x + input$i_x 
+  s_y = prev_state$s_y + input$i_y 
+  
+  # Update vector valued state variables
+  # List columns must be unlisted before use
+  s_0 = unlist(prev_state$s_0) * s_x
+  s_1 = unlist(prev_state$s_1) * s_y
+  s_2 = s_0 * s_1
+  s_3 = s_2 * s_0
+  s_4 = s_2 * s_1
+  s_5 = s_3 + s_4
+  
+  # Construct and return a 1-row dataframe containing the updated state
+  tibble::tibble_row(
+    # Scalar valued state variables
+    s_x, s_y, 
+    # Vector valued state variables
+    # List columns must be wrapped by list()
+    s_0 = list(s_0),
+    s_1 = list(s_1),
+    s_2 = list(s_2),
+    s_3 = list(s_3),
+    s_4 = list(s_4),
+    s_5 = list(s_5)
+  )
+}
+```
+
+# Run small simulation
+
+Run the simulation based on the previous settings.
+
+```{r}
+# Run the simulation, returning the history as a data frame
+history_df <- input_df %>% run_simulation(init_state, update_state)
+
+# Take a look at the shape of the history
+history_df
+str(history_df)
+```
+
+# Run large simulation
+
+Increase the parameters to realistic values and run the simulation.
+
+```{r}
+# Set global parameters
+v_dim <- 1e4 # vector dimension of state variables
+n_step <- 1e3 # number of time steps in simulation
+
+# Generate input variables (random)
+input_df <- tibble::tibble(
+  i_x = rnorm(n = n_step),
+  i_y = rnorm(n = n_step)
+)
+
+# Make the initial state
+init_state <- mk_init_state(v_dim, seed = 42)
+
+# Run the simulation, returning the history as a data frame
+# Time the execution with tictoc::
+tictoc::tic()
+history_df <- input_df %>% run_simulation(init_state, update_state)
+tictoc::toc()
+
+# Take a look at the history
+history_df
+
+# How much RAM does the history use?
+format(object.size(history_df), standard = "IEC", units = "GiB")
+```
+
+That's adequately fast.
+
+The size is as expected.

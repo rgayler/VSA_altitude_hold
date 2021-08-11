@@ -577,6 +577,15 @@ dfd01 %>% DiagrammeR::render_graph()
     labelled "=" to indicate that it is only intended for testing the
     calculation and is not actually part of the data flow diagram.
 
+-   The calculation (and hence, interpretation) of the $u$ node varies
+    between simulation data files.
+
+    -   In some files ($u_{clip} = TRUE$) the value was exported after
+        clipping, so should be identical to the value of node $i8$.
+    -   In the remaining files ($u_{clip} = FALSE$) the value was
+        exported before clipping, so should be identical to the value of
+        node $i7$.
+
 ## Data flow tables
 
 The data flow diagram is specified in an external spreadsheet. This

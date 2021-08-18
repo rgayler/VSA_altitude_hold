@@ -9,9 +9,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
+<meta name="author" content="Ross Gayler" />
 
+<meta name="date" content="2021-08-19" />
 
-<title>Project Home</title>
+<title>PID Task Analysis</title>
 
 <script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
@@ -29,6 +31,9 @@
        h6 {font-size: 12px;}
        code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
        pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
@@ -230,6 +235,69 @@ $(document).ready(function () {
 
 
 
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
 
 </head>
 
@@ -237,6 +305,16 @@ $(document).ready(function () {
 
 
 <div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
 
 
 
@@ -280,7 +358,9 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore">Project Home</h1>
+<h1 class="title toc-ignore">PID Task Analysis</h1>
+<h4 class="author">Ross Gayler</h4>
+<h4 class="date">2021-08-19</h4>
 
 </div>
 
@@ -314,7 +394,7 @@ Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></sp
 <p>
 <strong>Checks:</strong>
 <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
-2
+7
 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span>
 0
 </p>
@@ -349,6 +429,88 @@ The <em>Past versions</em> tab lists the development history.
 <div class="panel-body">
 <p>Great! Since the R Markdown file has been committed to the Git repository, you
 know the exact version of the code that produced these results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>Environment:</strong> empty
+</a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the global
+environment can affect the analysis in your R Markdown file in unknown ways.
+For reproduciblity it’s best to always run the code in an empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20210617code">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>Seed:</strong> <code>set.seed(20210617)</code>
+</a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20210617code" class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20210617)</code> was run prior to running the code in the R Markdown file.
+Setting a seed ensures that any results that rely on randomness, e.g.
+subsampling or permutations, are reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>Session information:</strong> recorded
+</a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package versions is
+critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>Cache:</strong> none
+</a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be confident
+that you successfully produced the results during this run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>File paths:</strong> relative
+</a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr project
+makes it easier to run your code on other machines.</p>
 </div>
 </div>
 </div>
@@ -404,7 +566,7 @@ changes.
 
 <p>
 These are the previous versions of the repository in which changes were made
-to the R Markdown (<code>analysis/index.Rmd</code>) and HTML (<code>docs/index.html</code>)
+to the R Markdown (<code>analysis/PID_task_analysis.Rmd</code>) and HTML (<code>docs/PID_task_analysis.html</code>)
 files. If you’ve configured a remote Git repository (see
 <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to
 view the files as they were in that past version.
@@ -436,7 +598,7 @@ Message
 Rmd
 </td>
 <td>
-<a href="https://github.com/rgayler/VSA_altitude_hold/blob/af002d994f20dbca323cb2bc6dcb0783e32ddda5/analysis/index.Rmd" target="_blank">af002d9</a>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/af002d994f20dbca323cb2bc6dcb0783e32ddda5/analysis/PID_task_analysis.Rmd" target="_blank">af002d9</a>
 </td>
 <td>
 Ross Gayler
@@ -446,244 +608,6 @@ Ross Gayler
 </td>
 <td>
 Add linear spline scalar encoder
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/rgayler/VSA_altitude_hold/af002d994f20dbca323cb2bc6dcb0783e32ddda5/docs/index.html" target="_blank">af002d9</a>
-</td>
-<td>
-Ross Gayler
-</td>
-<td>
-2021-08-18
-</td>
-<td>
-Add linear spline scalar encoder
-</td>
-</tr>
-<tr>
-<td>
-Rmd
-</td>
-<td>
-<a href="https://github.com/rgayler/VSA_altitude_hold/blob/867778a4963beba0cc74bcda58e338c491b65d91/analysis/index.Rmd" target="_blank">867778a</a>
-</td>
-<td>
-Ross Gayler
-</td>
-<td>
-2021-08-11
-</td>
-<td>
-Add multi target simulation data
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/rgayler/VSA_altitude_hold/867778a4963beba0cc74bcda58e338c491b65d91/docs/index.html" target="_blank">867778a</a>
-</td>
-<td>
-Ross Gayler
-</td>
-<td>
-2021-08-11
-</td>
-<td>
-Add multi target simulation data
-</td>
-</tr>
-<tr>
-<td>
-Rmd
-</td>
-<td>
-<a href="https://github.com/rgayler/VSA_altitude_hold/blob/3f64430ba4b6c0277ff34e63040b267402e2ca60/analysis/index.Rmd" target="_blank">3f64430</a>
-</td>
-<td>
-Ross Gayler
-</td>
-<td>
-2021-08-03
-</td>
-<td>
-Add code for VSA basic operators
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/rgayler/VSA_altitude_hold/3f64430ba4b6c0277ff34e63040b267402e2ca60/docs/index.html" target="_blank">3f64430</a>
-</td>
-<td>
-Ross Gayler
-</td>
-<td>
-2021-08-03
-</td>
-<td>
-Add code for VSA basic operators
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/rgayler/VSA_altitude_hold/e256bf9a04803fe30531ef1b5bd0f6d5681d4aa0/docs/index.html" target="_blank">e256bf9</a>
-</td>
-<td>
-Ross Gayler
-</td>
-<td>
-2021-07-07
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/rgayler/VSA_altitude_hold/7eae4c3d9ecc6c2f49833e180e92e41240419c88/docs/index.html" target="_blank">7eae4c3</a>
-</td>
-<td>
-Ross Gayler
-</td>
-<td>
-2021-06-26
-</td>
-<td>
-Check simulation data: initial values and z versus dz
-</td>
-</tr>
-<tr>
-<td>
-Rmd
-</td>
-<td>
-<a href="https://github.com/rgayler/VSA_altitude_hold/blob/c39cb39c0bd70fa82eb845d5228148f23f8ddfbf/analysis/index.Rmd" target="_blank">c39cb39</a>
-</td>
-<td>
-Ross Gayler
-</td>
-<td>
-2021-06-25
-</td>
-<td>
-Take first look at simulation data
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/rgayler/VSA_altitude_hold/c39cb39c0bd70fa82eb845d5228148f23f8ddfbf/docs/index.html" target="_blank">c39cb39</a>
-</td>
-<td>
-Ross Gayler
-</td>
-<td>
-2021-06-25
-</td>
-<td>
-Take first look at simulation data
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/rgayler/VSA_altitude_hold/456a3636c0bf6a5b8cfa591332805666569723b3/docs/index.html" target="_blank">456a363</a>
-</td>
-<td>
-Ross Gayler
-</td>
-<td>
-2021-06-21
-</td>
-<td>
-Add automatic rendering of DFDs
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/rgayler/VSA_altitude_hold/d8b9d539af09289067846b2c88cbbd47e8205bb5/docs/index.html" target="_blank">d8b9d53</a>
-</td>
-<td>
-Ross Gayler
-</td>
-<td>
-2021-06-18
-</td>
-<td>
-Add DFD for Design 01
-</td>
-</tr>
-<tr>
-<td>
-Rmd
-</td>
-<td>
-<a href="https://github.com/rgayler/VSA_altitude_hold/blob/0b7e1d45c154bb74f415168137e234628d4a1e9b/analysis/index.Rmd" target="_blank">0b7e1d4</a>
-</td>
-<td>
-Ross Gayler
-</td>
-<td>
-2021-06-17
-</td>
-<td>
-Publish initial docs
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/rgayler/VSA_altitude_hold/0b7e1d45c154bb74f415168137e234628d4a1e9b/docs/index.html" target="_blank">0b7e1d4</a>
-</td>
-<td>
-Ross Gayler
-</td>
-<td>
-2021-06-17
-</td>
-<td>
-Publish initial docs
-</td>
-</tr>
-<tr>
-<td>
-Rmd
-</td>
-<td>
-<a href="https://github.com/rgayler/VSA_altitude_hold/blob/87c00d2d7a33a76f9038749d88d539495ceaaca9/analysis/index.Rmd" target="_blank">87c00d2</a>
-</td>
-<td>
-Ross Gayler
-</td>
-<td>
-2021-06-17
-</td>
-<td>
-Start workflowr project.
 </td>
 </tr>
 </tbody>
@@ -693,81 +617,54 @@ Start workflowr project.
 </div>
 </div>
 </div>
-<p>This is the website for the research project “VSA Altitude Hold”.</p>
-<p>If you have cloned the project to a local computer this website is
-rendered in the <code>docs</code> subdirectory of the project directory.</p>
-<p>If you are using <code>workflowr</code> to publish the research website it will
-also be rendered online to GitHub Pages.</p>
-<p>This page acts as a table of contents for the website. There are links
-to the web pages generated from the analysis notebooks and to the
-rendered versions of any manuscripts/documents/presentations.</p>
-<hr />
-<div id="overview-documents" class="section level1 unnumbered">
-<h1>Overview documents</h1>
-<div id="design-notes" class="section level2 unnumbered">
-<h2><a href="design_notes.html">Design Notes</a></h2>
-<p>This notebook is for keeping notes about potential approaches for
-implementing altitude hold in VSA.</p>
-<hr />
-</div>
-</div>
-<div id="publications" class="section level1 unnumbered">
-<h1>Publications</h1>
-<p>Links to rendered manuscripts and presentations will go here.</p>
-<hr />
-</div>
-<div id="empirical-notebooks" class="section level1 unnumbered">
-<h1>Empirical Notebooks</h1>
-<p>This project repository deals with the conceptual issues of using VSA
-for altitude hold. Actual implementation occurs in the
-<a href="https://github.com/simondlevy/gym-copter">gym-copter</a> repository So the
-empirical work in this repository is limited to exploration of
-VSA-specific issues.</p>
-<div id="characterise-simulation-data" class="section level2 unnumbered">
-<h2>Characterise Simulation Data</h2>
-<p>These notebooks characterise data generated by the simulation of the
-classically implemented altitude hold controller. We need to understand
-the properties of the signals in order to design VSA implementations of
-them.</p>
-<div id="single-target-simulations" class="section level3 unnumbered">
-<h3>- <a href="characterise_single_target_data.html">Single Target Simulations</a></h3>
-<p>The set of simulation data files analysed in this notebook have a single
-target altitude that is constant for the duration of each simulation.</p>
-</div>
-<div id="multiple-target-simulations" class="section level3 unnumbered">
-<h3>- <a href="characterise_multiple_target_data.html">Multiple Target Simulations</a></h3>
-<p>The set of simulation data files analysed in this notebook have multiple
-target altitudes within each simulation.</p>
-</div>
-</div>
-<div id="pid-task-analysis" class="section level2 unnumbered">
-<h2><a href="PID_task_analysis.html">PID Task Analysis</a></h2>
-<p>Examine the function from PID inputs to PID output as a statistical
-exercise with the objective of characterising the complexity of the
-function. This is intended to inform the necessary complexity of the VSA
-implementation.</p>
-</div>
-<div id="simulation-framework" class="section level2 unnumbered">
-<h2><a href="simulation_framework.html">Simulation Framework</a></h2>
-<p>This notebook implements gives examples of running the software
-framework for simulation of the PID altitude hold controller.</p>
-</div>
-<div id="vsa-basic-operators" class="section level2 unnumbered">
-<h2><a href="vsa_basic_operators.html">VSA Basic Operators</a></h2>
-<p>This notebook implements and tests the basic VSA operators. The
-reasoning behind the design choices id given in the <a href="design_notes.html">Design
-Notes</a> notebook.</p>
-</div>
-<div id="encoding-and-decoding-scalars" class="section level2 unnumbered">
-<h2>Encoding and Decoding Scalars</h2>
-<p>These notebooks describe the implementation of encoders and decoders for
-transforming numeric scalar values to and from VSA vectors.</p>
-<div id="linear-interpolation-spline" class="section level3 unnumbered">
-<h3>- <a href="encoder_spline.html">Linear Interpolation Spline</a></h3>
-<p>This notebook describes the implementation of the linear interpolation
-spline encoder/decoder.</p>
-</div>
-</div>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.1.1 (2021-08-10)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: Ubuntu 21.04
+
+Matrix products: default
+BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.9.0
+LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.9.0
+
+locale:
+ [1] LC_CTYPE=en_AU.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_AU.UTF-8        LC_COLLATE=en_AU.UTF-8    
+ [5] LC_MONETARY=en_AU.UTF-8    LC_MESSAGES=en_AU.UTF-8   
+ [7] LC_PAPER=en_AU.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_AU.UTF-8 LC_IDENTIFICATION=C       
+
+attached base packages:
+[1] stats     graphics  grDevices datasets  utils     methods   base     
+
+other attached packages:
+ [1] tibble_3.1.3       Matrix_1.3-4       DiagrammeR_1.0.6.1 purrr_0.3.4       
+ [5] tidyr_1.1.3        ggplot2_3.3.5      forcats_0.5.1      skimr_2.1.3       
+ [9] stringr_1.4.0      DT_0.18            dplyr_1.0.7        vroom_1.5.4       
+[13] here_1.0.1         fs_1.5.0          
+
+loaded via a namespace (and not attached):
+ [1] tidyselect_1.1.1   xfun_0.25          repr_1.1.3         lattice_0.20-44   
+ [5] colorspace_2.0-2   vctrs_0.3.8        generics_0.1.0     htmltools_0.5.1.1 
+ [9] yaml_2.2.1         base64enc_0.1-3    utf8_1.2.2         rlang_0.4.11      
+[13] later_1.2.0        pillar_1.6.2       glue_1.4.2         withr_2.4.2       
+[17] bit64_4.0.5        RColorBrewer_1.1-2 lifecycle_1.0.0    munsell_0.5.0     
+[21] gtable_0.3.0       workflowr_1.6.2    visNetwork_2.0.9   htmlwidgets_1.5.3 
+[25] evaluate_0.14      knitr_1.33         tzdb_0.1.2         httpuv_1.6.1      
+[29] fansi_0.5.0        Rcpp_1.0.7         renv_0.14.0        promises_1.2.0.1  
+[33] scales_1.1.1       jsonlite_1.7.2     bit_4.0.4          digest_0.6.27     
+[37] stringi_1.7.3      bookdown_0.22      rprojroot_2.0.2    grid_4.1.1        
+[41] tools_4.1.1        magrittr_2.0.1     crayon_1.4.1       whisker_0.4       
+[45] pkgconfig_2.0.3    ellipsis_0.3.2     rmarkdown_2.10     R6_2.5.0          
+[49] git2r_0.28.0       compiler_4.1.1    </code></pre>
 </div>
 
 
@@ -786,6 +683,8 @@ footer is added to webpages before the MathJax javascript. -->
 
 
 
+</div>
+</div>
 
 </div>
 
@@ -818,6 +717,35 @@ $(document).ready(function () {
 
 <!-- code folding -->
 
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3,h4,h5",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
 <script>

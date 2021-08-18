@@ -1,0 +1,32 @@
+---
+title: "PID Task Analysis"
+author: "Ross Gayler"
+date: "2021-08-19"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+  markdown: 
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+suppressPackageStartupMessages(
+  {
+    library(fs)
+    library(here)
+    library(vroom)
+    library(dplyr)
+    library(DT)
+    library(stringr)
+    library(skimr)
+    library(forcats)
+    library(ggplot2)
+    library(tidyr)
+    library(purrr)
+  }
+)
+
+source(here::here("R", "functions.R"))
+```

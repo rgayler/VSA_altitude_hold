@@ -1,0 +1,604 @@
+---
+title: "Scalar Encoder/Decoder (Linear Interpolation Spline)"
+author: "Ross Gayler"
+date: "2021-08-12"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+  markdown: 
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+suppressPackageStartupMessages(
+  {
+    library(here)
+    library(magrittr)
+    library(purrr)
+    library(ggplot2)
+  }
+)
+
+source(here::here("R", "functions.R"))
+```
+
+```{r, include = FALSE, cache = FALSE}
+# Get all the functions defined in "R/functions.R"
+# so we can display the source code in this notebook
+# with a guarantee that they will be identical
+# to the code executed here and in other notebooks
+
+# See https://bookdown.org/yihui/rmarkdown-cookbook/read-chunk.html
+# The argument to read_chunk() *must* be a literal string
+knitr::read_chunk("R/functions.R")
+```
+
+This notebook documents the implementation of the linear interpolation
+spline scalar encoder/decoder.
+
+The reasoning behind the design choices is explained in
+[XXX](design_notes.html#dfd-01).
+
+# Make encoder specification
+
+The encoder will map each unique scalar input value to a VSA vector such
+that similar input values are mapped to similar output VSA vectors.
+
+For programming purposes, the mapping is represented by a `spline_spec`
+object, which is created by `vsa_mk_scalar_encoder_spline_spec()`.
+
+The encoder specification represents a piecewise linear function from
+the input scalar value to another scalar value.
+
+The piecewise linear function has $k$ knots, which must be unique scalar
+values and given in increasing order.
+
+Values of the input scalar that are outside the range of the knots are
+treated identically to the nearest extreme value of the knots.
+
+There is a unique atomic VSA vector associated with each knot.
+
+If the input scalar is exactly equal to a knot value then the encoder
+will return the corresponding VSA vector.
+
+If the input scalar lies between two knot value then the encoder will
+return the weighted sum of the two corresponding VSA vectors with the
+weighting reflecting the position of the scalar value relative to the
+two knot values..
+
+The piecewise linear function is specified by the knots given as an
+argument to `vsa_mk_scalar_encoder_spline_spec()` and the VSA vectors
+corresponding to the knots are randomly generated. The `spline_spec`
+object captures these two components, which remain constant over the
+simulation.
+
+```{r, vsa_mk_scalar_encoder_spline_spec, eval = FALSE}
+```
+
+Do some very small scale testing.
+
+Generate a tiny `spline_spec` object and display the contents.
+
+```{r}
+ss <- vsa_mk_scalar_encoder_spline_spec(vsa_dim = 10L, knots = c(-1, 1, 2))
+
+ss
+
+ss$knots_vsa[[1]]
+ss$knots_vsa[[2]]
+ss$knots_vsa[[3]]
+```
+
+-   The contents are as expected.
+
+# Apply encoding
+
+```{r, vsa_encode_scalar_spline, eval = FALSE}
+```
+
+Do some very small scale testing.
+
+Test what happens when the input scalar lies exactly on a knot.
+
+```{r}
+vsa_encode_scalar_spline(-1.0, ss)
+vsa_encode_scalar_spline( 1.0, ss)
+vsa_encode_scalar_spline( 2.0, ss)
+```
+
+-   The returned values are equal to the VSA vectors at the
+    corresponding knots.
+
+Test what happens when the input scalar falls outside the range of the
+knots.
+
+```{r}
+vsa_encode_scalar_spline(-1.1, ss)
+vsa_encode_scalar_spline( 2.1, ss)
+```
+
+-   Input values outside the range of the knots are mapped to the
+    nearest extreme knot.
+
+Check that intermediate values are random (because of the random
+sampling in `vsa_add()`).
+
+```{r}
+# remind us of the knot values
+ss$knots_vsa[[1]]
+ss$knots_vsa[[2]]
+
+# identify which elements are identical for the two knots
+ss$knots_vsa[[1]] == ss$knots_vsa[[2]]
+
+# interpolate midway between those two knots
+vsa_encode_scalar_spline(0, ss)
+vsa_encode_scalar_spline(0, ss)
+vsa_encode_scalar_spline(0, ss)
+vsa_encode_scalar_spline(0, ss)
+```
+
+-   Elements 3, 4, 6, 7, and 8 of the first and second knot vectors are
+    identical, so the result of adding them is constant.
+
+-   The other element values vary between the two knot vectors, so the
+    corresponding interpolated values will vary because of the random
+    sampling in `vsa_add()` (although some may be identical by chance)
+
+Check that interpolation has the expected effect on the angles of the
+vectors.
+
+Initially, use relatively low dimensional VSA vectors (`vsa_dim = 1e3`)
+to give greater variability to the results.
+
+```{r}
+# make an encoder specification with realistic vector dimension
+ss <- vsa_mk_scalar_encoder_spline_spec(vsa_dim = 1e3L, knots = c(-1, 1, 2, 4))
+
+# get the vectors corresponding to the knots
+v1 <- ss$knots_vsa[[1]]
+v2 <- ss$knots_vsa[[2]]
+v3 <- ss$knots_vsa[[3]]
+v4 <- ss$knots_vsa[[4]]
+
+# make a sequence of scalar values that (more than) span the knot range
+d <- tibble::tibble(
+  x = seq(from = -1.5, to = 4.5, by = 0.05)
+) %>% 
+  dplyr::rowwise() %>% 
+  dplyr::mutate(
+    # encode each value of x
+    v_x = vsa_encode_scalar_spline(x[[1]], ss) %>% list(),
+    # get the cosine between the encoded x and each of the knot vectors
+    cos_1 = vsa_cos_sim(v_x, v1),
+    cos_2 = vsa_cos_sim(v_x, v2),
+    cos_3 = vsa_cos_sim(v_x, v3),
+    cos_4 = vsa_cos_sim(v_x, v4)
+  ) %>% 
+  dplyr::ungroup() %>%
+  dplyr::select(-v_x) %>% 
+  tidyr::pivot_longer(cos_1:cos_4, 
+                      names_to = "knot", names_prefix = "cos_", 
+                      values_to = "cos")
+
+d %>% ggplot(aes(x = x)) +
+  geom_hline(yintercept = c(0, 1), alpha = 0.3) +
+  geom_vline(xintercept = c(-1, 1, 2, 4), alpha = 0.3) +
+  geom_point(aes(y = cos, colour = knot))
+```
+
+Each curve shows the cosine similarity of the encoded scalar ($x$) to
+the VSA vector corresponding to one of the knots.
+
+-   Each curve shows the expected linear ramp as it moves between the
+    two bounding knots.
+-   The cosine similarity at the peak of each curve is exactly one
+    because the encoded scalar is identical to the corresponding knot
+    vector.
+-   The curves corresponding to intermediate values of $x$ are noisy
+    around a straight line. The noise is due to the encoding being a
+    random weighted blend of the bounding knot vectors (due to applying
+    `vsa_add()`).
+-   The minimum values of each curve are *not* exactly zero, because
+    they correspond to the angle between two randomly selected vectors.
+    That is, the cosine similarity is distributed around zero. Repeat
+    that analysis using relatively high dimensional VSA vectors
+    (`vsa_dim = 1e5`) to reduce the variability of the results.
+
+```{r}
+# make an encoder specification with realistic vector dimension
+ss <- vsa_mk_scalar_encoder_spline_spec(vsa_dim = 1e5L, knots = c(-1, 1, 2, 4))
+
+# get the vectors corresponding to the knots
+v1 <- ss$knots_vsa[[1]]
+v2 <- ss$knots_vsa[[2]]
+v3 <- ss$knots_vsa[[3]]
+v4 <- ss$knots_vsa[[4]]
+
+# make a sequence of scalar values that (more than) span the knot range
+d <- tibble::tibble(
+  x = seq(from = -1.5, to = 4.5, by = 0.05)
+) %>% 
+  dplyr::rowwise() %>% 
+  dplyr::mutate(
+    # encode each value of x
+    v_x = vsa_encode_scalar_spline(x[[1]], ss) %>% list(),
+    # get the cosine between the encoded x and each of the knot vectors
+    cos_1 = vsa_cos_sim(v_x, v1),
+    cos_2 = vsa_cos_sim(v_x, v2),
+    cos_3 = vsa_cos_sim(v_x, v3),
+    cos_4 = vsa_cos_sim(v_x, v4)
+  ) %>% 
+  dplyr::ungroup() %>%
+  dplyr::select(-v_x) %>% 
+  tidyr::pivot_longer(cos_1:cos_4, 
+                      names_to = "knot", names_prefix = "cos_", 
+                      values_to = "cos")
+
+d %>% ggplot(aes(x = x)) +
+  geom_hline(yintercept = c(0, 1), alpha = 0.3) +
+  geom_vline(xintercept = c(-1, 1, 2, 4), alpha = 0.3) +
+  geom_point(aes(y = cos, colour = knot))
+```
+
+-   As expected, the noise is greatly reduced.
+
+With the linear spline encoding, the representations at the knots are
+always identical to the knot vectors. For intermediate values of the
+numeric scalar the encoding is a weighted blend of the bounding knot
+vectors. This blending is implemented by `vsa_add()`, so the encoding
+will be different on each occasion the encoding is generated.
+
+Demonstrate the distribution of cosine similarity between encodings of
+the same scalar value. Use a scalar value midway between the bounding
+knots to maximise the variation between encodings.
+
+Use VSA vectors with dimensionality $10^4$ to match the default
+dimensionality we intend to use.
+
+```{r}
+# make an encoder specification with realistic vector dimension
+ss <- vsa_mk_scalar_encoder_spline_spec(vsa_dim = 1e4L, knots = c(0, 1))
+
+# generate n pairs of encodings of the same scalar (x)
+x <- 0.5 # scalar to encode (in the range 0 .. 1)
+n <- 1e3 # number of pairs to create
+# make a one-column data frame with the cos similarity of each vector pair
+d <- tibble::tibble(
+  cos = purrr::map_dbl(1:n, ~ 
+                         vsa_cos_sim(
+                           vsa_encode_scalar_spline(x, ss), 
+                           vsa_encode_scalar_spline(x, ss)
+                         )
+  )
+) 
+
+d %>% ggplot() +
+  geom_histogram(aes(x = cos))
+```
+
+-   The encoded values of the scalar midway between the bounding knots
+    differ randomly and have a distribution of cosine similarities to
+    each other that are fairly tightly bounded around 0.5
+
+Repeat the analysis for a scalar much nearer one of the knots.
+
+```{r}
+# make an encoder specification with realistic vector dimension
+ss <- vsa_mk_scalar_encoder_spline_spec(vsa_dim = 1e4L, knots = c(0, 1))
+
+# generate n pairs of encodings of the same scalar (x)
+x <- 0.05 # scalar to encode (in the range 0 .. 1)
+n <- 1e3 # number of pairs to create
+# make a one-column data frame with the cos similarity of each vector pair
+d <- tibble::tibble(
+  cos = purrr::map_dbl(1:n, ~ 
+                         vsa_cos_sim(
+                           vsa_encode_scalar_spline(x, ss), 
+                           vsa_encode_scalar_spline(x, ss)
+                         )
+  )
+) 
+
+d %>% ggplot() +
+  geom_histogram(aes(x = cos))
+```
+
+-   The cosine similarities between pairs of encodings of the scalar
+    0.05 is a much tighter distribution around \~0.905
+
+The fact that the encoding is constant at the knots and more variable
+between knots seems rather odd. If this is a problem the encoding could
+be made constant by using a fixed seed to `vsa_add()`.
+
+# Apply decoding
+
+The decoder applies the spline specification to a VSA vector and returns
+a numeric scalar value.
+
+The input VSA vector is compared to each of the knot vectors and the dot
+product calculated for each comparison. Dot products less than a
+threshold (close to zero) are set to zero, then all the dot products are
+normalised to sum to one. The normalised dot products are then used with
+the scalar knot values to calculate the weighted mean of the scalar knot
+values. The weighted mean is returned as the output of the decoder.
+
+```{r, vsa_decode_scalar_spline, eval = FALSE}
+```
+
+Do some very small scale testing.
+
+## Values decoded correctly
+
+Chcek that encoded values are decoded correctly across the range of the
+knots.
+
+```{r}
+# make an encoder specification with realistic vector dimension
+ss <- vsa_mk_scalar_encoder_spline_spec(vsa_dim = 1e4L, knots = c(-1, 1, 2, 4))
+
+-1.5 %>% vsa_encode_scalar_spline(ss) %>% vsa_decode_scalar_spline(ss)
+-1 %>% vsa_encode_scalar_spline(ss) %>% vsa_decode_scalar_spline(ss)
+0 %>% vsa_encode_scalar_spline(ss) %>% vsa_decode_scalar_spline(ss)
+1 %>% vsa_encode_scalar_spline(ss) %>% vsa_decode_scalar_spline(ss)
+1.5 %>% vsa_encode_scalar_spline(ss) %>% vsa_decode_scalar_spline(ss)
+2 %>% vsa_encode_scalar_spline(ss) %>% vsa_decode_scalar_spline(ss)
+3 %>% vsa_encode_scalar_spline(ss) %>% vsa_decode_scalar_spline(ss)
+4 %>% vsa_encode_scalar_spline(ss) %>% vsa_decode_scalar_spline(ss)
+4.5 %>% vsa_encode_scalar_spline(ss) %>% vsa_decode_scalar_spline(ss)
+```
+
+-   The decoded values at the knots are exactly correct.
+-   The decoded values between the knots are approximately correct.
+
+Check the random variation of intermediate values.
+
+```{r}
+0 %>% vsa_encode_scalar_spline(ss) %>% vsa_decode_scalar_spline(ss)
+0 %>% vsa_encode_scalar_spline(ss) %>% vsa_decode_scalar_spline(ss)
+0 %>% vsa_encode_scalar_spline(ss) %>% vsa_decode_scalar_spline(ss)
+0 %>% vsa_encode_scalar_spline(ss) %>% vsa_decode_scalar_spline(ss)
+0 %>% vsa_encode_scalar_spline(ss) %>% vsa_decode_scalar_spline(ss)
+```
+
+-   The decoded values are tightly clustered around the encoded value.
+
+## Zero threshold
+
+Look at the effect of the zero threshold.
+
+When there are more than two knots there is more than one interval
+bounded by knots. When decoding, we are only interested in the knots
+bounding the interval containing the encoded value. The other knots
+should be ignored.
+
+These irrelevant knots will have small dot products with the encoded
+scalar value. Unfortunately, the dot products will not be exactly zero.
+They will be distributed in a small range around zero.
+
+The aim of the zero threshold is to treat dot products in the range that
+would be produced by approximately orthogonal vectors as exactly zero.
+
+In the following analyses I will make life gard for the decoder by
+having 101 knots. This makes it more likely that at least one of the
+irrelevant knots will have a dot product above the zero threshold.
+
+Make the zero threshold ridiculously large (10).
+
+```{r}
+ss <- vsa_mk_scalar_encoder_spline_spec(vsa_dim = 1e4L, knots = 0:100)
+
+# encode and decode random values over the first knot interval
+runif(n = 1e3, min = -0.1, max = 1.1) %>% 
+  tibble::tibble(x_in = .) %>% 
+  dplyr::rowwise() %>% 
+  dplyr::mutate(
+    x_out = x_in %>% 
+      vsa_encode_scalar_spline(ss) %>% 
+      vsa_decode_scalar_spline(ss, zero_thresh = 8)
+  ) %>% 
+  dplyr::ungroup() %>% 
+  ggplot() +
+  geom_vline(xintercept = 0:1, alpha = 0.3) +
+  geom_abline(slope = 1, intercept = 0, colour = "red", alpha = 0.5) +
+  geom_point(aes(x = x_in, y = x_out), size = 0.1, alpha = 0.5) +
+  ggtitle("zero_thresh = 8")
+```
+
+-   Encoded values close to the knots are treated as though they are
+    exactly equal to the knots (because the dot product with the knot
+    vector at the other end of the interval is close to zero).
+-   The decoded values not close to the knots lie along the expected
+    line.
+
+```{r}
+runif(n = 1e3, min = -0.1, max = 1.1) %>% 
+  tibble::tibble(x_in = .) %>% 
+  dplyr::rowwise() %>% 
+  dplyr::mutate(
+    x_out = x_in %>% 
+      vsa_encode_scalar_spline(ss) %>% 
+      vsa_decode_scalar_spline(ss, zero_thresh = 6)
+  ) %>% 
+  dplyr::ungroup() %>% 
+  ggplot() +
+  geom_vline(xintercept = 0:1, alpha = 0.3) +
+  geom_abline(slope = 1, intercept = 0, colour = "red", alpha = 0.5) +
+  geom_point(aes(x = x_in, y = x_out), size = 0.1, alpha = 0.5) +
+  ggtitle("zero_thresh = 6")
+```
+
+-   The region considered identical to the knot value is smaller.
+- The decoded values don't quite lie on the expected line.
+
+```{r}
+runif(n = 1e3, min = -0.1, max = 1.1) %>% 
+  tibble::tibble(x_in = .) %>% 
+  dplyr::rowwise() %>% 
+  dplyr::mutate(
+    x_out = x_in %>% 
+      vsa_encode_scalar_spline(ss) %>% 
+      vsa_decode_scalar_spline(ss, zero_thresh = 5)
+  ) %>% 
+  dplyr::ungroup() %>% 
+  ggplot() +
+  geom_vline(xintercept = 0:1, alpha = 0.3) +
+  geom_abline(slope = 1, intercept = 0, colour = "red", alpha = 0.5) +
+  geom_point(aes(x = x_in, y = x_out), size = 0.1, alpha = 0.5) +
+  ggtitle("zero_thresh = 5")
+```
+
+-   A small number of points are way off the expected line because some
+    irrelevant knots have had dot products above the zero threshold.
+
+Try a smaller number of knots, which will make life easier for the
+decoder.
+
+```{r}
+ss <- vsa_mk_scalar_encoder_spline_spec(vsa_dim = 1e4L, knots = 0:2)
+
+# encode and decode random values over the knot range
+runif(n = 1e3, min = -0.1, max = 2.1) %>% 
+  tibble::tibble(x_in = .) %>% 
+  dplyr::rowwise() %>% 
+  dplyr::mutate(
+    x_out = x_in %>% 
+      vsa_encode_scalar_spline(ss) %>% 
+      vsa_decode_scalar_spline(ss, zero_thresh = 4)
+  ) %>% 
+  dplyr::ungroup() %>% 
+  ggplot() +
+  geom_vline(xintercept = 0:2, alpha = 0.3) +
+  geom_abline(slope = 1, intercept = 0, colour = "red", alpha = 0.5) +
+  geom_point(aes(x = x_in, y = x_out), size = 0.1, alpha = 0.5) +
+  ggtitle("zero_thresh = 4")
+```
+
+```{r}
+runif(n = 1e3, min = -0.1, max = 2.1) %>% 
+  tibble::tibble(x_in = .) %>% 
+  dplyr::rowwise() %>% 
+  dplyr::mutate(
+    x_out = x_in %>% 
+      vsa_encode_scalar_spline(ss) %>% 
+      vsa_decode_scalar_spline(ss, zero_thresh = 2)
+  ) %>% 
+  dplyr::ungroup() %>% 
+  ggplot() +
+  geom_vline(xintercept = 0:2, alpha = 0.3) +
+  geom_abline(slope = 1, intercept = 0, colour = "red", alpha = 0.5) +
+  geom_point(aes(x = x_in, y = x_out), size = 0.1, alpha = 0.5) +
+  ggtitle("zero_thresh = 2")
+```
+
+-   The decoded values are not quite aligned with the expected line.
+
+Now try a zero threshold where we expect to see random values above the
+threshold.
+
+```{r}
+runif(n = 1e3, min = -0.1, max = 2.1) %>% 
+  tibble::tibble(x_in = .) %>% 
+  dplyr::rowwise() %>% 
+  dplyr::mutate(
+    x_out = x_in %>% 
+      vsa_encode_scalar_spline(ss) %>% 
+      vsa_decode_scalar_spline(ss, zero_thresh = 1)
+  ) %>% 
+  dplyr::ungroup() %>% 
+  ggplot() +
+  geom_vline(xintercept = 0:2, alpha = 0.3) +
+  geom_abline(slope = 1, intercept = 0, colour = "red", alpha = 0.5) +
+  geom_point(aes(x = x_in, y = x_out), size = 0.1, alpha = 0.5) +
+  ggtitle("zero_thresh = 1")
+```
+
+-   The decoded values are not quite aligned with the expected line.
+-   The decoded values corresponding to the knots are not quite right.
+
+Now set the zero threshold to zero. This avoids negative dot products,
+which is required to make the weighted sum meaningful.
+
+```{r}
+runif(n = 1e3, min = -0.1, max = 2.1) %>% 
+  tibble::tibble(x_in = .) %>% 
+  dplyr::rowwise() %>% 
+  dplyr::mutate(
+    x_out = x_in %>% 
+      vsa_encode_scalar_spline(ss) %>% 
+      vsa_decode_scalar_spline(ss, zero_thresh = 0)
+  ) %>% 
+  dplyr::ungroup() %>% 
+  ggplot() +
+  geom_vline(xintercept = 0:2, alpha = 0.3) +
+  geom_abline(slope = 1, intercept = 0, colour = "red", alpha = 0.5) +
+  geom_point(aes(x = x_in, y = x_out), size = 0.1, alpha = 0.5) +
+  ggtitle("zero_thresh = 0")
+```
+
+Now try disabling the zero threshold.
+
+```{r}
+runif(n = 1e3, min = -0.1, max = 2.1) %>% 
+  tibble::tibble(x_in = .) %>% 
+  dplyr::rowwise() %>% 
+  dplyr::mutate(
+    x_out = x_in %>% 
+      vsa_encode_scalar_spline(ss) %>% 
+      vsa_decode_scalar_spline(ss, zero_thresh = -Inf)
+  ) %>% 
+  dplyr::ungroup() %>% 
+  ggplot() +
+  geom_vline(xintercept = 0:2, alpha = 0.3) +
+  geom_abline(slope = 1, intercept = 0, colour = "red", alpha = 0.5) +
+  geom_point(aes(x = x_in, y = x_out), size = 0.1, alpha = 0.5) +
+  ggtitle("zero_thresh = -Inf")
+```
+
+-   That's not obviously different to setting the threshold to zero.
+
+## Random vectors
+
+Try to decode a random vector (i.e. not a valid encoding of a scalar).
+
+Setting a high zero threshold means that with high probability we will
+end up dividing by zero in the decoder.
+
+```{r}
+vsa_mk_atom_bipolar(1e4L) %>% vsa_decode_scalar_spline(ss, zero_thresh = 4)
+vsa_mk_atom_bipolar(1e4L) %>% vsa_decode_scalar_spline(ss, zero_thresh = 4)
+vsa_mk_atom_bipolar(1e4L) %>% vsa_decode_scalar_spline(ss, zero_thresh = 4)
+vsa_mk_atom_bipolar(1e4L) %>% vsa_decode_scalar_spline(ss, zero_thresh = 4)
+vsa_mk_atom_bipolar(1e4L) %>% vsa_decode_scalar_spline(ss, zero_thresh = 4)
+```
+
+Setting a zero threshold means that approximately half the dot products
+will be set to zero.
+
+```{r}
+vsa_mk_atom_bipolar(1e4L) %>% vsa_decode_scalar_spline(ss, zero_thresh = 0)
+vsa_mk_atom_bipolar(1e4L) %>% vsa_decode_scalar_spline(ss, zero_thresh = 0)
+vsa_mk_atom_bipolar(1e4L) %>% vsa_decode_scalar_spline(ss, zero_thresh = 0)
+vsa_mk_atom_bipolar(1e4L) %>% vsa_decode_scalar_spline(ss, zero_thresh = 0)
+vsa_mk_atom_bipolar(1e4L) %>% vsa_decode_scalar_spline(ss, zero_thresh = 0)
+```
+
+-   The probability of dividing by zero is nonzero.
+-   The "decoded" values lie in the range of the knots.
+
+Disabling the zero threshold results in a very small probability of
+dividing by zero. The weighted sum no longer makes sense because the
+weights can be negative. Consequently, the returned value can lie
+outside the range of the knots.
+
+```{r}
+vsa_mk_atom_bipolar(1e4L) %>% vsa_decode_scalar_spline(ss, zero_thresh = -Inf)
+vsa_mk_atom_bipolar(1e4L) %>% vsa_decode_scalar_spline(ss, zero_thresh = -Inf)
+vsa_mk_atom_bipolar(1e4L) %>% vsa_decode_scalar_spline(ss, zero_thresh = -Inf)
+vsa_mk_atom_bipolar(1e4L) %>% vsa_decode_scalar_spline(ss, zero_thresh = -Inf)
+vsa_mk_atom_bipolar(1e4L) %>% vsa_decode_scalar_spline(ss, zero_thresh = -Inf)
+```
+
+-   Some of the decoded values lie outside the range of the knots.

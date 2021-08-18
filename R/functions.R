@@ -13,6 +13,7 @@ suppressPackageStartupMessages(
     library(dplyr)
     library(purrr)
     library(Matrix)
+    library(tibble)
   }
 )
 
@@ -118,7 +119,7 @@ run_simulation <- function(
   # One row per time step
   # One column for each input variable, state variable, and time (t)
 {
-  # Apply the state update to tghe input values
+  # Apply the state update to the input values
   state_df <- input_df %>% 
     base::split(seq(nrow(.))) %>% # split input into a list of 1-row data frames
     purrr::accumulate( # accumulate list of simulated states
@@ -439,7 +440,7 @@ vsa_mk_sample_spec <- function(
 
 ## ---- vsa_add
 
-# function to add (weighted sum) an arbitrary number of VSA vectors
+# function to add (weighted sum) an arbitrary number of VSA vectors given as arguments
 # Weighted add is implemented as weighted sampling from the source vectors
 # If sample_spec is given it specifies which argument vector is the source for each element of the output vector
 # If sample_wt is given the sample specification is generated randomly
@@ -513,5 +514,173 @@ vsa_add <- function(
   
   ### Construct the result vector
   as.data.frame(args_list)[sel]
+}
+
+# 
+## ---- vsa_mk_scalar_encoder_spline_spec
+
+# function to make the specification for a piecewise linear spline encoder
+
+vsa_mk_scalar_encoder_spline_spec <- function(
+  vsa_dim, # integer - dimensionality of VSA vectors
+  knots, # numeric vector - scalar knot locations (in increasing order)
+  seed = NULL # integer - seed for random number generator
+) # value # data structure representing linear spline encoder specification
+{
+  ### Set up the arguments ###
+  # The OCD error checking is probably more useful as documentation
+
+  if(missing(vsa_dim))
+    stop("vsa_dim must be specified")
+
+  if(!(is.vector(vsa_dim, mode = "integer") && length(vsa_dim) == 1))
+    stop("vsa_dim must be an integer")
+
+  if(vsa_dim < 1)
+    stop("vsa_dim must be (much) greater than zero")
+
+  if(!is.vector(knots, mode = "numeric"))
+    stop("knots must be a numeric vector")
+
+  if(length(knots) < 2)
+    stop("length(knots) must be >= 2")
+
+  if(!all(is.finite(knots)))
+    stop("all knot values must be nonmissing and finite")
+
+  if(length(knots) != length(unique(knots)))
+    stop("all knot values must be unique")
+  
+  if(!all(order(knots) == 1:length(knots)))
+    stop("knot values must be in increasing order")
+  
+  # check that the specified seed is an integer
+  if(!is.null(seed) && !(is.vector(seed, mode = "integer") && length(seed) == 1))
+    stop("seed must be an integer")
+  
+  # set the seed if it has been specified
+  if (!is.null(seed))
+    set.seed(seed)
+  
+  # generate VSA atoms corresponding to each of the knots
+  tibble::tibble(
+    knots_scalar = knots,
+    knots_vsa = purrr::map(knots, ~ vsa_mk_atom_bipolar(vsa_dim = vsa_dim))
+  )
+}
+
+## ---- vsa_encode_scalar_spline
+
+# function to encode a scalar numeric value to a VSA vector
+# This function uses a linear interpolation spline
+# to interpolate between a sequence of VSA vectors corresponding to the spline knots
+
+vsa_encode_scalar_spline <- function(
+  x, # numeric[1] - scalar value to be encoded
+  spline_spec # data frame - spline spec created by vsa_mk_scalar_encoder_spline_spec()
+) # numeric # one VSA vector, the encoding of the scalar value
+{
+  ### Set up the arguments ###
+  # The OCD error checking is probably more useful as documentation
+  
+  if (missing(x))
+    stop("x must be specified")
+  
+  if (!(is.vector(x, mode = "numeric") && length(x) == 1))
+    stop("x must be a numeric scalar")
+  
+  if (is.na(x))
+    stop("x must be non-missing")
+  
+  if (!is.finite(x))
+    stop("x must be finite")
+  
+  if (missing(spline_spec))
+    stop("spline_spec must be specified")
+  
+  if ( 
+    !(
+      is_tibble(spline_spec) && 
+      all(c("knots_scalar", "knots_vsa") %in% names(spline_spec))
+    )
+  )
+    stop("spline_spec must be a spline specification object")
+  
+  # Map the scalar into a continuous index across the knots
+  # Linearly interpolate the input scalar onto a scale in which knots correspond to  1:n
+  i <- approx(
+    x = spline_spec$knots_scalar, y = seq_along(spline_spec$knots_scalar), 
+    rule = 2, # clip x to fit the range of the knots
+    xout = x
+  )$y # get the interpolated value only
+  
+  # Get the knot indices immediately above and below the index value
+  i_lo <- floor(i)
+  i_hi <- ceiling(i)
+  
+  # Return the VSA vector corresponding to the index value
+  if (i_lo == i_hi) # check if index is on a knot
+    # Exactly on a knot so return the corresponding knot VSA vector
+    spline_spec$knots_vsa[[i]] 
+  else {
+    # Between two knots
+    # Return the weighted sum of the corresponding knot VSA vectors
+    i_offset <- i - i_lo
+    vsa_add(
+      spline_spec$knots_vsa[[i_lo]], spline_spec$knots_vsa[[i_hi]],
+      sample_wt = c(1 - i_offset, i_offset)
+    )
+  }
+}
+
+## ---- vsa_decode_scalar_spline
+
+# function to encode a scalar numeric value to a VSA vector
+# This function uses a linear interpolation spline
+# to interpolate between a sequence of VSA vectors corresponding to the spline knots
+
+vsa_decode_scalar_spline <- function(
+  v, # numeric - VSA vector (not necessarily bipolar)
+  spline_spec, # data frame - spline spec created by vsa_mk_scalar_encoder_spline_spec()
+  zero_thresh = 4 # numeric[1] - zero threshold (in standard deviations)
+) # numeric[1] - scalar value decoded from v
+{
+  ### Set up the arguments ###
+  # The OCD error checking is probably more useful as documentation
+  
+  if(missing(v)) 
+    stop("VSA vector argument (v) must be specified")
+  
+  if(!is.vector(v, mode = "numeric"))
+    stop("v must be an numeric vector")
+  
+  if (missing(spline_spec))
+    stop("spline_spec must be specified")
+  
+  if ( 
+    !(
+      is_tibble(spline_spec) && 
+      all(c("knots_scalar", "knots_vsa") %in% names(spline_spec))
+    )
+  )
+    stop("spline_spec must be a spline specification object")
+  
+  if(!missing(zero_thresh) && 
+     !(is.vector(zero_thresh, mode = "numeric") && length(zero_thresh) == 1))
+    stop("zero_thresh must be numeric")
+  
+  # get the dot product of the encoded scalar with each of the knot vectors
+  dotprod <- spline_spec$knots_vsa %>% 
+    purrr::map_dbl(.f = vsa_dotprod, v2 = v)
+  
+  # set dot products below the zero threshold to 0.5
+  zero_thresh <- zero_thresh * sqrt(length(v) * 0.5) # sd = sqrt(n p q) = sqrt(vsa_dim 0.5 0.5)
+  dotprod <- ifelse(dotprod < zero_thresh, 0, dotprod)
+  
+  # normalise the dot products
+  dotprod <- dotprod / sum(dotprod)
+  
+  # return the weighted sum of the knot scalara
+  sum(dotprod * spline_spec$knots_scalar)
 }
 

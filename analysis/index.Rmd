@@ -57,15 +57,22 @@ classically implemented altitude hold controller. We need to understand
 the properties of the signals in order to design VSA implementations of
 them.
 
-### [Single Target Simulations](characterise_single_target_data.html) {.unnumbered}
+### - [Single Target Simulations](characterise_single_target_data.html) {.unnumbered}
 
 The set of simulation data files analysed in this notebook have a single
 target altitude that is constant for the duration of each simulation.
 
-### [Multiple Target Simulations](characterise_multiple_target_data.html) {.unnumbered}
+### - [Multiple Target Simulations](characterise_multiple_target_data.html) {.unnumbered}
 
 The set of simulation data files analysed in this notebook have multiple
 target altitudes within each simulation.
+
+## [PID Task Analysis](PID_task_analysis.html) {.unnumbered}
+
+Examine the function from PID inputs to PID output as a statistical
+exercise with the objective of characterising the complexity of the
+function. This is intended to inform the necessary complexity of the VSA
+implementation.
 
 ## [Simulation Framework](simulation_framework.html) {.unnumbered}
 
@@ -77,3 +84,13 @@ framework for simulation of the PID altitude hold controller.
 This notebook implements and tests the basic VSA operators. The
 reasoning behind the design choices id given in the [Design
 Notes](design_notes.html) notebook.
+
+## Encoding and Decoding Scalars {.unnumbered}
+
+These notebooks describe the implementation of encoders and decoders for
+transforming numeric scalar values to and from VSA vectors.
+
+### - [Linear Interpolation Spline](encoder_spline.html) {.unnumbered}
+
+This notebook describes the implementation of the linear interpolation
+spline encoder/decoder.

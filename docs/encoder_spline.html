@@ -1,0 +1,1906 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Ross Gayler" />
+
+<meta name="date" content="2021-08-12" />
+
+<title>Scalar Encoder/Decoder (Linear Interpolation Spline)</title>
+
+<script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/master/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">VSA_altitude_hold</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/rgayler/VSA_altitude_hold">
+    <span class="fa fa-github"></span>
+     
+    Source code
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Scalar Encoder/Decoder (Linear Interpolation Spline)</h1>
+<h4 class="author">Ross Gayler</h4>
+<h4 class="date">2021-08-12</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks">
+Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2021-08-18
+</p>
+<p>
+<strong>Checks:</strong>
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+7
+<span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span>
+0
+</p>
+<p>
+<strong>Knit directory:</strong>
+<code>VSA_altitude_hold/</code>
+<span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/jdblischak/workflowr">workflowr</a> (version
+1.6.2). The <em>Checks</em> tab describes the
+reproducibility checks that were applied when the results were created.
+The <em>Past versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>R Markdown file:</strong> up-to-date
+</a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git repository, you
+know the exact version of the code that produced these results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>Environment:</strong> empty
+</a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the global
+environment can affect the analysis in your R Markdown file in unknown ways.
+For reproduciblity it’s best to always run the code in an empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20210617code">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>Seed:</strong> <code>set.seed(20210617)</code>
+</a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20210617code" class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20210617)</code> was run prior to running the code in the R Markdown file.
+Setting a seed ensures that any results that rely on randomness, e.g.
+subsampling or permutations, are reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>Session information:</strong> recorded
+</a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package versions is
+critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>Cache:</strong> none
+</a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be confident
+that you successfully produced the results during this run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>File paths:</strong> relative
+</a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr project
+makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomrgaylerVSAaltitudeholdtreee40da78fe9d8e911cf109c9e5e9b84983f8efca1targetblanke40da78a">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>Repository version:</strong> <a href="https://github.com/rgayler/VSA_altitude_hold/tree/e40da78fe9d8e911cf109c9e5e9b84983f8efca1" target="_blank">e40da78</a>
+</a>
+</p>
+</div>
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomrgaylerVSAaltitudeholdtreee40da78fe9d8e911cf109c9e5e9b84983f8efca1targetblanke40da78a" class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development and
+connecting the code version to the results is critical for reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version <a href="https://github.com/rgayler/VSA_altitude_hold/tree/e40da78fe9d8e911cf109c9e5e9b84983f8efca1" target="_blank">e40da78</a>.
+See the <em>Past versions</em> tab to see a history of the changes made to the
+R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for the
+analysis have been committed to Git prior to generating the results (you can
+use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only
+checks the R Markdown file, but you know if there are other scripts or data
+files that it depends on. Below is the status of the Git repository when the
+results were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    renv/library/
+    Ignored:    renv/local/
+    Ignored:    renv/staging/
+
+Untracked files:
+    Untracked:  analysis/figure/
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not included in
+this status report because it is ok for generated content to have uncommitted
+changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the repository in which changes were made
+to the R Markdown (<code>analysis/encoder_spline.Rmd</code>) and HTML (<code>docs/encoder_spline.html</code>)
+files. If you’ve configured a remote Git repository (see
+<code>?wflow_git_remote</code>), click on the hyperlinks in the table below to
+view the files as they were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/rgayler/VSA_altitude_hold/e40da78fe9d8e911cf109c9e5e9b84983f8efca1/docs/encoder_spline.html" target="_blank">e40da78</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-08-18
+</td>
+<td>
+WIP
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/77b171d9e00a489d6d099a9f0fb528b6c0e143fb/analysis/encoder_spline.Rmd" target="_blank">77b171d</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-08-18
+</td>
+<td>
+WIP
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/rgayler/VSA_altitude_hold/77b171d9e00a489d6d099a9f0fb528b6c0e143fb/docs/encoder_spline.html" target="_blank">77b171d</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-08-18
+</td>
+<td>
+WIP
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/9c30ab06bd66cf4ab688f66dc65924bc979bc1df/analysis/encoder_spline.Rmd" target="_blank">9c30ab0</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-08-17
+</td>
+<td>
+WIP
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/rgayler/VSA_altitude_hold/9c30ab06bd66cf4ab688f66dc65924bc979bc1df/docs/encoder_spline.html" target="_blank">9c30ab0</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-08-17
+</td>
+<td>
+WIP
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/rgayler/VSA_altitude_hold/dd93727f170b3f504c1fcdce53a3dbd457bc6513/docs/encoder_spline.html" target="_blank">dd93727</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-08-16
+</td>
+<td>
+WIP
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/271e9ef24450cab8287a3af2b7ba1ba4542fd407/analysis/encoder_spline.Rmd" target="_blank">271e9ef</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-08-16
+</td>
+<td>
+WIP
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/rgayler/VSA_altitude_hold/271e9ef24450cab8287a3af2b7ba1ba4542fd407/docs/encoder_spline.html" target="_blank">271e9ef</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-08-16
+</td>
+<td>
+WIP
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/rgayler/VSA_altitude_hold/73ca38710ba38dfd81fcc753870ceb942617fb95/docs/encoder_spline.html" target="_blank">73ca387</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-08-15
+</td>
+<td>
+WIP
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/56137f3745f859b322c4e76f2df2897374d29b12/analysis/encoder_spline.Rmd" target="_blank">56137f3</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-08-15
+</td>
+<td>
+WIP
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/4d2ad683e93fa8a0873a37da00c29729195568d9/analysis/encoder_spline.Rmd" target="_blank">4d2ad68</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-08-15
+</td>
+<td>
+WIP
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<p>This notebook documents the implementation of the linear interpolation
+spline scalar encoder/decoder.</p>
+<p>The reasoning behind the design choices is explained in
+<a href="design_notes.html#dfd-01">XXX</a>.</p>
+<div id="make-encoder-specification" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> Make encoder specification</h1>
+<p>The encoder will map each unique scalar input value to a VSA vector such
+that similar input values are mapped to similar output VSA vectors.</p>
+<p>For programming purposes, the mapping is represented by a <code>spline_spec</code>
+object, which is created by <code>vsa_mk_scalar_encoder_spline_spec()</code>.</p>
+<p>The encoder specification represents a piecewise linear function from
+the input scalar value to another scalar value.</p>
+<p>The piecewise linear function has <span class="math inline">\(k\)</span> knots, which must be unique scalar
+values and given in increasing order.</p>
+<p>Values of the input scalar that are outside the range of the knots are
+treated identically to the nearest extreme value of the knots.</p>
+<p>There is a unique atomic VSA vector associated with each knot.</p>
+<p>If the input scalar is exactly equal to a knot value then the encoder
+will return the corresponding VSA vector.</p>
+<p>If the input scalar lies between two knot value then the encoder will
+return the weighted sum of the two corresponding VSA vectors with the
+weighting reflecting the position of the scalar value relative to the
+two knot values..</p>
+<p>The piecewise linear function is specified by the knots given as an
+argument to <code>vsa_mk_scalar_encoder_spline_spec()</code> and the VSA vectors
+corresponding to the knots are randomly generated. The <code>spline_spec</code>
+object captures these two components, which remain constant over the
+simulation.</p>
+<pre class="r"><code># function to make the specification for a piecewise linear spline encoder
+
+vsa_mk_scalar_encoder_spline_spec &lt;- function(
+  vsa_dim, # integer - dimensionality of VSA vectors
+  knots, # numeric vector - scalar knot locations (in increasing order)
+  seed = NULL # integer - seed for random number generator
+) # value # data structure representing linear spline encoder specification
+{
+  ### Set up the arguments ###
+  # The OCD error checking is probably more useful as documentation
+
+  if(missing(vsa_dim))
+    stop(&quot;vsa_dim must be specified&quot;)
+
+  if(!(is.vector(vsa_dim, mode = &quot;integer&quot;) &amp;&amp; length(vsa_dim) == 1))
+    stop(&quot;vsa_dim must be an integer&quot;)
+
+  if(vsa_dim &lt; 1)
+    stop(&quot;vsa_dim must be (much) greater than zero&quot;)
+
+  if(!is.vector(knots, mode = &quot;numeric&quot;))
+    stop(&quot;knots must be a numeric vector&quot;)
+
+  if(length(knots) &lt; 2)
+    stop(&quot;length(knots) must be &gt;= 2&quot;)
+
+  if(!all(is.finite(knots)))
+    stop(&quot;all knot values must be nonmissing and finite&quot;)
+
+  if(length(knots) != length(unique(knots)))
+    stop(&quot;all knot values must be unique&quot;)
+  
+  if(!all(order(knots) == 1:length(knots)))
+    stop(&quot;knot values must be in increasing order&quot;)
+  
+  # check that the specified seed is an integer
+  if(!is.null(seed) &amp;&amp; !(is.vector(seed, mode = &quot;integer&quot;) &amp;&amp; length(seed) == 1))
+    stop(&quot;seed must be an integer&quot;)
+  
+  # set the seed if it has been specified
+  if (!is.null(seed))
+    set.seed(seed)
+  
+  # generate VSA atoms corresponding to each of the knots
+  tibble::tibble(
+    knots_scalar = knots,
+    knots_vsa = purrr::map(knots, ~ vsa_mk_atom_bipolar(vsa_dim = vsa_dim))
+  )
+}</code></pre>
+<p>Do some very small scale testing.</p>
+<p>Generate a tiny <code>spline_spec</code> object and display the contents.</p>
+<pre class="r"><code>ss &lt;- vsa_mk_scalar_encoder_spline_spec(vsa_dim = 10L, knots = c(-1, 1, 2))
+
+ss</code></pre>
+<pre><code># A tibble: 3 × 2
+  knots_scalar knots_vsa 
+         &lt;dbl&gt; &lt;list&gt;    
+1           -1 &lt;int [10]&gt;
+2            1 &lt;int [10]&gt;
+3            2 &lt;int [10]&gt;</code></pre>
+<pre class="r"><code>ss$knots_vsa[[1]]</code></pre>
+<pre><code> [1] -1  1  1 -1 -1  1 -1 -1  1  1</code></pre>
+<pre class="r"><code>ss$knots_vsa[[2]]</code></pre>
+<pre><code> [1] -1  1  1 -1  1 -1 -1  1 -1 -1</code></pre>
+<pre class="r"><code>ss$knots_vsa[[3]]</code></pre>
+<pre><code> [1]  1 -1  1  1 -1 -1 -1  1  1  1</code></pre>
+<ul>
+<li>The contents are as expected.</li>
+</ul>
+</div>
+<div id="apply-encoding" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> Apply encoding</h1>
+<pre class="r"><code># function to encode a scalar numeric value to a VSA vector
+# This function uses a linear interpolation spline
+# to interpolate between a sequence of VSA vectors corresponding to the spline knots
+
+vsa_encode_scalar_spline &lt;- function(
+  x, # numeric[1] - scalar value to be encoded
+  spline_spec # data frame - spline spec created by vsa_mk_scalar_encoder_spline_spec()
+) # numeric # one VSA vector, the encoding of the scalar value
+{
+  ### Set up the arguments ###
+  # The OCD error checking is probably more useful as documentation
+  
+  if (missing(x))
+    stop(&quot;x must be specified&quot;)
+  
+  if (!(is.vector(x, mode = &quot;numeric&quot;) &amp;&amp; length(x) == 1))
+    stop(&quot;x must be a numeric scalar&quot;)
+  
+  if (is.na(x))
+    stop(&quot;x must be non-missing&quot;)
+  
+  if (!is.finite(x))
+    stop(&quot;x must be finite&quot;)
+  
+  if (missing(spline_spec))
+    stop(&quot;spline_spec must be specified&quot;)
+  
+  if ( 
+    !(
+      is_tibble(spline_spec) &amp;&amp; 
+      all(c(&quot;knots_scalar&quot;, &quot;knots_vsa&quot;) %in% names(spline_spec))
+    )
+  )
+    stop(&quot;spline_spec must be a spline specification object&quot;)
+  
+  # Map the scalar into a continuous index across the knots
+  # Linearly interpolate the input scalar onto a scale in which knots correspond to  1:n
+  i &lt;- approx(
+    x = spline_spec$knots_scalar, y = seq_along(spline_spec$knots_scalar), 
+    rule = 2, # clip x to fit the range of the knots
+    xout = x
+  )$y # get the interpolated value only
+  
+  # Get the knot indices immediately above and below the index value
+  i_lo &lt;- floor(i)
+  i_hi &lt;- ceiling(i)
+  
+  # Return the VSA vector corresponding to the index value
+  if (i_lo == i_hi) # check if index is on a knot
+    # Exactly on a knot so return the corresponding knot VSA vector
+    spline_spec$knots_vsa[[i]] 
+  else {
+    # Between two knots
+    # Return the weighted sum of the corresponding knot VSA vectors
+    i_offset &lt;- i - i_lo
+    vsa_add(
+      spline_spec$knots_vsa[[i_lo]], spline_spec$knots_vsa[[i_hi]],
+      sample_wt = c(1 - i_offset, i_offset)
+    )
+  }
+}</code></pre>
+<p>Do some very small scale testing.</p>
+<p>Test what happens when the input scalar lies exactly on a knot.</p>
+<pre class="r"><code>vsa_encode_scalar_spline(-1.0, ss)</code></pre>
+<pre><code> [1] -1  1  1 -1 -1  1 -1 -1  1  1</code></pre>
+<pre class="r"><code>vsa_encode_scalar_spline( 1.0, ss)</code></pre>
+<pre><code> [1] -1  1  1 -1  1 -1 -1  1 -1 -1</code></pre>
+<pre class="r"><code>vsa_encode_scalar_spline( 2.0, ss)</code></pre>
+<pre><code> [1]  1 -1  1  1 -1 -1 -1  1  1  1</code></pre>
+<ul>
+<li>The returned values are equal to the VSA vectors at the
+corresponding knots.</li>
+</ul>
+<p>Test what happens when the input scalar falls outside the range of the
+knots.</p>
+<pre class="r"><code>vsa_encode_scalar_spline(-1.1, ss)</code></pre>
+<pre><code> [1] -1  1  1 -1 -1  1 -1 -1  1  1</code></pre>
+<pre class="r"><code>vsa_encode_scalar_spline( 2.1, ss)</code></pre>
+<pre><code> [1]  1 -1  1  1 -1 -1 -1  1  1  1</code></pre>
+<ul>
+<li>Input values outside the range of the knots are mapped to the
+nearest extreme knot.</li>
+</ul>
+<p>Check that intermediate values are random (because of the random
+sampling in <code>vsa_add()</code>).</p>
+<pre class="r"><code># remind us of the knot values
+ss$knots_vsa[[1]]</code></pre>
+<pre><code> [1] -1  1  1 -1 -1  1 -1 -1  1  1</code></pre>
+<pre class="r"><code>ss$knots_vsa[[2]]</code></pre>
+<pre><code> [1] -1  1  1 -1  1 -1 -1  1 -1 -1</code></pre>
+<pre class="r"><code># identify which elements are identical for the two knots
+ss$knots_vsa[[1]] == ss$knots_vsa[[2]]</code></pre>
+<pre><code> [1]  TRUE  TRUE  TRUE  TRUE FALSE FALSE  TRUE FALSE FALSE FALSE</code></pre>
+<pre class="r"><code># interpolate midway between those two knots
+vsa_encode_scalar_spline(0, ss)</code></pre>
+<pre><code> [1] -1  1  1 -1  1  1 -1  1  1 -1</code></pre>
+<pre class="r"><code>vsa_encode_scalar_spline(0, ss)</code></pre>
+<pre><code> [1] -1  1  1 -1 -1 -1 -1 -1 -1 -1</code></pre>
+<pre class="r"><code>vsa_encode_scalar_spline(0, ss)</code></pre>
+<pre><code> [1] -1  1  1 -1 -1  1 -1  1  1  1</code></pre>
+<pre class="r"><code>vsa_encode_scalar_spline(0, ss)</code></pre>
+<pre><code> [1] -1  1  1 -1 -1 -1 -1  1 -1  1</code></pre>
+<ul>
+<li><p>Elements 3, 4, 6, 7, and 8 of the first and second knot vectors are
+identical, so the result of adding them is constant.</p></li>
+<li><p>The other element values vary between the two knot vectors, so the
+corresponding interpolated values will vary because of the random
+sampling in <code>vsa_add()</code> (although some may be identical by chance)</p></li>
+</ul>
+<p>Check that interpolation has the expected effect on the angles of the
+vectors.</p>
+<p>Initially, use relatively low dimensional VSA vectors (<code>vsa_dim = 1e3</code>)
+to give greater variability to the results.</p>
+<pre class="r"><code># make an encoder specification with realistic vector dimension
+ss &lt;- vsa_mk_scalar_encoder_spline_spec(vsa_dim = 1e3L, knots = c(-1, 1, 2, 4))
+
+# get the vectors corresponding to the knots
+v1 &lt;- ss$knots_vsa[[1]]
+v2 &lt;- ss$knots_vsa[[2]]
+v3 &lt;- ss$knots_vsa[[3]]
+v4 &lt;- ss$knots_vsa[[4]]
+
+# make a sequence of scalar values that (more than) span the knot range
+d &lt;- tibble::tibble(
+  x = seq(from = -1.5, to = 4.5, by = 0.05)
+) %&gt;% 
+  dplyr::rowwise() %&gt;% 
+  dplyr::mutate(
+    # encode each value of x
+    v_x = vsa_encode_scalar_spline(x[[1]], ss) %&gt;% list(),
+    # get the cosine between the encoded x and each of the knot vectors
+    cos_1 = vsa_cos_sim(v_x, v1),
+    cos_2 = vsa_cos_sim(v_x, v2),
+    cos_3 = vsa_cos_sim(v_x, v3),
+    cos_4 = vsa_cos_sim(v_x, v4)
+  ) %&gt;% 
+  dplyr::ungroup() %&gt;%
+  dplyr::select(-v_x) %&gt;% 
+  tidyr::pivot_longer(cos_1:cos_4, 
+                      names_to = &quot;knot&quot;, names_prefix = &quot;cos_&quot;, 
+                      values_to = &quot;cos&quot;)
+
+d %&gt;% ggplot(aes(x = x)) +
+  geom_hline(yintercept = c(0, 1), alpha = 0.3) +
+  geom_vline(xintercept = c(-1, 1, 2, 4), alpha = 0.3) +
+  geom_point(aes(y = cos, colour = knot))</code></pre>
+<p><img src="figure/encoder_spline.Rmd/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-6-1">
+Past versions of unnamed-chunk-6-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-6-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/e40da78fe9d8e911cf109c9e5e9b84983f8efca1/docs/figure/encoder_spline.Rmd/unnamed-chunk-6-1.png" target="_blank">e40da78</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-08-18
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/77b171d9e00a489d6d099a9f0fb528b6c0e143fb/docs/figure/encoder_spline.Rmd/unnamed-chunk-6-1.png" target="_blank">77b171d</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-08-18
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/9c30ab06bd66cf4ab688f66dc65924bc979bc1df/docs/figure/encoder_spline.Rmd/unnamed-chunk-6-1.png" target="_blank">9c30ab0</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-08-17
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/e19cb7e9a3e5a7c619b1aba1bb0437aeaefc66a8/docs/figure/encoder_spline.Rmd/unnamed-chunk-6-1.png" target="_blank">e19cb7e</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-08-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Each curve shows the cosine similarity of the encoded scalar (<span class="math inline">\(x\)</span>) to
+the VSA vector corresponding to one of the knots.</p>
+<ul>
+<li>Each curve shows the expected linear ramp as it moves between the
+two bounding knots.</li>
+<li>The cosine similarity at the peak of each curve is exactly one
+because the encoded scalar is identical to the corresponding knot
+vector.</li>
+<li>The curves corresponding to intermediate values of <span class="math inline">\(x\)</span> are noisy
+around a straight line. The noise is due to the encoding being a
+random weighted blend of the bounding knot vectors (due to applying
+<code>vsa_add()</code>).</li>
+<li>The minimum values of each curve are <em>not</em> exactly zero, because
+they correspond to the angle between two randomly selected vectors.
+That is, the cosine similarity is distributed around zero. Repeat
+that analysis using relatively high dimensional VSA vectors
+(<code>vsa_dim = 1e5</code>) to reduce the variability of the results.</li>
+</ul>
+<pre class="r"><code># make an encoder specification with realistic vector dimension
+ss &lt;- vsa_mk_scalar_encoder_spline_spec(vsa_dim = 1e5L, knots = c(-1, 1, 2, 4))
+
+# get the vectors corresponding to the knots
+v1 &lt;- ss$knots_vsa[[1]]
+v2 &lt;- ss$knots_vsa[[2]]
+v3 &lt;- ss$knots_vsa[[3]]
+v4 &lt;- ss$knots_vsa[[4]]
+
+# make a sequence of scalar values that (more than) span the knot range
+d &lt;- tibble::tibble(
+  x = seq(from = -1.5, to = 4.5, by = 0.05)
+) %&gt;% 
+  dplyr::rowwise() %&gt;% 
+  dplyr::mutate(
+    # encode each value of x
+    v_x = vsa_encode_scalar_spline(x[[1]], ss) %&gt;% list(),
+    # get the cosine between the encoded x and each of the knot vectors
+    cos_1 = vsa_cos_sim(v_x, v1),
+    cos_2 = vsa_cos_sim(v_x, v2),
+    cos_3 = vsa_cos_sim(v_x, v3),
+    cos_4 = vsa_cos_sim(v_x, v4)
+  ) %&gt;% 
+  dplyr::ungroup() %&gt;%
+  dplyr::select(-v_x) %&gt;% 
+  tidyr::pivot_longer(cos_1:cos_4, 
+                      names_to = &quot;knot&quot;, names_prefix = &quot;cos_&quot;, 
+                      values_to = &quot;cos&quot;)
+
+d %&gt;% ggplot(aes(x = x)) +
+  geom_hline(yintercept = c(0, 1), alpha = 0.3) +
+  geom_vline(xintercept = c(-1, 1, 2, 4), alpha = 0.3) +
+  geom_point(aes(y = cos, colour = knot))</code></pre>
+<p><img src="figure/encoder_spline.Rmd/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-1">
+Past versions of unnamed-chunk-7-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-7-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/e40da78fe9d8e911cf109c9e5e9b84983f8efca1/docs/figure/encoder_spline.Rmd/unnamed-chunk-7-1.png" target="_blank">e40da78</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-08-18
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/77b171d9e00a489d6d099a9f0fb528b6c0e143fb/docs/figure/encoder_spline.Rmd/unnamed-chunk-7-1.png" target="_blank">77b171d</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-08-18
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/9c30ab06bd66cf4ab688f66dc65924bc979bc1df/docs/figure/encoder_spline.Rmd/unnamed-chunk-7-1.png" target="_blank">9c30ab0</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-08-17
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/e19cb7e9a3e5a7c619b1aba1bb0437aeaefc66a8/docs/figure/encoder_spline.Rmd/unnamed-chunk-7-1.png" target="_blank">e19cb7e</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-08-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<ul>
+<li>As expected, the noise is greatly reduced.</li>
+</ul>
+<p>With the linear spline encoding, the representations at the knots are
+always identical to the knot vectors. For intermediate values of the
+numeric scalar the encoding is a weighted blend of the bounding knot
+vectors. This blending is implemented by <code>vsa_add()</code>, so the encoding
+will be different on each occasion the encoding is generated.</p>
+<p>Demonstrate the distribution of cosine similarity between encodings of
+the same scalar value. Use a scalar value midway between the bounding
+knots to maximise the variation between encodings.</p>
+<p>Use VSA vectors with dimensionality <span class="math inline">\(10^4\)</span> to match the default
+dimensionality we intend to use.</p>
+<pre class="r"><code># make an encoder specification with realistic vector dimension
+ss &lt;- vsa_mk_scalar_encoder_spline_spec(vsa_dim = 1e4L, knots = c(0, 1))
+
+# generate n pairs of encodings of the same scalar (x)
+x &lt;- 0.5 # scalar to encode (in the range 0 .. 1)
+n &lt;- 1e3 # number of pairs to create
+# make a one-column data frame with the cos similarity of each vector pair
+d &lt;- tibble::tibble(
+  cos = purrr::map_dbl(1:n, ~ 
+                         vsa_cos_sim(
+                           vsa_encode_scalar_spline(x, ss), 
+                           vsa_encode_scalar_spline(x, ss)
+                         )
+  )
+) 
+
+d %&gt;% ggplot() +
+  geom_histogram(aes(x = cos))</code></pre>
+<pre><code>`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<p><img src="figure/encoder_spline.Rmd/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-8-1">
+Past versions of unnamed-chunk-8-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-8-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/e40da78fe9d8e911cf109c9e5e9b84983f8efca1/docs/figure/encoder_spline.Rmd/unnamed-chunk-8-1.png" target="_blank">e40da78</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-08-18
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/77b171d9e00a489d6d099a9f0fb528b6c0e143fb/docs/figure/encoder_spline.Rmd/unnamed-chunk-8-1.png" target="_blank">77b171d</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-08-18
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/9c30ab06bd66cf4ab688f66dc65924bc979bc1df/docs/figure/encoder_spline.Rmd/unnamed-chunk-8-1.png" target="_blank">9c30ab0</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-08-17
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/e19cb7e9a3e5a7c619b1aba1bb0437aeaefc66a8/docs/figure/encoder_spline.Rmd/unnamed-chunk-8-1.png" target="_blank">e19cb7e</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-08-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<ul>
+<li>The encoded values of the scalar midway between the bounding knots
+differ randomly and have a distribution of cosine similarities to
+each other that are fairly tightly bounded around 0.5</li>
+</ul>
+<p>Repeat the analysis for a scalar much nearer one of the knots.</p>
+<pre class="r"><code># make an encoder specification with realistic vector dimension
+ss &lt;- vsa_mk_scalar_encoder_spline_spec(vsa_dim = 1e4L, knots = c(0, 1))
+
+# generate n pairs of encodings of the same scalar (x)
+x &lt;- 0.05 # scalar to encode (in the range 0 .. 1)
+n &lt;- 1e3 # number of pairs to create
+# make a one-column data frame with the cos similarity of each vector pair
+d &lt;- tibble::tibble(
+  cos = purrr::map_dbl(1:n, ~ 
+                         vsa_cos_sim(
+                           vsa_encode_scalar_spline(x, ss), 
+                           vsa_encode_scalar_spline(x, ss)
+                         )
+  )
+) 
+
+d %&gt;% ggplot() +
+  geom_histogram(aes(x = cos))</code></pre>
+<pre><code>`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<p><img src="figure/encoder_spline.Rmd/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-1">
+Past versions of unnamed-chunk-9-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-9-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/e40da78fe9d8e911cf109c9e5e9b84983f8efca1/docs/figure/encoder_spline.Rmd/unnamed-chunk-9-1.png" target="_blank">e40da78</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-08-18
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/77b171d9e00a489d6d099a9f0fb528b6c0e143fb/docs/figure/encoder_spline.Rmd/unnamed-chunk-9-1.png" target="_blank">77b171d</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-08-18
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/9c30ab06bd66cf4ab688f66dc65924bc979bc1df/docs/figure/encoder_spline.Rmd/unnamed-chunk-9-1.png" target="_blank">9c30ab0</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-08-17
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/e19cb7e9a3e5a7c619b1aba1bb0437aeaefc66a8/docs/figure/encoder_spline.Rmd/unnamed-chunk-9-1.png" target="_blank">e19cb7e</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-08-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<ul>
+<li>The cosine similarities between pairs of encodings of the scalar
+0.05 is a much tighter distribution around ~0.905</li>
+</ul>
+<p>The fact that the encoding is constant at the knots and more variable
+between knots seems rather odd. If this is a problem the encoding could
+be made constant by using a fixed seed to <code>vsa_add()</code>.</p>
+</div>
+<div id="apply-decoding" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> Apply decoding</h1>
+<p>The decoder applies the spline specification to a VSA vector and returns
+a numeric scalar value.</p>
+<p>The input VSA vector is compared to each of the knot vectors and the dot
+product calculated for each comparison. Dot products less than a
+threshold (close to zero) are set to zero, then all the dot products are
+normalised to sum to one. The normalised dot products are then used with
+the scalar knot values to calculate the weighted mean of the scalar knot
+values. The weighted mean is returned as the output of the decoder.</p>
+<pre class="r"><code># function to encode a scalar numeric value to a VSA vector
+# This function uses a linear interpolation spline
+# to interpolate between a sequence of VSA vectors corresponding to the spline knots
+
+vsa_decode_scalar_spline &lt;- function(
+  v, # numeric - VSA vector (not necessarily bipolar)
+  spline_spec, # data frame - spline spec created by vsa_mk_scalar_encoder_spline_spec()
+  zero_thresh = 4 # numeric[1] - zero threshold (in standard deviations)
+) # numeric[1] - scalar value decoded from v
+{
+  ### Set up the arguments ###
+  # The OCD error checking is probably more useful as documentation
+  
+  if(missing(v)) 
+    stop(&quot;VSA vector argument (v) must be specified&quot;)
+  
+  if(!is.vector(v, mode = &quot;numeric&quot;))
+    stop(&quot;v must be an numeric vector&quot;)
+  
+  if (missing(spline_spec))
+    stop(&quot;spline_spec must be specified&quot;)
+  
+  if ( 
+    !(
+      is_tibble(spline_spec) &amp;&amp; 
+      all(c(&quot;knots_scalar&quot;, &quot;knots_vsa&quot;) %in% names(spline_spec))
+    )
+  )
+    stop(&quot;spline_spec must be a spline specification object&quot;)
+  
+  if(!missing(zero_thresh) &amp;&amp; 
+     !(is.vector(zero_thresh, mode = &quot;numeric&quot;) &amp;&amp; length(zero_thresh) == 1))
+    stop(&quot;zero_thresh must be numeric&quot;)
+  
+  # get the dot product of the encoded scalar with each of the knot vectors
+  dotprod &lt;- spline_spec$knots_vsa %&gt;% 
+    purrr::map_dbl(.f = vsa_dotprod, v2 = v)
+  
+  # set dot products below the zero threshold to 0.5
+  zero_thresh &lt;- zero_thresh * sqrt(length(v) * 0.5) # sd = sqrt(n p q) = sqrt(vsa_dim 0.5 0.5)
+  dotprod &lt;- ifelse(dotprod &lt; zero_thresh, 0, dotprod)
+  
+  # normalise the dot products
+  dotprod &lt;- dotprod / sum(dotprod)
+  
+  # return the weighted sum of the knot scalara
+  sum(dotprod * spline_spec$knots_scalar)
+}</code></pre>
+<p>Do some very small scale testing.</p>
+<div id="values-decoded-correctly" class="section level2" number="3.1">
+<h2><span class="header-section-number">3.1</span> Values decoded correctly</h2>
+<p>Chcek that encoded values are decoded correctly across the range of the
+knots.</p>
+<pre class="r"><code># make an encoder specification with realistic vector dimension
+ss &lt;- vsa_mk_scalar_encoder_spline_spec(vsa_dim = 1e4L, knots = c(-1, 1, 2, 4))
+
+-1.5 %&gt;% vsa_encode_scalar_spline(ss) %&gt;% vsa_decode_scalar_spline(ss)</code></pre>
+<pre><code>[1] -1</code></pre>
+<pre class="r"><code>-1 %&gt;% vsa_encode_scalar_spline(ss) %&gt;% vsa_decode_scalar_spline(ss)</code></pre>
+<pre><code>[1] -1</code></pre>
+<pre class="r"><code>0 %&gt;% vsa_encode_scalar_spline(ss) %&gt;% vsa_decode_scalar_spline(ss)</code></pre>
+<pre><code>[1] 0.01286691</code></pre>
+<pre class="r"><code>1 %&gt;% vsa_encode_scalar_spline(ss) %&gt;% vsa_decode_scalar_spline(ss)</code></pre>
+<pre><code>[1] 1</code></pre>
+<pre class="r"><code>1.5 %&gt;% vsa_encode_scalar_spline(ss) %&gt;% vsa_decode_scalar_spline(ss)</code></pre>
+<pre><code>[1] 1.507176</code></pre>
+<pre class="r"><code>2 %&gt;% vsa_encode_scalar_spline(ss) %&gt;% vsa_decode_scalar_spline(ss)</code></pre>
+<pre><code>[1] 2</code></pre>
+<pre class="r"><code>3 %&gt;% vsa_encode_scalar_spline(ss) %&gt;% vsa_decode_scalar_spline(ss)</code></pre>
+<pre><code>[1] 2.971713</code></pre>
+<pre class="r"><code>4 %&gt;% vsa_encode_scalar_spline(ss) %&gt;% vsa_decode_scalar_spline(ss)</code></pre>
+<pre><code>[1] 4</code></pre>
+<pre class="r"><code>4.5 %&gt;% vsa_encode_scalar_spline(ss) %&gt;% vsa_decode_scalar_spline(ss)</code></pre>
+<pre><code>[1] 4</code></pre>
+<ul>
+<li>The decoded values at the knots are exactly correct.</li>
+<li>The decoded values between the knots are approximately correct.</li>
+</ul>
+<p>Check the random variation of intermediate values.</p>
+<pre class="r"><code>0 %&gt;% vsa_encode_scalar_spline(ss) %&gt;% vsa_decode_scalar_spline(ss)</code></pre>
+<pre><code>[1] 0.01005227</code></pre>
+<pre class="r"><code>0 %&gt;% vsa_encode_scalar_spline(ss) %&gt;% vsa_decode_scalar_spline(ss)</code></pre>
+<pre><code>[1] -0.02090873</code></pre>
+<pre class="r"><code>0 %&gt;% vsa_encode_scalar_spline(ss) %&gt;% vsa_decode_scalar_spline(ss)</code></pre>
+<pre><code>[1] -0.005227181</code></pre>
+<pre class="r"><code>0 %&gt;% vsa_encode_scalar_spline(ss) %&gt;% vsa_decode_scalar_spline(ss)</code></pre>
+<pre><code>[1] -0.009650181</code></pre>
+<pre class="r"><code>0 %&gt;% vsa_encode_scalar_spline(ss) %&gt;% vsa_decode_scalar_spline(ss)</code></pre>
+<pre><code>[1] -0.00924809</code></pre>
+<ul>
+<li>The decoded values are tightly clustered around the encoded value.</li>
+</ul>
+</div>
+<div id="zero-threshold" class="section level2" number="3.2">
+<h2><span class="header-section-number">3.2</span> Zero threshold</h2>
+<p>Look at the effect of the zero threshold.</p>
+<p>When there are more than two knots there is more than one interval
+bounded by knots. When decoding, we are only interested in the knots
+bounding the interval containing the encoded value. The other knots
+should be ignored.</p>
+<p>These irrelevant knots will have small dot products with the encoded
+scalar value. Unfortunately, the dot products will not be exactly zero.
+They will be distributed in a small range around zero.</p>
+<p>The aim of the zero threshold is to treat dot products in the range that
+would be produced by approximately orthogonal vectors as exactly zero.</p>
+<p>In the following analyses I will make life gard for the decoder by
+having 101 knots. This makes it more likely that at least one of the
+irrelevant knots will have a dot product above the zero threshold.</p>
+<p>Make the zero threshold ridiculously large (10).</p>
+<pre class="r"><code>ss &lt;- vsa_mk_scalar_encoder_spline_spec(vsa_dim = 1e4L, knots = 0:100)
+
+# encode and decode random values over the first knot interval
+runif(n = 1e3, min = -0.1, max = 1.1) %&gt;% 
+  tibble::tibble(x_in = .) %&gt;% 
+  dplyr::rowwise() %&gt;% 
+  dplyr::mutate(
+    x_out = x_in %&gt;% 
+      vsa_encode_scalar_spline(ss) %&gt;% 
+      vsa_decode_scalar_spline(ss, zero_thresh = 8)
+  ) %&gt;% 
+  dplyr::ungroup() %&gt;% 
+  ggplot() +
+  geom_vline(xintercept = 0:1, alpha = 0.3) +
+  geom_abline(slope = 1, intercept = 0, colour = &quot;red&quot;, alpha = 0.5) +
+  geom_point(aes(x = x_in, y = x_out), size = 0.1, alpha = 0.5) +
+  ggtitle(&quot;zero_thresh = 8&quot;)</code></pre>
+<p><img src="figure/encoder_spline.Rmd/unnamed-chunk-12-1.png" width="672" style="display: block; margin: auto;" /></p>
+<ul>
+<li>Encoded values close to the knots are treated as though they are
+exactly equal to the knots (because the dot product with the knot
+vector at the other end of the interval is close to zero).</li>
+<li>The decoded values not close to the knots lie along the expected
+line.</li>
+</ul>
+<pre class="r"><code>runif(n = 1e3, min = -0.1, max = 1.1) %&gt;% 
+  tibble::tibble(x_in = .) %&gt;% 
+  dplyr::rowwise() %&gt;% 
+  dplyr::mutate(
+    x_out = x_in %&gt;% 
+      vsa_encode_scalar_spline(ss) %&gt;% 
+      vsa_decode_scalar_spline(ss, zero_thresh = 6)
+  ) %&gt;% 
+  dplyr::ungroup() %&gt;% 
+  ggplot() +
+  geom_vline(xintercept = 0:1, alpha = 0.3) +
+  geom_abline(slope = 1, intercept = 0, colour = &quot;red&quot;, alpha = 0.5) +
+  geom_point(aes(x = x_in, y = x_out), size = 0.1, alpha = 0.5) +
+  ggtitle(&quot;zero_thresh = 6&quot;)</code></pre>
+<p><img src="figure/encoder_spline.Rmd/unnamed-chunk-13-1.png" width="672" style="display: block; margin: auto;" /></p>
+<ul>
+<li>The region considered identical to the knot value is smaller.</li>
+<li>The decoded values don’t quite lie on the expected line.</li>
+</ul>
+<pre class="r"><code>runif(n = 1e3, min = -0.1, max = 1.1) %&gt;% 
+  tibble::tibble(x_in = .) %&gt;% 
+  dplyr::rowwise() %&gt;% 
+  dplyr::mutate(
+    x_out = x_in %&gt;% 
+      vsa_encode_scalar_spline(ss) %&gt;% 
+      vsa_decode_scalar_spline(ss, zero_thresh = 5)
+  ) %&gt;% 
+  dplyr::ungroup() %&gt;% 
+  ggplot() +
+  geom_vline(xintercept = 0:1, alpha = 0.3) +
+  geom_abline(slope = 1, intercept = 0, colour = &quot;red&quot;, alpha = 0.5) +
+  geom_point(aes(x = x_in, y = x_out), size = 0.1, alpha = 0.5) +
+  ggtitle(&quot;zero_thresh = 5&quot;)</code></pre>
+<p><img src="figure/encoder_spline.Rmd/unnamed-chunk-14-1.png" width="672" style="display: block; margin: auto;" /></p>
+<ul>
+<li>A small number of points are way off the expected line because some
+irrelevant knots have had dot products above the zero threshold.</li>
+</ul>
+<p>Try a smaller number of knots, which will make life easier for the
+decoder.</p>
+<pre class="r"><code>ss &lt;- vsa_mk_scalar_encoder_spline_spec(vsa_dim = 1e4L, knots = 0:2)
+
+# encode and decode random values over the knot range
+runif(n = 1e3, min = -0.1, max = 2.1) %&gt;% 
+  tibble::tibble(x_in = .) %&gt;% 
+  dplyr::rowwise() %&gt;% 
+  dplyr::mutate(
+    x_out = x_in %&gt;% 
+      vsa_encode_scalar_spline(ss) %&gt;% 
+      vsa_decode_scalar_spline(ss, zero_thresh = 4)
+  ) %&gt;% 
+  dplyr::ungroup() %&gt;% 
+  ggplot() +
+  geom_vline(xintercept = 0:2, alpha = 0.3) +
+  geom_abline(slope = 1, intercept = 0, colour = &quot;red&quot;, alpha = 0.5) +
+  geom_point(aes(x = x_in, y = x_out), size = 0.1, alpha = 0.5) +
+  ggtitle(&quot;zero_thresh = 4&quot;)</code></pre>
+<p><img src="figure/encoder_spline.Rmd/unnamed-chunk-15-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>runif(n = 1e3, min = -0.1, max = 2.1) %&gt;% 
+  tibble::tibble(x_in = .) %&gt;% 
+  dplyr::rowwise() %&gt;% 
+  dplyr::mutate(
+    x_out = x_in %&gt;% 
+      vsa_encode_scalar_spline(ss) %&gt;% 
+      vsa_decode_scalar_spline(ss, zero_thresh = 2)
+  ) %&gt;% 
+  dplyr::ungroup() %&gt;% 
+  ggplot() +
+  geom_vline(xintercept = 0:2, alpha = 0.3) +
+  geom_abline(slope = 1, intercept = 0, colour = &quot;red&quot;, alpha = 0.5) +
+  geom_point(aes(x = x_in, y = x_out), size = 0.1, alpha = 0.5) +
+  ggtitle(&quot;zero_thresh = 2&quot;)</code></pre>
+<p><img src="figure/encoder_spline.Rmd/unnamed-chunk-16-1.png" width="672" style="display: block; margin: auto;" /></p>
+<ul>
+<li>The decoded values are not quite aligned with the expected line.</li>
+</ul>
+<p>Now try a zero threshold where we expect to see random values above the
+threshold.</p>
+<pre class="r"><code>runif(n = 1e3, min = -0.1, max = 2.1) %&gt;% 
+  tibble::tibble(x_in = .) %&gt;% 
+  dplyr::rowwise() %&gt;% 
+  dplyr::mutate(
+    x_out = x_in %&gt;% 
+      vsa_encode_scalar_spline(ss) %&gt;% 
+      vsa_decode_scalar_spline(ss, zero_thresh = 1)
+  ) %&gt;% 
+  dplyr::ungroup() %&gt;% 
+  ggplot() +
+  geom_vline(xintercept = 0:2, alpha = 0.3) +
+  geom_abline(slope = 1, intercept = 0, colour = &quot;red&quot;, alpha = 0.5) +
+  geom_point(aes(x = x_in, y = x_out), size = 0.1, alpha = 0.5) +
+  ggtitle(&quot;zero_thresh = 1&quot;)</code></pre>
+<p><img src="figure/encoder_spline.Rmd/unnamed-chunk-17-1.png" width="672" style="display: block; margin: auto;" /></p>
+<ul>
+<li>The decoded values are not quite aligned with the expected line.</li>
+<li>The decoded values corresponding to the knots are not quite right.</li>
+</ul>
+<p>Now set the zero threshold to zero. This avoids negative dot products,
+which is required to make the weighted sum meaningful.</p>
+<pre class="r"><code>runif(n = 1e3, min = -0.1, max = 2.1) %&gt;% 
+  tibble::tibble(x_in = .) %&gt;% 
+  dplyr::rowwise() %&gt;% 
+  dplyr::mutate(
+    x_out = x_in %&gt;% 
+      vsa_encode_scalar_spline(ss) %&gt;% 
+      vsa_decode_scalar_spline(ss, zero_thresh = 0)
+  ) %&gt;% 
+  dplyr::ungroup() %&gt;% 
+  ggplot() +
+  geom_vline(xintercept = 0:2, alpha = 0.3) +
+  geom_abline(slope = 1, intercept = 0, colour = &quot;red&quot;, alpha = 0.5) +
+  geom_point(aes(x = x_in, y = x_out), size = 0.1, alpha = 0.5) +
+  ggtitle(&quot;zero_thresh = 0&quot;)</code></pre>
+<p><img src="figure/encoder_spline.Rmd/unnamed-chunk-18-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Now try disabling the zero threshold.</p>
+<pre class="r"><code>runif(n = 1e3, min = -0.1, max = 2.1) %&gt;% 
+  tibble::tibble(x_in = .) %&gt;% 
+  dplyr::rowwise() %&gt;% 
+  dplyr::mutate(
+    x_out = x_in %&gt;% 
+      vsa_encode_scalar_spline(ss) %&gt;% 
+      vsa_decode_scalar_spline(ss, zero_thresh = -Inf)
+  ) %&gt;% 
+  dplyr::ungroup() %&gt;% 
+  ggplot() +
+  geom_vline(xintercept = 0:2, alpha = 0.3) +
+  geom_abline(slope = 1, intercept = 0, colour = &quot;red&quot;, alpha = 0.5) +
+  geom_point(aes(x = x_in, y = x_out), size = 0.1, alpha = 0.5) +
+  ggtitle(&quot;zero_thresh = -Inf&quot;)</code></pre>
+<p><img src="figure/encoder_spline.Rmd/unnamed-chunk-19-1.png" width="672" style="display: block; margin: auto;" /></p>
+<ul>
+<li>That’s not obviously different to setting the threshold to zero.</li>
+</ul>
+</div>
+<div id="random-vectors" class="section level2" number="3.3">
+<h2><span class="header-section-number">3.3</span> Random vectors</h2>
+<p>Try to decode a random vector (i.e. not a valid encoding of a scalar).</p>
+<p>Setting a high zero threshold means that with high probability we will
+end up dividing by zero in the decoder.</p>
+<pre class="r"><code>vsa_mk_atom_bipolar(1e4L) %&gt;% vsa_decode_scalar_spline(ss, zero_thresh = 4)</code></pre>
+<pre><code>[1] NaN</code></pre>
+<pre class="r"><code>vsa_mk_atom_bipolar(1e4L) %&gt;% vsa_decode_scalar_spline(ss, zero_thresh = 4)</code></pre>
+<pre><code>[1] NaN</code></pre>
+<pre class="r"><code>vsa_mk_atom_bipolar(1e4L) %&gt;% vsa_decode_scalar_spline(ss, zero_thresh = 4)</code></pre>
+<pre><code>[1] NaN</code></pre>
+<pre class="r"><code>vsa_mk_atom_bipolar(1e4L) %&gt;% vsa_decode_scalar_spline(ss, zero_thresh = 4)</code></pre>
+<pre><code>[1] NaN</code></pre>
+<pre class="r"><code>vsa_mk_atom_bipolar(1e4L) %&gt;% vsa_decode_scalar_spline(ss, zero_thresh = 4)</code></pre>
+<pre><code>[1] NaN</code></pre>
+<p>Setting a zero threshold means that approximately half the dot products
+will be set to zero.</p>
+<pre class="r"><code>vsa_mk_atom_bipolar(1e4L) %&gt;% vsa_decode_scalar_spline(ss, zero_thresh = 0)</code></pre>
+<pre><code>[1] 1.163043</code></pre>
+<pre class="r"><code>vsa_mk_atom_bipolar(1e4L) %&gt;% vsa_decode_scalar_spline(ss, zero_thresh = 0)</code></pre>
+<pre><code>[1] NaN</code></pre>
+<pre class="r"><code>vsa_mk_atom_bipolar(1e4L) %&gt;% vsa_decode_scalar_spline(ss, zero_thresh = 0)</code></pre>
+<pre><code>[1] NaN</code></pre>
+<pre class="r"><code>vsa_mk_atom_bipolar(1e4L) %&gt;% vsa_decode_scalar_spline(ss, zero_thresh = 0)</code></pre>
+<pre><code>[1] 1</code></pre>
+<pre class="r"><code>vsa_mk_atom_bipolar(1e4L) %&gt;% vsa_decode_scalar_spline(ss, zero_thresh = 0)</code></pre>
+<pre><code>[1] 0.6153846</code></pre>
+<ul>
+<li>The probability of dividing by zero is nonzero.</li>
+<li>The “decoded” values lie in the range of the knots.</li>
+</ul>
+<p>Disabling the zero threshold results in a very small probability of
+dividing by zero. The weighted sum no longer makes sense because the
+weights can be negative. Consequently, the returned value can lie
+outside the range of the knots.</p>
+<pre class="r"><code>vsa_mk_atom_bipolar(1e4L) %&gt;% vsa_decode_scalar_spline(ss, zero_thresh = -Inf)</code></pre>
+<pre><code>[1] -1.47619</code></pre>
+<pre class="r"><code>vsa_mk_atom_bipolar(1e4L) %&gt;% vsa_decode_scalar_spline(ss, zero_thresh = -Inf)</code></pre>
+<pre><code>[1] 1.6875</code></pre>
+<pre class="r"><code>vsa_mk_atom_bipolar(1e4L) %&gt;% vsa_decode_scalar_spline(ss, zero_thresh = -Inf)</code></pre>
+<pre><code>[1] 1</code></pre>
+<pre class="r"><code>vsa_mk_atom_bipolar(1e4L) %&gt;% vsa_decode_scalar_spline(ss, zero_thresh = -Inf)</code></pre>
+<pre><code>[1] 0.6521739</code></pre>
+<pre class="r"><code>vsa_mk_atom_bipolar(1e4L) %&gt;% vsa_decode_scalar_spline(ss, zero_thresh = -Inf)</code></pre>
+<pre><code>[1] 0.804878</code></pre>
+<ul>
+<li>Some of the decoded values lie outside the range of the knots.</li>
+</ul>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.1.1 (2021-08-10)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: Ubuntu 21.04
+
+Matrix products: default
+BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.9.0
+LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.9.0
+
+locale:
+ [1] LC_CTYPE=en_AU.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_AU.UTF-8        LC_COLLATE=en_AU.UTF-8    
+ [5] LC_MONETARY=en_AU.UTF-8    LC_MESSAGES=en_AU.UTF-8   
+ [7] LC_PAPER=en_AU.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_AU.UTF-8 LC_IDENTIFICATION=C       
+
+attached base packages:
+[1] stats     graphics  grDevices datasets  utils     methods   base     
+
+other attached packages:
+[1] tibble_3.1.3       Matrix_1.3-4       dplyr_1.0.7        DiagrammeR_1.0.6.1
+[5] ggplot2_3.3.5      purrr_0.3.4        magrittr_2.0.1     here_1.0.1        
+
+loaded via a namespace (and not attached):
+ [1] Rcpp_1.0.7         highr_0.9          RColorBrewer_1.1-2 pillar_1.6.2      
+ [5] compiler_4.1.1     later_1.2.0        git2r_0.28.0       workflowr_1.6.2   
+ [9] tools_4.1.1        digest_0.6.27      lattice_0.20-44    jsonlite_1.7.2    
+[13] evaluate_0.14      lifecycle_1.0.0    gtable_0.3.0       pkgconfig_2.0.3   
+[17] rlang_0.4.11       rstudioapi_0.13    cli_3.0.1          yaml_2.2.1        
+[21] xfun_0.25          withr_2.4.2        stringr_1.4.0      knitr_1.33        
+[25] htmlwidgets_1.5.3  generics_0.1.0     fs_1.5.0           vctrs_0.3.8       
+[29] tidyselect_1.1.1   rprojroot_2.0.2    grid_4.1.1         glue_1.4.2        
+[33] R6_2.5.0           fansi_0.5.0        rmarkdown_2.10     bookdown_0.22     
+[37] farver_2.1.0       tidyr_1.1.3        whisker_0.4        scales_1.1.1      
+[41] promises_1.2.0.1   ellipsis_0.3.2     htmltools_0.5.1.1  colorspace_2.0-2  
+[45] renv_0.14.0        httpuv_1.6.1       labeling_0.4.2     utf8_1.2.2        
+[49] stringi_1.7.3      visNetwork_2.0.9   munsell_0.5.0      crayon_1.4.1      </code></pre>
+</div>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+http://docs.mathjax.org/en/latest/configuration.html.  This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3,h4,h5",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -661,9 +661,8 @@ def vsa_mk_atom_bipolar(
   np.random.seed(seed)
   
   # Construct a random bipolar vector
-  return np.random.random(vsa_dim)
-  #sample(c(-1L, 1L), size = vsa_dim, replace = TRUE)
-
+  return 2 * (np.random.random(vsa_dim) > 0.5) - 1
+ 
 ## ---- tests
 
 def main():

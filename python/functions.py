@@ -658,9 +658,16 @@ def vsa_mk_atom_bipolar(
   
   # if seed is set the the vector is fixed
   # otherwise it is randomised
-  set.seed(seed)
+  np.random.seed(seed)
   
   # Construct a random bipolar vector
+  return np.random.random(vsa_dim)
   #sample(c(-1L, 1L), size = vsa_dim, replace = TRUE)
 
+## ---- tests
 
+def main():
+    print(vsa_mk_atom_bipolar(10))
+
+if __name__ == '__main__':
+    main()

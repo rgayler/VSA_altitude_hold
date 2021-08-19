@@ -389,7 +389,7 @@ Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></sp
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2021-08-18
+<strong>Last updated:</strong> 2021-08-19
 </p>
 <p>
 <strong>Checks:</strong>
@@ -517,20 +517,20 @@ makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomrgaylerVSAaltitudeholdtreeaf002d994f20dbca323cb2bc6dcb0783e32ddda5targetblankaf002d9a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomrgaylerVSAaltitudeholdtree852c903ff4902bbda22050348f516bf477da28aetargetblank852c903a">
 <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
-<strong>Repository version:</strong> <a href="https://github.com/rgayler/VSA_altitude_hold/tree/af002d994f20dbca323cb2bc6dcb0783e32ddda5" target="_blank">af002d9</a>
+<strong>Repository version:</strong> <a href="https://github.com/rgayler/VSA_altitude_hold/tree/852c903ff4902bbda22050348f516bf477da28ae" target="_blank">852c903</a>
 </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomrgaylerVSAaltitudeholdtreeaf002d994f20dbca323cb2bc6dcb0783e32ddda5targetblankaf002d9a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomrgaylerVSAaltitudeholdtree852c903ff4902bbda22050348f516bf477da28aetargetblank852c903a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and
 connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/rgayler/VSA_altitude_hold/tree/af002d994f20dbca323cb2bc6dcb0783e32ddda5" target="_blank">af002d9</a>.
+The results in this page were generated with repository version <a href="https://github.com/rgayler/VSA_altitude_hold/tree/852c903ff4902bbda22050348f516bf477da28ae" target="_blank">852c903</a>.
 See the <em>Past versions</em> tab to see a history of the changes made to the
 R Markdown and HTML files.
 </p>
@@ -593,6 +593,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/852c903ff4902bbda22050348f516bf477da28ae/analysis/encoder_spline.Rmd" target="_blank">852c903</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-08-19
+</td>
+<td>
+Add linear spline regression decoder
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/rgayler/VSA_altitude_hold/de8dbda9296c45b71b3b0a101fcbdf1ddfe0388e/docs/encoder_spline.html" target="_blank">de8dbda</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-08-18
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -723,11 +757,11 @@ ss</code></pre>
 2            1 &lt;int [10]&gt;
 3            2 &lt;int [10]&gt;</code></pre>
 <pre class="r"><code>ss$knots_vsa[[1]]</code></pre>
-<pre><code> [1]  1  1 -1  1  1  1 -1  1  1  1</code></pre>
+<pre><code> [1] -1  1 -1  1 -1 -1  1  1 -1  1</code></pre>
 <pre class="r"><code>ss$knots_vsa[[2]]</code></pre>
-<pre><code> [1] -1 -1  1 -1  1 -1  1  1 -1  1</code></pre>
+<pre><code> [1]  1  1  1  1 -1  1  1  1  1  1</code></pre>
 <pre class="r"><code>ss$knots_vsa[[3]]</code></pre>
-<pre><code> [1]  1 -1 -1  1 -1 -1 -1  1  1 -1</code></pre>
+<pre><code> [1] -1 -1 -1 -1 -1  1  1 -1  1 -1</code></pre>
 <ul>
 <li>The contents are as expected.</li>
 </ul>
@@ -798,11 +832,11 @@ vsa_encode_scalar_spline &lt;- function(
 <p>Do some very small scale testing.</p>
 <p>Test what happens when the input scalar lies exactly on a knot.</p>
 <pre class="r"><code>vsa_encode_scalar_spline(-1.0, ss)</code></pre>
-<pre><code> [1]  1  1 -1  1  1  1 -1  1  1  1</code></pre>
+<pre><code> [1] -1  1 -1  1 -1 -1  1  1 -1  1</code></pre>
 <pre class="r"><code>vsa_encode_scalar_spline( 1.0, ss)</code></pre>
-<pre><code> [1] -1 -1  1 -1  1 -1  1  1 -1  1</code></pre>
+<pre><code> [1]  1  1  1  1 -1  1  1  1  1  1</code></pre>
 <pre class="r"><code>vsa_encode_scalar_spline( 2.0, ss)</code></pre>
-<pre><code> [1]  1 -1 -1  1 -1 -1 -1  1  1 -1</code></pre>
+<pre><code> [1] -1 -1 -1 -1 -1  1  1 -1  1 -1</code></pre>
 <ul>
 <li>The returned values are equal to the VSA vectors at the
 corresponding knots.</li>
@@ -810,9 +844,9 @@ corresponding knots.</li>
 <p>Test what happens when the input scalar falls outside the range of the
 knots.</p>
 <pre class="r"><code>vsa_encode_scalar_spline(-1.1, ss)</code></pre>
-<pre><code> [1]  1  1 -1  1  1  1 -1  1  1  1</code></pre>
+<pre><code> [1] -1  1 -1  1 -1 -1  1  1 -1  1</code></pre>
 <pre class="r"><code>vsa_encode_scalar_spline( 2.1, ss)</code></pre>
-<pre><code> [1]  1 -1 -1  1 -1 -1 -1  1  1 -1</code></pre>
+<pre><code> [1] -1 -1 -1 -1 -1  1  1 -1  1 -1</code></pre>
 <ul>
 <li>Input values outside the range of the knots are mapped to the
 nearest extreme knot.</li>
@@ -821,21 +855,21 @@ nearest extreme knot.</li>
 sampling in <code>vsa_add()</code>).</p>
 <pre class="r"><code># remind us of the knot values
 ss$knots_vsa[[1]]</code></pre>
-<pre><code> [1]  1  1 -1  1  1  1 -1  1  1  1</code></pre>
+<pre><code> [1] -1  1 -1  1 -1 -1  1  1 -1  1</code></pre>
 <pre class="r"><code>ss$knots_vsa[[2]]</code></pre>
-<pre><code> [1] -1 -1  1 -1  1 -1  1  1 -1  1</code></pre>
+<pre><code> [1]  1  1  1  1 -1  1  1  1  1  1</code></pre>
 <pre class="r"><code># identify which elements are identical for the two knots
 ss$knots_vsa[[1]] == ss$knots_vsa[[2]]</code></pre>
-<pre><code> [1] FALSE FALSE FALSE FALSE  TRUE FALSE FALSE  TRUE FALSE  TRUE</code></pre>
+<pre><code> [1] FALSE  TRUE FALSE  TRUE  TRUE FALSE  TRUE  TRUE FALSE  TRUE</code></pre>
 <pre class="r"><code># interpolate midway between those two knots
 vsa_encode_scalar_spline(0, ss)</code></pre>
-<pre><code> [1]  1  1 -1  1  1  1  1  1  1  1</code></pre>
+<pre><code> [1] -1  1 -1  1 -1  1  1  1 -1  1</code></pre>
 <pre class="r"><code>vsa_encode_scalar_spline(0, ss)</code></pre>
-<pre><code> [1]  1 -1 -1  1  1 -1  1  1  1  1</code></pre>
+<pre><code> [1] -1  1  1  1 -1 -1  1  1 -1  1</code></pre>
 <pre class="r"><code>vsa_encode_scalar_spline(0, ss)</code></pre>
-<pre><code> [1]  1  1 -1  1  1 -1  1  1 -1  1</code></pre>
+<pre><code> [1] -1  1  1  1 -1  1  1  1  1  1</code></pre>
 <pre class="r"><code>vsa_encode_scalar_spline(0, ss)</code></pre>
-<pre><code> [1] -1  1  1  1  1 -1 -1  1  1  1</code></pre>
+<pre><code> [1] -1  1  1  1 -1 -1  1  1  1  1</code></pre>
 <ul>
 <li><p>Elements 3, 4, 6, 7, and 8 of the first and second knot vectors are
 identical, so the result of adding them is constant.</p></li>
@@ -903,6 +937,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/de8dbda9296c45b71b3b0a101fcbdf1ddfe0388e/docs/figure/encoder_spline.Rmd/unnamed-chunk-6-1.png" target="_blank">de8dbda</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-08-18
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/rgayler/VSA_altitude_hold/blob/af002d994f20dbca323cb2bc6dcb0783e32ddda5/docs/figure/encoder_spline.Rmd/unnamed-chunk-6-1.png" target="_blank">af002d9</a>
@@ -994,6 +1039,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/de8dbda9296c45b71b3b0a101fcbdf1ddfe0388e/docs/figure/encoder_spline.Rmd/unnamed-chunk-7-1.png" target="_blank">de8dbda</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-08-18
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/rgayler/VSA_altitude_hold/blob/af002d994f20dbca323cb2bc6dcb0783e32ddda5/docs/figure/encoder_spline.Rmd/unnamed-chunk-7-1.png" target="_blank">af002d9</a>
 </td>
 <td>
@@ -1064,6 +1120,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/de8dbda9296c45b71b3b0a101fcbdf1ddfe0388e/docs/figure/encoder_spline.Rmd/unnamed-chunk-8-1.png" target="_blank">de8dbda</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-08-18
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/rgayler/VSA_altitude_hold/blob/af002d994f20dbca323cb2bc6dcb0783e32ddda5/docs/figure/encoder_spline.Rmd/unnamed-chunk-8-1.png" target="_blank">af002d9</a>
 </td>
 <td>
@@ -1125,6 +1192,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/de8dbda9296c45b71b3b0a101fcbdf1ddfe0388e/docs/figure/encoder_spline.Rmd/unnamed-chunk-9-1.png" target="_blank">de8dbda</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-08-18
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/rgayler/VSA_altitude_hold/blob/af002d994f20dbca323cb2bc6dcb0783e32ddda5/docs/figure/encoder_spline.Rmd/unnamed-chunk-9-1.png" target="_blank">af002d9</a>
@@ -1209,7 +1287,7 @@ vsa_decode_scalar_spline &lt;- function(
 <p>Do some very small scale testing.</p>
 <div id="values-decoded-correctly" class="section level2" number="3.1">
 <h2><span class="header-section-number">3.1</span> Values decoded correctly</h2>
-<p>Chcek that encoded values are decoded correctly across the range of the
+<p>Check that encoded values are decoded correctly across the range of the
 knots.</p>
 <pre class="r"><code># make an encoder specification with realistic vector dimension
 ss &lt;- vsa_mk_scalar_encoder_spline_spec(vsa_dim = 1e4L, knots = c(-1, 1, 2, 4))
@@ -1219,15 +1297,15 @@ ss &lt;- vsa_mk_scalar_encoder_spline_spec(vsa_dim = 1e4L, knots = c(-1, 1, 2, 4
 <pre class="r"><code>-1 %&gt;% vsa_encode_scalar_spline(ss) %&gt;% vsa_decode_scalar_spline(ss)</code></pre>
 <pre><code>[1] -1</code></pre>
 <pre class="r"><code>0 %&gt;% vsa_encode_scalar_spline(ss) %&gt;% vsa_decode_scalar_spline(ss)</code></pre>
-<pre><code>[1] -0.00239904</code></pre>
+<pre><code>[1] -0.00998004</code></pre>
 <pre class="r"><code>1 %&gt;% vsa_encode_scalar_spline(ss) %&gt;% vsa_decode_scalar_spline(ss)</code></pre>
 <pre><code>[1] 1</code></pre>
 <pre class="r"><code>1.5 %&gt;% vsa_encode_scalar_spline(ss) %&gt;% vsa_decode_scalar_spline(ss)</code></pre>
-<pre><code>[1] 1.507435</code></pre>
+<pre><code>[1] 1.504208</code></pre>
 <pre class="r"><code>2 %&gt;% vsa_encode_scalar_spline(ss) %&gt;% vsa_decode_scalar_spline(ss)</code></pre>
 <pre><code>[1] 2</code></pre>
 <pre class="r"><code>3 %&gt;% vsa_encode_scalar_spline(ss) %&gt;% vsa_decode_scalar_spline(ss)</code></pre>
-<pre><code>[1] 3.004601</code></pre>
+<pre><code>[1] 2.995196</code></pre>
 <pre class="r"><code>4 %&gt;% vsa_encode_scalar_spline(ss) %&gt;% vsa_decode_scalar_spline(ss)</code></pre>
 <pre><code>[1] 4</code></pre>
 <pre class="r"><code>4.5 %&gt;% vsa_encode_scalar_spline(ss) %&gt;% vsa_decode_scalar_spline(ss)</code></pre>
@@ -1238,15 +1316,15 @@ ss &lt;- vsa_mk_scalar_encoder_spline_spec(vsa_dim = 1e4L, knots = c(-1, 1, 2, 4
 </ul>
 <p>Check the random variation of intermediate values.</p>
 <pre class="r"><code>0 %&gt;% vsa_encode_scalar_spline(ss) %&gt;% vsa_decode_scalar_spline(ss)</code></pre>
-<pre><code>[1] -0.005597761</code></pre>
+<pre><code>[1] -0.00758483</code></pre>
 <pre class="r"><code>0 %&gt;% vsa_encode_scalar_spline(ss) %&gt;% vsa_decode_scalar_spline(ss)</code></pre>
-<pre><code>[1] -0.006397441</code></pre>
+<pre><code>[1] -0.003592814</code></pre>
 <pre class="r"><code>0 %&gt;% vsa_encode_scalar_spline(ss) %&gt;% vsa_decode_scalar_spline(ss)</code></pre>
-<pre><code>[1] 0.03198721</code></pre>
+<pre><code>[1] -0.0003992016</code></pre>
 <pre class="r"><code>0 %&gt;% vsa_encode_scalar_spline(ss) %&gt;% vsa_decode_scalar_spline(ss)</code></pre>
-<pre><code>[1] -0.02319072</code></pre>
+<pre><code>[1] -0.01556886</code></pre>
 <pre class="r"><code>0 %&gt;% vsa_encode_scalar_spline(ss) %&gt;% vsa_decode_scalar_spline(ss)</code></pre>
-<pre><code>[1] -0.01159536</code></pre>
+<pre><code>[1] 0.0003992016</code></pre>
 <ul>
 <li>The decoded values are tightly clustered around the encoded value.</li>
 </ul>
@@ -1263,7 +1341,7 @@ scalar value. Unfortunately, the dot products will not be exactly zero.
 They will be distributed in a small range around zero.</p>
 <p>The aim of the zero threshold is to treat dot products in the range that
 would be produced by approximately orthogonal vectors as exactly zero.</p>
-<p>In the following analyses I will make life gard for the decoder by
+<p>In the following analyses I will make life hard for the decoder by
 having 101 knots. This makes it more likely that at least one of the
 irrelevant knots will have a dot product above the zero threshold.</p>
 <p>Make the zero threshold ridiculously large (10).</p>
@@ -1307,6 +1385,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/de8dbda9296c45b71b3b0a101fcbdf1ddfe0388e/docs/figure/encoder_spline.Rmd/unnamed-chunk-12-1.png" target="_blank">de8dbda</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-08-18
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/rgayler/VSA_altitude_hold/blob/af002d994f20dbca323cb2bc6dcb0783e32ddda5/docs/figure/encoder_spline.Rmd/unnamed-chunk-12-1.png" target="_blank">af002d9</a>
@@ -1368,6 +1457,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/de8dbda9296c45b71b3b0a101fcbdf1ddfe0388e/docs/figure/encoder_spline.Rmd/unnamed-chunk-13-1.png" target="_blank">de8dbda</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-08-18
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/rgayler/VSA_altitude_hold/blob/af002d994f20dbca323cb2bc6dcb0783e32ddda5/docs/figure/encoder_spline.Rmd/unnamed-chunk-13-1.png" target="_blank">af002d9</a>
 </td>
 <td>
@@ -1422,6 +1522,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/de8dbda9296c45b71b3b0a101fcbdf1ddfe0388e/docs/figure/encoder_spline.Rmd/unnamed-chunk-14-1.png" target="_blank">de8dbda</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-08-18
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/rgayler/VSA_altitude_hold/blob/af002d994f20dbca323cb2bc6dcb0783e32ddda5/docs/figure/encoder_spline.Rmd/unnamed-chunk-14-1.png" target="_blank">af002d9</a>
@@ -1485,6 +1596,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/de8dbda9296c45b71b3b0a101fcbdf1ddfe0388e/docs/figure/encoder_spline.Rmd/unnamed-chunk-15-1.png" target="_blank">de8dbda</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-08-18
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/rgayler/VSA_altitude_hold/blob/af002d994f20dbca323cb2bc6dcb0783e32ddda5/docs/figure/encoder_spline.Rmd/unnamed-chunk-15-1.png" target="_blank">af002d9</a>
 </td>
 <td>
@@ -1535,6 +1657,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/de8dbda9296c45b71b3b0a101fcbdf1ddfe0388e/docs/figure/encoder_spline.Rmd/unnamed-chunk-16-1.png" target="_blank">de8dbda</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-08-18
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/rgayler/VSA_altitude_hold/blob/af002d994f20dbca323cb2bc6dcb0783e32ddda5/docs/figure/encoder_spline.Rmd/unnamed-chunk-16-1.png" target="_blank">af002d9</a>
@@ -1592,6 +1725,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/de8dbda9296c45b71b3b0a101fcbdf1ddfe0388e/docs/figure/encoder_spline.Rmd/unnamed-chunk-17-1.png" target="_blank">de8dbda</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-08-18
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/rgayler/VSA_altitude_hold/blob/af002d994f20dbca323cb2bc6dcb0783e32ddda5/docs/figure/encoder_spline.Rmd/unnamed-chunk-17-1.png" target="_blank">af002d9</a>
@@ -1652,6 +1796,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/de8dbda9296c45b71b3b0a101fcbdf1ddfe0388e/docs/figure/encoder_spline.Rmd/unnamed-chunk-18-1.png" target="_blank">de8dbda</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-08-18
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/rgayler/VSA_altitude_hold/blob/af002d994f20dbca323cb2bc6dcb0783e32ddda5/docs/figure/encoder_spline.Rmd/unnamed-chunk-18-1.png" target="_blank">af002d9</a>
 </td>
 <td>
@@ -1705,6 +1860,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/de8dbda9296c45b71b3b0a101fcbdf1ddfe0388e/docs/figure/encoder_spline.Rmd/unnamed-chunk-19-1.png" target="_blank">de8dbda</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-08-18
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/rgayler/VSA_altitude_hold/blob/af002d994f20dbca323cb2bc6dcb0783e32ddda5/docs/figure/encoder_spline.Rmd/unnamed-chunk-19-1.png" target="_blank">af002d9</a>
 </td>
 <td>
@@ -1740,15 +1906,15 @@ end up dividing by zero in the decoder.</p>
 <p>Setting a zero threshold means that approximately half the dot products
 will be set to zero.</p>
 <pre class="r"><code>vsa_mk_atom_bipolar(1e4L) %&gt;% vsa_decode_scalar_spline(ss, zero_thresh = 0)</code></pre>
-<pre><code>[1] 1.978022</code></pre>
+<pre><code>[1] NaN</code></pre>
 <pre class="r"><code>vsa_mk_atom_bipolar(1e4L) %&gt;% vsa_decode_scalar_spline(ss, zero_thresh = 0)</code></pre>
-<pre><code>[1] 1</code></pre>
+<pre><code>[1] 0.3464567</code></pre>
 <pre class="r"><code>vsa_mk_atom_bipolar(1e4L) %&gt;% vsa_decode_scalar_spline(ss, zero_thresh = 0)</code></pre>
-<pre><code>[1] 1.203252</code></pre>
+<pre><code>[1] 0.688</code></pre>
 <pre class="r"><code>vsa_mk_atom_bipolar(1e4L) %&gt;% vsa_decode_scalar_spline(ss, zero_thresh = 0)</code></pre>
-<pre><code>[1] 0.6290323</code></pre>
+<pre><code>[1] 1.423077</code></pre>
 <pre class="r"><code>vsa_mk_atom_bipolar(1e4L) %&gt;% vsa_decode_scalar_spline(ss, zero_thresh = 0)</code></pre>
-<pre><code>[1] 0.8</code></pre>
+<pre><code>[1] 1.456954</code></pre>
 <ul>
 <li>The probability of dividing by zero is nonzero.</li>
 <li>The “decoded” values lie in the range of the knots.</li>
@@ -1758,17 +1924,985 @@ dividing by zero. The weighted sum no longer makes sense because the
 weights can be negative. Consequently, the returned value can lie
 outside the range of the knots.</p>
 <pre class="r"><code>vsa_mk_atom_bipolar(1e4L) %&gt;% vsa_decode_scalar_spline(ss, zero_thresh = -Inf)</code></pre>
-<pre><code>[1] 1.020979</code></pre>
+<pre><code>[1] 0.6938776</code></pre>
 <pre class="r"><code>vsa_mk_atom_bipolar(1e4L) %&gt;% vsa_decode_scalar_spline(ss, zero_thresh = -Inf)</code></pre>
-<pre><code>[1] -0.3452381</code></pre>
+<pre><code>[1] 2.580645</code></pre>
 <pre class="r"><code>vsa_mk_atom_bipolar(1e4L) %&gt;% vsa_decode_scalar_spline(ss, zero_thresh = -Inf)</code></pre>
-<pre><code>[1] -0.6964286</code></pre>
+<pre><code>[1] -6.8</code></pre>
 <pre class="r"><code>vsa_mk_atom_bipolar(1e4L) %&gt;% vsa_decode_scalar_spline(ss, zero_thresh = -Inf)</code></pre>
-<pre><code>[1] 0.7131148</code></pre>
+<pre><code>[1] 1.342466</code></pre>
 <pre class="r"><code>vsa_mk_atom_bipolar(1e4L) %&gt;% vsa_decode_scalar_spline(ss, zero_thresh = -Inf)</code></pre>
-<pre><code>[1] 2.5</code></pre>
+<pre><code>[1] 2.702381</code></pre>
 <ul>
 <li>Some of the decoded values lie outside the range of the knots.</li>
+</ul>
+</div>
+</div>
+<div id="regression-decoding" class="section level1" number="4">
+<h1><span class="header-section-number">4</span> Regression decoding</h1>
+<p>The decoder above is intended for use where we <em>design</em> a system that
+requires a vector representation of a scalars quantity to be converted
+to a numeric scalar to interface with some piece of equipment that can
+only accept numeric scalars as inputs.</p>
+<p>It is relatively common to use VSA representations as the core of a
+regression/classification task. The output transformation of reservoir
+computing can also be viewed as an equivalent task. In these tasks the
+transformation from the high-dimensional vector representation to a
+numeric scalar is implemented with standard statistical regression
+techniques.</p>
+<p>In this section, I will attempt to use standard statistical regression
+techniques to decode the encoded scalar representations. (This is being
+attempted without having recently read the relevant papers in using
+regression with VSA representations. In the event that this fails to
+work or becomes a horrible mess I will have to read those papers before
+making another attempt.)</p>
+<p>In using regression to decode VSA representations I will have to create
+a data matrix with one row per observation (the encoding of a value).
+One column will correspond to the dependent variable - the <em>target</em>
+value (i.e. the original scalar value that was encoded). The remaining
+columns correspond to the independent variables (predictors) - the VSA
+vector representation of the encoded scalar value. There will be one
+column for each element of the vector representation.</p>
+<p>The number of columns will far exceed the number of rows, so simple
+unregularised regression will fail. I will initially attempt to use
+regularised regression (elasticnet, implemented by <code>glmnet</code> in R).</p>
+<div id="one-interval" class="section level2" number="4.1">
+<h2><span class="header-section-number">4.1</span> One interval</h2>
+<p>Start with the simplest possible encoder: one interval, bounded by two
+knots. Create some data, run the regression, and see what happens. At
+this stage I won’t bother running replicates to assess variability
+across atoms. I will arbitrarily choose 101 equally spaced examples as
+the data.</p>
+<pre class="r"><code># use the &#39;default&#39; VSA dimensionality
+vsa_dim &lt;- 1e4L
+
+# create the spline specification
+ss_1 &lt;- vsa_mk_scalar_encoder_spline_spec(vsa_dim, knots = c(1, 2))
+
+# create the numeric scalar values to be encoded
+x &lt;- seq(1, 2, length.out = 101)
+
+# function to to take a set of numeric scalar values,
+# encode them as VSA vectors using the given spline specification,
+# and package the results as a data frame for regression modelling
+mk_df &lt;- function(
+  x, # numeric - vector of scalar values to be encoded
+  ss # data frame - spline specification for scalar encoding
+) # value - data frame - one row per scalar, one column for the scalar and each VSA element
+{
+  tibble::tibble(x_num = x) %&gt;% # put scalars as column of data frame
+  dplyr::rowwise() %&gt;% 
+  dplyr::mutate( 
+    x_vsa = x_num %&gt;% vsa_encode_scalar_spline(ss) %&gt;% # encode each scalar
+      tibble(e = 1:length(.), e_val = .) %&gt;% # name all the vector elements
+      tidyr::pivot_wider(names_from = e, names_prefix = &quot;e_&quot;, values_from = e_val) %&gt;% # transpose vector to columns
+      list() # package the value for a list column
+  ) %&gt;% 
+  dplyr::ungroup() %&gt;%
+  tidyr::unnest(x_vsa) # convert the nested df to columns
+}
+
+# create training data
+d_train &lt;- mk_df(x, ss_1)
+# create testing data
+# use the same knot vectors, different sampling in vsa_add()
+d_test &lt;- mk_df(x, ss_1)
+
+
+# take a quick look at the data
+d_train</code></pre>
+<pre><code># A tibble: 101 × 10,001
+   x_num   e_1   e_2   e_3   e_4   e_5   e_6   e_7   e_8   e_9  e_10  e_11  e_12
+   &lt;dbl&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;
+ 1  1       -1     1    -1     1     1     1    -1     1    -1    -1    -1     1
+ 2  1.01    -1     1    -1     1     1     1    -1     1    -1    -1    -1     1
+ 3  1.02    -1     1    -1     1     1     1    -1     1    -1    -1    -1     1
+ 4  1.03    -1     1    -1     1     1     1    -1     1    -1    -1    -1     1
+ 5  1.04    -1     1    -1    -1     1     1    -1     1    -1    -1    -1     1
+ 6  1.05    -1     1    -1     1     1     1    -1     1    -1    -1    -1     1
+ 7  1.06    -1     1    -1     1     1     1    -1     1    -1    -1     1     1
+ 8  1.07    -1     1    -1     1     1     1    -1     1    -1    -1    -1     1
+ 9  1.08    -1     1    -1     1     1     1    -1     1    -1    -1    -1     1
+10  1.09    -1     1    -1     1     1     1    -1     1    -1    -1    -1     1
+# … with 91 more rows, and 9,988 more variables: e_13 &lt;int&gt;, e_14 &lt;int&gt;,
+#   e_15 &lt;int&gt;, e_16 &lt;int&gt;, e_17 &lt;int&gt;, e_18 &lt;int&gt;, e_19 &lt;int&gt;, e_20 &lt;int&gt;,
+#   e_21 &lt;int&gt;, e_22 &lt;int&gt;, e_23 &lt;int&gt;, e_24 &lt;int&gt;, e_25 &lt;int&gt;, e_26 &lt;int&gt;,
+#   e_27 &lt;int&gt;, e_28 &lt;int&gt;, e_29 &lt;int&gt;, e_30 &lt;int&gt;, e_31 &lt;int&gt;, e_32 &lt;int&gt;,
+#   e_33 &lt;int&gt;, e_34 &lt;int&gt;, e_35 &lt;int&gt;, e_36 &lt;int&gt;, e_37 &lt;int&gt;, e_38 &lt;int&gt;,
+#   e_39 &lt;int&gt;, e_40 &lt;int&gt;, e_41 &lt;int&gt;, e_42 &lt;int&gt;, e_43 &lt;int&gt;, e_44 &lt;int&gt;,
+#   e_45 &lt;int&gt;, e_46 &lt;int&gt;, e_47 &lt;int&gt;, e_48 &lt;int&gt;, e_49 &lt;int&gt;, e_50 &lt;int&gt;, …</code></pre>
+<p>The data has 101 observations where each has the encoded numeric value
+and the 10,000 elements of the encoded VSA representation.</p>
+<p>Fit a linear (i.e. Gaussian family) regression model, predicting the
+encoded numeric value from the VSA elements.</p>
+<p>Use <code>glmnet()</code> because it fits regularised regressions, allowing it to
+deal with the number of predictors being much greater than the number of
+observations. Also, it has been engineered for efficiency with large
+numbers of predictors.</p>
+<p><code>glmnet()</code> can make use of parallel processing but it’s not needed here
+as this code runs sufficiently rapidly on a modest laptop computer.</p>
+<p><code>cva.glmnet()</code> in the code below runs cross-validation fits across a
+grid of <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\lambda\)</span> values so that we can choose the best
+regularisation scheme. <span class="math inline">\(\alpha = 1\)</span> corresponds to the ridge-regression
+penalty and <span class="math inline">\(\alpha = 0\)</span> corresponds to the lasso penalty. The <span class="math inline">\(\lambda\)</span>
+parameter is the weighting of the elastic-net penalty.</p>
+<p>I will use the cross-validation analysis to select the parameters rather
+than testing on a hold-out sample, because it is less programming effort
+and I don’t expect it to make a substantial difference to the results.</p>
+<pre class="r"><code># fit a set of models at a grid of alpha and lambda parameter values
+fit_1 &lt;- glmnetUtils::cva.glmnet(x_num ~ ., data = d_train, family = &quot;gaussian&quot;)
+fit_1</code></pre>
+<pre><code>Call:
+cva.glmnet.formula(formula = x_num ~ ., data = d_train, family = &quot;gaussian&quot;)
+
+Model fitting options:
+    Sparse model matrix: FALSE
+    Use model.frame: FALSE
+    Alpha values: 0 0.001 0.008 0.027 0.064 0.125 0.216 0.343 0.512 0.729 1
+    Number of crossvalidation folds for lambda: 10</code></pre>
+<pre class="r"><code>summary(fit_1)</code></pre>
+<pre><code>                Length Class  Mode     
+alpha              11  -none- numeric  
+nfolds              1  -none- numeric  
+modlist            11  -none- list     
+call                4  -none- call     
+terms               2  -none- call     
+xlev            10000  -none- list     
+sparse              1  -none- logical  
+use.model.frame     1  -none- logical  
+na.action           1  -none- character</code></pre>
+<pre class="r"><code># look at the goodness of fit as a function of the parameters
+plot(fit_1)</code></pre>
+<p><img src="figure/encoder_spline.Rmd/unnamed-chunk-24-1.png" width="672" style="display: block; margin: auto;" /></p>
+<ul>
+<li>The minimum error value per curve appears to be lowest for the
+<span class="math inline">\(\alpha = 0\)</span> (i.e. ridge regression) curve. That seems reasonable
+given that all the VSA vector elements should be equally informative
+of the outcome and equally correlated with each other.</li>
+</ul>
+<p>Look at the impact of the <span class="math inline">\(\lambda\)</span> parameter on goodness of fit for the
+<span class="math inline">\(\alpha = 0\)</span> curve.</p>
+<pre class="r"><code># check that we are looking at the correct curve (alpha = 0)
+fit_1$alpha[1]</code></pre>
+<pre><code>[1] 0</code></pre>
+<pre class="r"><code># extract the alpha = 0 model
+fit_1_alpha_0 &lt;- fit_1$modlist[[1]]
+
+# look at the lambda curve
+plot(fit_1_alpha_0)</code></pre>
+<p><img src="figure/encoder_spline.Rmd/unnamed-chunk-25-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># get a summary of the alpha = 0 model
+fit_1_alpha_0</code></pre>
+<pre><code>
+Call:  glmnet::cv.glmnet(x = x, y = y, weights = ..1, offset = ..2,      nfolds = nfolds, foldid = foldid, alpha = a, family = &quot;gaussian&quot;) 
+
+Measure: Mean-Squared Error 
+
+    Lambda Index   Measure        SE Nonzero
+min  14.56    60 0.0001743 2.356e-05    4996
+1se  15.97    58 0.0001887 2.764e-05    4996</code></pre>
+<ul>
+<li>The left dotted vertical line corresponds to minimum error. The
+right dotted vertical line corresponds to the largest value of
+lambda such that the error is within one standard-error of the
+minimum - the so-called “one-standard-error” rule.</li>
+<li>The numbers along the top margin show the number of nonzero
+coefficients in the regression models corresponding to the lambda
+values. All the plausible models have a number of nonzero
+coefficients equal to roughly half the dimensionality of the VSA
+vectors.</li>
+</ul>
+<p>Look at the model selected by the one-standard-error rule.</p>
+<p>First look at how good the predictions are.</p>
+<pre class="r"><code># make a data frame with the original and regression-decoded scalar values
+d &lt;- tibble::tibble(# the elements of both columns are in 1:1 correspondence
+  x_in = x, 
+  x_out = predict(fit_1, newdata = d_test, alpha = 0, s = &quot;lambda.1se&quot;)
+)
+
+# summary of residuals
+summary(d$x_out - d$x_in)</code></pre>
+<pre><code>   lambda.1se        
+ Min.   :-0.0212169  
+ 1st Qu.:-0.0092862  
+ Median :-0.0007877  
+ Mean   : 0.0004406  
+ 3rd Qu.: 0.0103276  
+ Max.   : 0.0247850  </code></pre>
+<pre class="r"><code># histogram of residuals
+ggplot(d) + geom_histogram(aes(x = x_out - x_in), bins = 10)</code></pre>
+<p><img src="figure/encoder_spline.Rmd/unnamed-chunk-26-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># plot of fit vs actual
+ggplot(d) + 
+  geom_vline(xintercept = c(1, 2), alpha = 0.3) +
+  geom_abline(slope = 1, intercept = 0, alpha = 0.3) +
+  geom_smooth(aes(x = x_in, y = x_out), method = &quot;lm&quot;) +
+  geom_point(aes(x = x_in, y = x_out))</code></pre>
+<pre><code>`geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
+<p><img src="figure/encoder_spline.Rmd/unnamed-chunk-26-2.png" width="672" style="display: block; margin: auto;" /></p>
+<ul>
+<li>That’s a pretty good fit.</li>
+<li>The slope of the fit is a little less than it should be. This is
+probably due to the regularisation. (The regression coefficients are
+shrunk towards zero.)</li>
+</ul>
+<p>Look at the model coefficients.</p>
+<pre class="r"><code># get the coefficients as a dense matrix
+fit_1_coef &lt;- coef(fit_1, alpha = 0, s = &quot;lambda.1se&quot;) %&gt;% as.matrix()
+
+# look at the first few entries
+head(fit_1_coef, n = 10)</code></pre>
+<pre><code>                       s1
+(Intercept)  1.500353e+00
+e_1          0.000000e+00
+e_2         -8.683578e-05
+e_3          0.000000e+00
+e_4         -1.011215e-04
+e_5         -1.085085e-04
+e_6         -1.036345e-04
+e_7          0.000000e+00
+e_8         -8.698376e-05
+e_9          9.038864e-05</code></pre>
+<pre class="r"><code># put coefficients (excluding intercept) in a data frame
+d_coef &lt;- fit_1_coef[-1] %&gt;% tibble::tibble(e = 1:length(.), coef = .)
+
+# distribution of coefficients
+ggplot(d_coef) + geom_histogram(aes(x = coef), bins = 100)</code></pre>
+<p><img src="figure/encoder_spline.Rmd/unnamed-chunk-27-1.png" width="672" style="display: block; margin: auto;" /></p>
+<ul>
+<li><p>The fit has an intercept of 1.5, which corresponds to the midpoint
+of the knot interval.</p></li>
+<li><p>Roughly half the coefficients are zero.</p></li>
+<li><p>Of the nonzero coefficients roughly half are distinctly positive and
+the other half are distinctly negative.</p></li>
+<li><p>The magnitudes of the positive and negative coefficients are a
+little less than <span class="math inline">\(10^{-4}\)</span> (which probably depends on the
+dimensionality).</p>
+<ul>
+<li>I suspect that magnitudes could be rounded to be exactly the
+same value with minimal impact on the fit.</li>
+</ul></li>
+</ul>
+<p>Look at the relationship between the coefficients (taken as a vector)
+and the VSA knot vectors.</p>
+<pre class="r"><code># cosine of coefficients to first knot vector
+vsa_cos_sim(d_coef$coef, (ss_1$knots_vsa)[[1]])</code></pre>
+<pre><code>[1] -0.7025528</code></pre>
+<pre class="r"><code># cosine of coefficients to second knot vector
+vsa_cos_sim(d_coef$coef, (ss_1$knots_vsa)[[2]])</code></pre>
+<pre><code>[1] 0.7025528</code></pre>
+<pre class="r"><code># cosine of coefficients to difference of knot vectors
+vsa_cos_sim(d_coef$coef, (ss_1$knots_vsa)[[2]] - (ss_1$knots_vsa)[[1]])</code></pre>
+<pre><code>[1] 0.9939574</code></pre>
+<pre class="r"><code># cosine of rounded coefficients to difference of knot vectors
+vsa_cos_sim(sign(d_coef$coef), (ss_1$knots_vsa)[[2]] - (ss_1$knots_vsa)[[1]])</code></pre>
+<pre><code>[1] 1</code></pre>
+<ul>
+<li><p>The coefficient vector is quite similar to the first and second knot
+vectors.</p></li>
+<li><p>The coefficient vector is very similar to the difference of the
+first and second knot vectors.</p></li>
+<li><p>The rounded coefficient vector is identical (up to scaling) to the
+difference of the first and second knot vectors.</p>
+<ul>
+<li>This explains why approximately half the coefficients are zero.
+(The vector difference of two bipolar vectors will have
+approximately half zero values.) ## Two equal intervals</li>
+</ul></li>
+</ul>
+<p>Create a linear spline encoder with two intervals of equal extent: two
+intervals, bounded by three knots. Create some data, run the regression,
+and see what happens. At this stage I won’t bother running replicates to
+assess variability across atoms. I will arbitrarily choose 201 equally
+spaced examples as the data (to maintain the same number of observations
+per interval).</p>
+<pre class="r"><code># use the &#39;default&#39; VSA dimensionality
+vsa_dim &lt;- 1e4L
+
+# create the spline specification
+ss_2e &lt;- vsa_mk_scalar_encoder_spline_spec(vsa_dim, knots = c(1, 2, 3))
+
+# create the numeric scalar values to be encoded
+x &lt;- seq(1, 3, length.out = 201)
+
+# create training data
+d_train &lt;- mk_df(x, ss_2e)
+# create testing data
+# use the same knot vectors, different sampling in vsa_add()
+d_test &lt;- mk_df(x, ss_2e)</code></pre>
+<p>The data has 201 observations where each has the encoded numeric value
+and the 10,000 elements of the encoded VSA representation.</p>
+<p>Fit a linear (i.e. Gaussian family) regression model, predicting the
+encoded numeric value from the VSA elements.</p>
+<p>Use <code>glmnet()</code> because it fits regularised regressions, allowing it to
+deal with the number of predictors being much greater than the number of
+observations. Also, it has been engineered for efficiency with large
+numbers of predictors.</p>
+<p><code>glmnet()</code> can make use of parallel processing but it’s not needed here
+as this code runs sufficiently rapidly on a modest laptop computer.</p>
+<p><code>cva.glmnet()</code> in the code below runs cross-validation fits across a
+grid of <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\lambda\)</span> values so that we can choose the best
+regularisation scheme. <span class="math inline">\(\alpha = 1\)</span> corresponds to the ridge-regression
+penalty and <span class="math inline">\(\alpha = 0\)</span> corresponds to the lasso penalty. The <span class="math inline">\(\lambda\)</span>
+parameter is the weighting of the elastic-net penalty.</p>
+<p>I will use the cross-validation analysis to select the parameters rather
+than testing on a hold-out sample, because it is less programming effort
+and I don’t expect it to make a substantial difference to the results.</p>
+<pre class="r"><code># fit a set of models at a grid of alpha and lambda parameter values
+fit_2e &lt;- glmnetUtils::cva.glmnet(x_num ~ ., data = d_train, family = &quot;gaussian&quot;)
+fit_2e</code></pre>
+<pre><code>Call:
+cva.glmnet.formula(formula = x_num ~ ., data = d_train, family = &quot;gaussian&quot;)
+
+Model fitting options:
+    Sparse model matrix: FALSE
+    Use model.frame: FALSE
+    Alpha values: 0 0.001 0.008 0.027 0.064 0.125 0.216 0.343 0.512 0.729 1
+    Number of crossvalidation folds for lambda: 10</code></pre>
+<pre class="r"><code>summary(fit_2e)</code></pre>
+<pre><code>                Length Class  Mode     
+alpha              11  -none- numeric  
+nfolds              1  -none- numeric  
+modlist            11  -none- list     
+call                4  -none- call     
+terms               2  -none- call     
+xlev            10000  -none- list     
+sparse              1  -none- logical  
+use.model.frame     1  -none- logical  
+na.action           1  -none- character</code></pre>
+<pre class="r"><code># look at the goodness of fit as a function of the parameters
+plot(fit_2e)</code></pre>
+<p><img src="figure/encoder_spline.Rmd/unnamed-chunk-30-1.png" width="672" style="display: block; margin: auto;" /></p>
+<ul>
+<li>The minimum error value per curve appears to be lowest for the
+<span class="math inline">\(\alpha = 0\)</span> (i.e. ridge regression) curve. That seems reasonable
+given that all the VSA vector elements should be equally informative
+of the outcome and equally correlated with each other.</li>
+</ul>
+<p>Look at the impact of the <span class="math inline">\(\lambda\)</span> parameter on goodness of fit for the
+<span class="math inline">\(\alpha = 0\)</span> curve.</p>
+<pre class="r"><code># check that we are looking at the correct curve (alpha = 0)
+fit_2e$alpha[1]</code></pre>
+<pre><code>[1] 0</code></pre>
+<pre class="r"><code># extract the alpha = 0 model
+fit_2e_alpha_0 &lt;- fit_2e$modlist[[1]]
+
+# look at the lambda curve
+plot(fit_2e_alpha_0)</code></pre>
+<p><img src="figure/encoder_spline.Rmd/unnamed-chunk-31-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># get a summary of the alpha = 0 model
+fit_2e_alpha_0</code></pre>
+<pre><code>
+Call:  glmnet::cv.glmnet(x = x, y = y, weights = ..1, offset = ..2,      nfolds = nfolds, foldid = foldid, alpha = a, family = &quot;gaussian&quot;) 
+
+Measure: Mean-Squared Error 
+
+    Lambda Index   Measure        SE Nonzero
+min  40.13    53 0.0004771 3.127e-05    7534
+1se  42.04    52 0.0005074 3.295e-05    7534</code></pre>
+<ul>
+<li>The left dotted vertical line corresponds to minimum error. The
+right dotted vertical line corresponds to the largest value of
+lambda such that the error is within one standard-error of the
+minimum - the so-called “one-standard-error” rule.</li>
+<li>The numbers along the top margin show the number of nonzero
+coefficients in the regression models corresponding to the lambda
+values. All the plausible models have a number of nonzero
+coefficients equal to roughly 75% of the dimensionality of the VSA
+vectors.</li>
+</ul>
+<p>Look at the model selected by the one-standard-error rule.</p>
+<p>First look at how good the predictions are.</p>
+<pre class="r"><code># make a data frame with the original and regression-decoded scalar values
+d &lt;- tibble::tibble(# the elements of both columns are in 1:1 correspondence
+  x_in = x, 
+  x_out = predict(fit_2e, newdata = d_test, alpha = 0, s = &quot;lambda.1se&quot;)
+)
+
+# summary of residuals
+summary(d$x_out - d$x_in)</code></pre>
+<pre><code>   lambda.1se        
+ Min.   :-4.276e-02  
+ 1st Qu.:-1.556e-02  
+ Median :-6.647e-05  
+ Mean   : 1.081e-03  
+ 3rd Qu.: 1.898e-02  
+ Max.   : 4.266e-02  </code></pre>
+<pre class="r"><code># histogram of residuals
+ggplot(d) + geom_histogram(aes(x = x_out - x_in), bins = 10)</code></pre>
+<p><img src="figure/encoder_spline.Rmd/unnamed-chunk-32-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># plot of fit vs actual
+ggplot(d) + 
+  geom_vline(xintercept = c(1, 2, 3), alpha = 0.3) +
+  geom_abline(slope = 1, intercept = 0, alpha = 0.3) +
+  geom_smooth(aes(x = x_in, y = x_out), method = &quot;lm&quot;) +
+  geom_point(aes(x = x_in, y = x_out))</code></pre>
+<pre><code>`geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
+<p><img src="figure/encoder_spline.Rmd/unnamed-chunk-32-2.png" width="672" style="display: block; margin: auto;" /></p>
+<ul>
+<li>That’s a pretty good fit.</li>
+<li>The slope of the fit is a little less than it should be. This is
+probably due to the regularisation. (The regression coefficients are
+shrunk towards zero.)</li>
+</ul>
+<p>Look at the model coefficients.</p>
+<pre class="r"><code># get the coefficients as a dense matrix
+fit_2e_coef &lt;- coef(fit_2e, alpha = 0, s = &quot;lambda.1se&quot;) %&gt;% as.matrix()
+
+# look at the first few entries
+head(fit_2e_coef, n = 10)</code></pre>
+<pre><code>                       s1
+(Intercept)  1.999465e+00
+e_1         -2.095916e-05
+e_2          1.910179e-04
+e_3         -4.167184e-05
+e_4          1.911862e-04
+e_5         -1.767036e-04
+e_6         -8.463783e-06
+e_7         -1.641703e-05
+e_8          1.205765e-06
+e_9          1.013340e-05</code></pre>
+<pre class="r"><code># put coefficients (excluding intercept) in a data frame
+d_coef &lt;- fit_2e_coef[-1] %&gt;% tibble::tibble(e = 1:length(.), coef = .)
+
+# distribution of coefficients
+ggplot(d_coef) + geom_histogram(aes(x = coef), bins = 100)</code></pre>
+<p><img src="figure/encoder_spline.Rmd/unnamed-chunk-33-1.png" width="672" style="display: block; margin: auto;" /></p>
+<ul>
+<li><p>The fit has an intercept of approximately 2, which corresponds to
+the midpoint of the knot range</p></li>
+<li><p>Roughly 25% of the coefficients are exactly zero.</p></li>
+<li><p>The remaining coefficients are split roughly equally between
+distinctly positive, distinctly negative, and approximately zero.</p></li>
+<li><p>The magnitudes of the positive and negative coefficients are a
+little less than <span class="math inline">\(10^{-4}\)</span> (which probably depends on the
+dimensionality).</p>
+<ul>
+<li>I suspect that magnitudes could be rounded to three unique
+values with minimal impact on the fit.</li>
+</ul></li>
+</ul>
+<p>Look at the relationship between the coefficients (taken as a vector)
+and the VSA knot vectors.</p>
+<pre class="r"><code># cosine of coefficients to first knot vector
+vsa_cos_sim(d_coef$coef, (ss_2e$knots_vsa)[[1]])</code></pre>
+<pre><code>[1] -0.7037075</code></pre>
+<pre class="r"><code># cosine of coefficients to second knot vector
+vsa_cos_sim(d_coef$coef, (ss_2e$knots_vsa)[[2]])</code></pre>
+<pre><code>[1] 0.0005483365</code></pre>
+<pre class="r"><code># cosine of coefficients to third knot vector
+vsa_cos_sim(d_coef$coef, (ss_2e$knots_vsa)[[3]])</code></pre>
+<pre><code>[1] 0.7055347</code></pre>
+<pre class="r"><code># cosine of coefficients to difference of knot vectors
+vsa_cos_sim(d_coef$coef, (ss_2e$knots_vsa)[[3]] - (ss_2e$knots_vsa)[[1]])</code></pre>
+<pre><code>[1] 0.9979828</code></pre>
+<pre class="r"><code># cosine of rounded coefficients to difference of knot vectors
+vsa_cos_sim(round(d_coef$coef * 1e4), (ss_2e$knots_vsa)[[3]] - (ss_2e$knots_vsa)[[1]])</code></pre>
+<pre><code>[1] 0.9999749</code></pre>
+<ul>
+<li><p>The coefficient vector is quite similar to the first and third knot
+vectors, but approximately orthogonal to the second knot vector.</p></li>
+<li><p>The coefficient vector is very similar to the difference of the
+first and third knot vectors.</p></li>
+<li><p>The rounded coefficient vector is almost identical (up to scaling)
+to the difference of the first and third knot vectors.</p></li>
+</ul>
+</div>
+<div id="three-equal-intervals" class="section level2" number="4.2">
+<h2><span class="header-section-number">4.2</span> Three equal intervals</h2>
+<p>Create a linear spline encoder with three intervals of equal extent:
+three intervals, bounded by four knots. Create some data, run the
+regression, and see what happens. At this stage I won’t bother running
+replicates to assess variability across atoms. I will arbitrarily choose
+301 equally spaced examples as the data (to maintain the same number of
+observations per interval).</p>
+<pre class="r"><code># use the &#39;default&#39; VSA dimensionality
+vsa_dim &lt;- 1e4L
+
+# create the spline specification
+ss_3e &lt;- vsa_mk_scalar_encoder_spline_spec(vsa_dim, knots = c(1, 2, 3, 4))
+
+# create the numeric scalar values to be encoded
+x &lt;- seq(1, 4, length.out = 301)
+
+# create training data
+d_train &lt;- mk_df(x, ss_3e)
+# create testing data
+# use the same knot vectors, different sampling in vsa_add()
+d_test &lt;- mk_df(x, ss_3e)</code></pre>
+<p>The data has 301 observations where each has the encoded numeric value
+and the 10,000 elements of the encoded VSA representation.</p>
+<p>Fit a linear (i.e. Gaussian family) regression model, predicting the
+encoded numeric value from the VSA elements.</p>
+<p>Use <code>glmnet()</code> because it fits regularised regressions, allowing it to
+deal with the number of predictors being much greater than the number of
+observations. Also, it has been engineered for efficiency with large
+numbers of predictors.</p>
+<p><code>glmnet()</code> can make use of parallel processing but it’s not needed here
+as this code runs sufficiently rapidly on a modest laptop computer.</p>
+<p><code>cva.glmnet()</code> in the code below runs cross-validation fits across a
+grid of <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\lambda\)</span> values so that we can choose the best
+regularisation scheme. <span class="math inline">\(\alpha = 1\)</span> corresponds to the ridge-regression
+penalty and <span class="math inline">\(\alpha = 0\)</span> corresponds to the lasso penalty. The <span class="math inline">\(\lambda\)</span>
+parameter is the weighting of the elastic-net penalty.</p>
+<p>I will use the cross-validation analysis to select the parameters rather
+than testing on a hold-out sample, because it is less programming effort
+and I don’t expect it to make a substantial difference to the results.</p>
+<pre class="r"><code># fit a set of models at a grid of alpha and lambda parameter values
+fit_3e &lt;- glmnetUtils::cva.glmnet(x_num ~ ., data = d_train, family = &quot;gaussian&quot;)
+fit_3e</code></pre>
+<pre><code>Call:
+cva.glmnet.formula(formula = x_num ~ ., data = d_train, family = &quot;gaussian&quot;)
+
+Model fitting options:
+    Sparse model matrix: FALSE
+    Use model.frame: FALSE
+    Alpha values: 0 0.001 0.008 0.027 0.064 0.125 0.216 0.343 0.512 0.729 1
+    Number of crossvalidation folds for lambda: 10</code></pre>
+<pre class="r"><code>summary(fit_3e)</code></pre>
+<pre><code>                Length Class  Mode     
+alpha              11  -none- numeric  
+nfolds              1  -none- numeric  
+modlist            11  -none- list     
+call                4  -none- call     
+terms               2  -none- call     
+xlev            10000  -none- list     
+sparse              1  -none- logical  
+use.model.frame     1  -none- logical  
+na.action           1  -none- character</code></pre>
+<pre class="r"><code># look at the goodness of fit as a function of the parameters
+plot(fit_3e)</code></pre>
+<p><img src="figure/encoder_spline.Rmd/unnamed-chunk-36-1.png" width="672" style="display: block; margin: auto;" /></p>
+<ul>
+<li>The minimum error value per curve appears to be lowest for the
+<span class="math inline">\(\alpha = 0\)</span> (i.e. ridge regression) curve. That seems reasonable
+given that all the VSA vector elements should be equally informative
+of the outcome and equally correlated with each other.</li>
+</ul>
+<p>Look at the impact of the <span class="math inline">\(\lambda\)</span> parameter on goodness of fit for the
+<span class="math inline">\(\alpha = 0\)</span> curve.</p>
+<pre class="r"><code># check that we are looking at the correct curve (alpha = 0)
+fit_3e$alpha[1]</code></pre>
+<pre><code>[1] 0</code></pre>
+<pre class="r"><code># extract the alpha = 0 model
+fit_3e_alpha_0 &lt;- fit_3e$modlist[[1]]
+
+# look at the lambda curve
+plot(fit_3e_alpha_0)</code></pre>
+<p><img src="figure/encoder_spline.Rmd/unnamed-chunk-37-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># get a summary of the alpha = 0 model
+fit_3e_alpha_0</code></pre>
+<pre><code>
+Call:  glmnet::cv.glmnet(x = x, y = y, weights = ..1, offset = ..2,      nfolds = nfolds, foldid = foldid, alpha = a, family = &quot;gaussian&quot;) 
+
+Measure: Mean-Squared Error 
+
+    Lambda Index  Measure        SE Nonzero
+min  50.00    59 0.001017 0.0001103    8751
+1se  52.38    58 0.001081 0.0001212    8751</code></pre>
+<ul>
+<li>The left dotted vertical line corresponds to minimum error. The
+right dotted vertical line corresponds to the largest value of
+lambda such that the error is within one standard-error of the
+minimum - the so-called “one-standard-error” rule.</li>
+<li>The numbers along the top margin show the number of nonzero
+coefficients in the regression models corresponding to the lambda
+values. All the plausible models have a number of nonzero
+coefficients equal to roughly 88% of the dimensionality of the VSA
+vectors.</li>
+</ul>
+<p>Look at the model selected by the one-standard-error rule.</p>
+<p>First look at how good the predictions are.</p>
+<pre class="r"><code># make a data frame with the original and regression-decoded scalar values
+d &lt;- tibble::tibble(# the elements of both columns are in 1:1 correspondence
+  x_in = x, 
+  x_out = predict(fit_3e, newdata = d_test, alpha = 0, s = &quot;lambda.1se&quot;)
+)
+
+# summary of residuals
+summary(d$x_out - d$x_in)</code></pre>
+<pre><code>   lambda.1se       
+ Min.   :-0.086160  
+ 1st Qu.:-0.015326  
+ Median : 0.002538  
+ Mean   : 0.002012  
+ 3rd Qu.: 0.018501  
+ Max.   : 0.074620  </code></pre>
+<pre class="r"><code># histogram of residuals
+ggplot(d) + geom_histogram(aes(x = x_out - x_in), bins = 10)</code></pre>
+<p><img src="figure/encoder_spline.Rmd/unnamed-chunk-38-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># plot of fit vs actual
+ggplot(d) + 
+  geom_vline(xintercept = c(1, 2, 3, 4), alpha = 0.3) +
+  geom_abline(slope = 1, intercept = 0, alpha = 0.3) +
+  geom_smooth(aes(x = x_in, y = x_out), method = &quot;lm&quot;) +
+  geom_point(aes(x = x_in, y = x_out))</code></pre>
+<pre><code>`geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
+<p><img src="figure/encoder_spline.Rmd/unnamed-chunk-38-2.png" width="672" style="display: block; margin: auto;" /></p>
+<ul>
+<li>That’s a pretty good fit.</li>
+<li>The slope of the fit is a little less than it should be. This is
+probably due to the regularisation. (The regression coefficients are
+shrunk towards zero.)</li>
+</ul>
+<p>Look at the model coefficients.</p>
+<pre class="r"><code># get the coefficients as a dense matrix
+fit_3e_coef &lt;- coef(fit_3e, alpha = 0, s = &quot;lambda.1se&quot;) %&gt;% as.matrix()
+
+# look at the first few entries
+head(fit_3e_coef, n = 10)</code></pre>
+<pre><code>                       s1
+(Intercept)  2.490071e+00
+e_1          1.205527e-04
+e_2          1.259445e-04
+e_3          1.164035e-04
+e_4          3.138492e-04
+e_5          3.940944e-05
+e_6          0.000000e+00
+e_7          1.180545e-04
+e_8         -8.820584e-05
+e_9          1.293669e-04</code></pre>
+<pre class="r"><code># put coefficients (excluding intercept) in a data frame
+d_coef &lt;- fit_3e_coef[-1] %&gt;% tibble::tibble(e = 1:length(.), coef = .)
+
+# distribution of coefficients
+ggplot(d_coef) + geom_histogram(aes(x = coef), bins = 100)</code></pre>
+<p><img src="figure/encoder_spline.Rmd/unnamed-chunk-39-1.png" width="672" style="display: block; margin: auto;" /></p>
+<ul>
+<li>I suspect that the magnitudes could be rounded to seven unique
+values with minimal impact on the fit.</li>
+</ul>
+<p>Look at the relationship between the coefficients (taken as a vector)
+and the VSA knot vectors.</p>
+<pre class="r"><code># try to model the rounded coefficients
+# as an additive function of the knot vectors
+d_coef_model &lt;- as_tibble(ss_3e$knots_vsa, .name_repair = &quot;unique&quot;)</code></pre>
+<pre><code>New names:
+* `` -&gt; ...1
+* `` -&gt; ...2
+* `` -&gt; ...3
+* `` -&gt; ...4</code></pre>
+<pre class="r"><code>d_coef_model$coef &lt;- round(d_coef$coef * 1e4)
+
+# check the distribution of the rounded coefficients
+table(d_coef_model$coef)</code></pre>
+<pre><code>
+  -4   -3   -2   -1    0    1    2    3    4 
+1155  634   16 1939 2472 1940   19  602 1223 </code></pre>
+<pre class="r"><code># model the coefficients as a weighted sum of the knot vectors
+lm(coef ~ ., data = d_coef_model) %&gt;% summary()</code></pre>
+<pre><code>
+Call:
+lm(formula = coef ~ ., data = d_coef_model)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-1.04346 -0.04333 -0.00473  0.92973  1.02861 
+
+Coefficients:
+             Estimate Std. Error  t value Pr(&gt;|t|)    
+(Intercept)  0.007425   0.007038    1.055    0.291    
+...1        -1.486528   0.007040 -211.143   &lt;2e-16 ***
+...2        -0.513405   0.007041  -72.918   &lt;2e-16 ***
+...3         0.519302   0.007037   73.795   &lt;2e-16 ***
+...4         1.483329   0.007035  210.842   &lt;2e-16 ***
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Residual standard error: 0.7035 on 9995 degrees of freedom
+Multiple R-squared:  0.907, Adjusted R-squared:  0.907 
+F-statistic: 2.437e+04 on 4 and 9995 DF,  p-value: &lt; 2.2e-16</code></pre>
+<ul>
+<li>To a very good approximation
+<span class="math inline">\(c_i = -1.5 e_{1,i} + -0.5 e_{2,i} + 0.5 e_{3,i} + 1.5 e_{4,i}\)</span></li>
+</ul>
+</div>
+<div id="three-unequal-intervals" class="section level2" number="4.3">
+<h2><span class="header-section-number">4.3</span> Three unequal intervals</h2>
+<p>Create a linear spline encoder with three intervals of unequal extent:
+three intervals, bounded by four knots. Create some data, run the
+regression, and see what happens.</p>
+<pre class="r"><code># use the &#39;default&#39; VSA dimensionality
+vsa_dim &lt;- 1e4L
+
+# create the spline specification
+ss_3u &lt;- vsa_mk_scalar_encoder_spline_spec(vsa_dim, knots = c(1, 2, 4, 8))
+
+# create the numeric scalar values to be encoded
+x &lt;- seq(1, 8, length.out = 301)
+
+# create training data
+d_train &lt;- mk_df(x, ss_3u)
+# create testing data
+# use the same knot vectors, different sampling in vsa_add()
+d_test &lt;- mk_df(x, ss_3u)</code></pre>
+<p>The data has 301 observations where each has the encoded numeric value
+and the 10,000 elements of the encoded VSA representation.</p>
+<p>Fit a linear (i.e. Gaussian family) regression model, predicting the
+encoded numeric value from the VSA elements.</p>
+<pre class="r"><code># fit a set of models at a grid of alpha and lambda parameter values
+fit_3u &lt;- glmnetUtils::cva.glmnet(x_num ~ ., data = d_train, family = &quot;gaussian&quot;)
+fit_3u</code></pre>
+<pre><code>Call:
+cva.glmnet.formula(formula = x_num ~ ., data = d_train, family = &quot;gaussian&quot;)
+
+Model fitting options:
+    Sparse model matrix: FALSE
+    Use model.frame: FALSE
+    Alpha values: 0 0.001 0.008 0.027 0.064 0.125 0.216 0.343 0.512 0.729 1
+    Number of crossvalidation folds for lambda: 10</code></pre>
+<pre class="r"><code>summary(fit_3u)</code></pre>
+<pre><code>                Length Class  Mode     
+alpha              11  -none- numeric  
+nfolds              1  -none- numeric  
+modlist            11  -none- list     
+call                4  -none- call     
+terms               2  -none- call     
+xlev            10000  -none- list     
+sparse              1  -none- logical  
+use.model.frame     1  -none- logical  
+na.action           1  -none- character</code></pre>
+<pre class="r"><code># look at the goodness of fit as a function of the parameters
+plot(fit_3u)</code></pre>
+<p><img src="figure/encoder_spline.Rmd/unnamed-chunk-42-1.png" width="672" style="display: block; margin: auto;" /></p>
+<ul>
+<li>The minimum error value per curve appears to be lowest for the
+<span class="math inline">\(\alpha = 0\)</span> (i.e. ridge regression) curve. That seems reasonable
+given that all the VSA vector elements should be equally informative
+of the outcome and equally correlated with each other.</li>
+</ul>
+<p>Look at the impact of the <span class="math inline">\(\lambda\)</span> parameter on goodness of fit for the
+<span class="math inline">\(\alpha = 0\)</span> curve.</p>
+<pre class="r"><code># check that we are looking at the correct curve (alpha = 0)
+fit_3u$alpha[1]</code></pre>
+<pre><code>[1] 0</code></pre>
+<pre class="r"><code># extract the alpha = 0 model
+fit_3u_alpha_0 &lt;- fit_3u$modlist[[1]]
+
+# look at the lambda curve
+plot(fit_3u_alpha_0)</code></pre>
+<p><img src="figure/encoder_spline.Rmd/unnamed-chunk-43-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># get a summary of the alpha = 0 model
+fit_3u_alpha_0</code></pre>
+<pre><code>
+Call:  glmnet::cv.glmnet(x = x, y = y, weights = ..1, offset = ..2,      nfolds = nfolds, foldid = foldid, alpha = a, family = &quot;gaussian&quot;) 
+
+Measure: Mean-Squared Error 
+
+    Lambda Index  Measure        SE Nonzero
+min  119.2    57 0.005415 0.0004317    8761
+1se  124.9    56 0.005655 0.0004397    8761</code></pre>
+<ul>
+<li>The two dotted vertical lines are coincident.</li>
+<li>The numbers along the top margin show the number of nonzero
+coefficients in the regression models corresponding to the lambda
+values. All the plausible models have a number of nonzero
+coefficients equal to roughly 88% of the dimensionality of the VSA
+vectors.</li>
+</ul>
+<p>Look at the model selected by the one-standard-error rule.</p>
+<p>First look at how good the predictions are.</p>
+<pre class="r"><code># make a data frame with the original and regression-decoded scalar values
+d &lt;- tibble::tibble(# the elements of both columns are in 1:1 correspondence
+  x_in = x, 
+  x_out = predict(fit_3u, newdata = d_test, alpha = 0, s = &quot;lambda.1se&quot;)
+)
+
+# summary of residuals
+summary(d$x_out - d$x_in)</code></pre>
+<pre><code>   lambda.1se        
+ Min.   :-0.1589315  
+ 1st Qu.:-0.0614709  
+ Median : 0.0093582  
+ Mean   : 0.0003694  
+ 3rd Qu.: 0.0458795  
+ Max.   : 0.1954137  </code></pre>
+<pre class="r"><code># histogram of residuals
+ggplot(d) + geom_histogram(aes(x = x_out - x_in), bins = 10)</code></pre>
+<p><img src="figure/encoder_spline.Rmd/unnamed-chunk-44-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># plot of fit vs actual
+ggplot(d) + 
+  geom_vline(xintercept = c(1, 2, 4, 8), alpha = 0.3) +
+  geom_abline(slope = 1, intercept = 0, alpha = 0.3) +
+  geom_smooth(aes(x = x_in, y = x_out), method = &quot;lm&quot;) +
+  geom_point(aes(x = x_in, y = x_out))</code></pre>
+<pre><code>`geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
+<p><img src="figure/encoder_spline.Rmd/unnamed-chunk-44-2.png" width="672" style="display: block; margin: auto;" /></p>
+<ul>
+<li>That’s a pretty good fit.</li>
+<li>The slope of the fit is a little less than it should be. This is
+probably due to the regularisation. (The regression coefficients are
+shrunk towards zero.)</li>
+</ul>
+<p>Look at the model coefficients.</p>
+<pre class="r"><code># get the coefficients as a dense matrix
+fit_3u_coef &lt;- coef(fit_3u, alpha = 0, s = &quot;lambda.1se&quot;) %&gt;% as.matrix()
+
+# look at the first few entries
+head(fit_3u_coef, n = 10)</code></pre>
+<pre><code>                       s1
+(Intercept)  3.290274e+00
+e_1          7.677789e-04
+e_2          6.303249e-05
+e_3          2.472407e-04
+e_4         -4.236701e-04
+e_5         -6.958573e-04
+e_6          6.996196e-04
+e_7          4.973809e-04
+e_8         -5.213202e-04
+e_9          3.355693e-04</code></pre>
+<pre class="r"><code># put coefficients (excluding intercept) in a data frame
+d_coef &lt;- fit_3u_coef[-1] %&gt;% tibble::tibble(e = 1:length(.), coef = .)
+
+# distribution of coefficients
+ggplot(d_coef) + geom_histogram(aes(x = coef), bins = 100)</code></pre>
+<p><img src="figure/encoder_spline.Rmd/unnamed-chunk-45-1.png" width="672" style="display: block; margin: auto;" /></p>
+<ul>
+<li>I suspect that the magnitudes could be rounded to discrete values
+with minimal impact on the fit.</li>
+</ul>
+<p>Look at the relationship between the coefficients (taken as a vector)
+and the VSA knot vectors.</p>
+<pre class="r"><code># try to model the coefficients (this time, unrounded)
+# as an additive function of the knot vectors
+d_coef_model &lt;- as_tibble(ss_3u$knots_vsa, .name_repair = &quot;unique&quot;)</code></pre>
+<pre><code>New names:
+* `` -&gt; ...1
+* `` -&gt; ...2
+* `` -&gt; ...3
+* `` -&gt; ...4</code></pre>
+<pre class="r"><code>d_coef_model$coef &lt;- d_coef$coef
+
+# model the coefficients as a weighted sum of the knot vectors
+lm(coef ~ ., data = d_coef_model) %&gt;% summary()</code></pre>
+<pre><code>
+Call:
+lm(formula = coef ~ ., data = d_coef_model)
+
+Residuals:
+       Min         1Q     Median         3Q        Max 
+-4.312e-04 -1.428e-04  1.210e-06  1.362e-04  4.712e-04 
+
+Coefficients:
+              Estimate Std. Error  t value Pr(&gt;|t|)    
+(Intercept) -3.108e-07  1.651e-06   -0.188    0.851    
+...1        -2.246e-04  1.652e-06 -135.905   &lt;2e-16 ***
+...2        -1.351e-04  1.652e-06  -81.785   &lt;2e-16 ***
+...3         7.810e-05  1.652e-06   47.280   &lt;2e-16 ***
+...4         4.635e-04  1.652e-06  280.621   &lt;2e-16 ***
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Residual standard error: 0.0001651 on 9995 degrees of freedom
+Multiple R-squared:  0.912, Adjusted R-squared:  0.912 
+F-statistic: 2.591e+04 on 4 and 9995 DF,  p-value: &lt; 2.2e-16</code></pre>
+<ul>
+<li>That’s a pretty good approximation <span class="math inline">\(R^2 = 0.91\)</span>.</li>
+</ul>
+</div>
+<div id="nonlinear-function-of-three-unequal-intervals" class="section level2" number="4.4">
+<h2><span class="header-section-number">4.4</span> Nonlinear function of three unequal intervals</h2>
+<p>Use the same data used for the previous section, but this time use
+<span class="math inline">\(log_2(x)\)</span> as the outcome of the regression. This is getting closer to
+the reservoir computing application where we are trying to decode some
+nonlinear function from the reservoir.</p>
+<p>Fit a linear (i.e. Gaussian family) regression model, predicting the
+logarithm of the encoded numeric value from the VSA elements.</p>
+<pre class="r"><code># fit a set of models at a grid of alpha and lambda parameter values
+fit_3un &lt;- glmnetUtils::cva.glmnet(log2(x_num) ~ ., data = d_train, family = &quot;gaussian&quot;)
+fit_3un</code></pre>
+<pre><code>Call:
+cva.glmnet.formula(formula = log2(x_num) ~ ., data = d_train, 
+    family = &quot;gaussian&quot;)
+
+Model fitting options:
+    Sparse model matrix: FALSE
+    Use model.frame: FALSE
+    Alpha values: 0 0.001 0.008 0.027 0.064 0.125 0.216 0.343 0.512 0.729 1
+    Number of crossvalidation folds for lambda: 10</code></pre>
+<pre class="r"><code>summary(fit_3un)</code></pre>
+<pre><code>                Length Class  Mode     
+alpha              11  -none- numeric  
+nfolds              1  -none- numeric  
+modlist            11  -none- list     
+call                4  -none- call     
+terms               2  -none- call     
+xlev            10000  -none- list     
+sparse              1  -none- logical  
+use.model.frame     1  -none- logical  
+na.action           1  -none- character</code></pre>
+<pre class="r"><code># look at the goodness of fit as a function of the parameters
+plot(fit_3un)</code></pre>
+<p><img src="figure/encoder_spline.Rmd/unnamed-chunk-47-1.png" width="672" style="display: block; margin: auto;" /></p>
+<ul>
+<li>The minimum error value per curve appears to be lowest for the
+<span class="math inline">\(\alpha = 0\)</span> (i.e. ridge regression) curve. That seems reasonable
+given that all the VSA vector elements should be equally informative
+of the outcome and equally correlated with each other.</li>
+</ul>
+<p>Look at the impact of the <span class="math inline">\(\lambda\)</span> parameter on goodness of fit for the
+<span class="math inline">\(\alpha = 0\)</span> curve.</p>
+<pre class="r"><code># check that we are looking at the correct curve (alpha = 0)
+fit_3un$alpha[1]</code></pre>
+<pre><code>[1] 0</code></pre>
+<pre class="r"><code># extract the alpha = 0 model
+fit_3un_alpha_0 &lt;- fit_3un$modlist[[1]]
+
+# look at the lambda curve
+plot(fit_3un_alpha_0)</code></pre>
+<p><img src="figure/encoder_spline.Rmd/unnamed-chunk-48-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># get a summary of the alpha = 0 model
+fit_3un_alpha_0</code></pre>
+<pre><code>
+Call:  glmnet::cv.glmnet(x = x, y = y, weights = ..1, offset = ..2,      nfolds = nfolds, foldid = foldid, alpha = a, family = &quot;gaussian&quot;) 
+
+Measure: Mean-Squared Error 
+
+    Lambda Index  Measure        SE Nonzero
+min  24.30    72 0.001096 0.0001523    8761
+1se  33.66    65 0.001247 0.0001949    8761</code></pre>
+<ul>
+<li>The left dotted vertical line corresponds to minimum error. The
+right dotted vertical line corresponds to the largest value of
+lambda such that the error is within one standard-error of the
+minimum - the so-called “one-standard-error” rule.</li>
+<li>The numbers along the top margin show the number of nonzero
+coefficients in the regression models corresponding to the lambda
+values. All the plausible models have a number of nonzero
+coefficients equal to roughly 88% of the dimensionality of the VSA
+vectors.</li>
+</ul>
+<p>Look at the model selected by the one-standard-error rule.</p>
+<p>First look at how good the predictions are.</p>
+<pre class="r"><code># make a data frame with the original and regression-decoded scalar values
+d &lt;- tibble::tibble(# the elements of both columns are in 1:1 correspondence
+  x_in = x, 
+  x_tgt = log2(x),
+  x_out = predict(fit_3un, newdata = d_test, alpha = 0, s = &quot;lambda.1se&quot;)
+)
+
+# summary of residuals
+summary(d$x_out - d$x_tgt)</code></pre>
+<pre><code>   lambda.1se       
+ Min.   :-0.066587  
+ 1st Qu.:-0.030059  
+ Median :-0.008660  
+ Mean   :-0.002973  
+ 3rd Qu.: 0.019451  
+ Max.   : 0.124204  </code></pre>
+<pre class="r"><code># histogram of residuals
+ggplot(d) + geom_histogram(aes(x = x_out - x_tgt), bins = 10)</code></pre>
+<p><img src="figure/encoder_spline.Rmd/unnamed-chunk-49-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># plot of fit vs actual
+ggplot(d) + 
+  geom_vline(xintercept = c(1, 2, 4, 8), alpha = 0.3) +
+  geom_path(aes(x = x_in, y = x_tgt), colour = &quot;red&quot;) +
+  geom_point(aes(x = x_in, y = x_out))</code></pre>
+<p><img src="figure/encoder_spline.Rmd/unnamed-chunk-49-2.png" width="672" style="display: block; margin: auto;" /></p>
+<ul>
+<li>That’s a tolerably good fit. It’s clearly a piecewise linear
+approximation to the logarithmic curve.</li>
+<li>The approximation could be improved with more knots.</li>
 </ul>
 <br>
 <p>
@@ -1799,23 +2933,27 @@ attached base packages:
 [1] stats     graphics  grDevices datasets  utils     methods   base     
 
 other attached packages:
-[1] tibble_3.1.3       Matrix_1.3-4       dplyr_1.0.7        DiagrammeR_1.0.6.1
-[5] ggplot2_3.3.5      purrr_0.3.4        magrittr_2.0.1     here_1.0.1        
+ [1] tibble_3.1.3       dplyr_1.0.7        DiagrammeR_1.0.6.1 glmnetUtils_1.1.8 
+ [5] glmnet_4.1-2       Matrix_1.3-4       ggplot2_3.3.5      purrr_0.3.4       
+ [9] magrittr_2.0.1     here_1.0.1        
 
 loaded via a namespace (and not attached):
- [1] Rcpp_1.0.7         highr_0.9          RColorBrewer_1.1-2 pillar_1.6.2      
- [5] compiler_4.1.1     later_1.2.0        git2r_0.28.0       workflowr_1.6.2   
- [9] tools_4.1.1        digest_0.6.27      lattice_0.20-44    jsonlite_1.7.2    
-[13] evaluate_0.14      lifecycle_1.0.0    gtable_0.3.0       pkgconfig_2.0.3   
-[17] rlang_0.4.11       rstudioapi_0.13    cli_3.0.1          yaml_2.2.1        
-[21] xfun_0.25          withr_2.4.2        stringr_1.4.0      knitr_1.33        
-[25] htmlwidgets_1.5.3  generics_0.1.0     fs_1.5.0           vctrs_0.3.8       
-[29] tidyselect_1.1.1   rprojroot_2.0.2    grid_4.1.1         glue_1.4.2        
-[33] R6_2.5.0           fansi_0.5.0        rmarkdown_2.10     bookdown_0.22     
-[37] farver_2.1.0       tidyr_1.1.3        whisker_0.4        scales_1.1.1      
-[41] promises_1.2.0.1   ellipsis_0.3.2     htmltools_0.5.1.1  colorspace_2.0-2  
-[45] renv_0.14.0        httpuv_1.6.1       labeling_0.4.2     utf8_1.2.2        
-[49] stringi_1.7.3      visNetwork_2.0.9   munsell_0.5.0      crayon_1.4.1      </code></pre>
+ [1] shape_1.4.6        tidyselect_1.1.1   xfun_0.25          splines_4.1.1     
+ [5] lattice_0.20-44    colorspace_2.0-2   vctrs_0.3.8        generics_0.1.0    
+ [9] htmltools_0.5.1.1  mgcv_1.8-36        yaml_2.2.1         utf8_1.2.2        
+[13] survival_3.2-12    rlang_0.4.11       later_1.3.0        pillar_1.6.2      
+[17] glue_1.4.2         withr_2.4.2        RColorBrewer_1.1-2 foreach_1.5.1     
+[21] lifecycle_1.0.0    stringr_1.4.0      munsell_0.5.0      gtable_0.3.0      
+[25] workflowr_1.6.2    visNetwork_2.0.9   htmlwidgets_1.5.3  codetools_0.2-18  
+[29] evaluate_0.14      labeling_0.4.2     knitr_1.33         httpuv_1.6.2      
+[33] parallel_4.1.1     fansi_0.5.0        highr_0.9          Rcpp_1.0.7        
+[37] renv_0.14.0        promises_1.2.0.1   scales_1.1.1       jsonlite_1.7.2    
+[41] farver_2.1.0       fs_1.5.0           digest_0.6.27      stringi_1.7.3     
+[45] bookdown_0.23      grid_4.1.1         rprojroot_2.0.2    cli_3.0.1         
+[49] tools_4.1.1        tidyr_1.1.3        crayon_1.4.1       whisker_0.4       
+[53] pkgconfig_2.0.3    ellipsis_0.3.2     rstudioapi_0.13    rmarkdown_2.10    
+[57] iterators_1.0.13   R6_2.5.0           nlme_3.1-152       git2r_0.28.0      
+[61] compiler_4.1.1    </code></pre>
 </div>
 </div>
 </div>

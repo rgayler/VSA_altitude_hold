@@ -18,6 +18,8 @@ suppressPackageStartupMessages(
     library(magrittr)
     library(purrr)
     library(ggplot2)
+    library(glmnet)
+    library(glmnetUtils)
   }
 )
 
@@ -332,7 +334,7 @@ Do some very small scale testing.
 
 ## Values decoded correctly
 
-Chcek that encoded values are decoded correctly across the range of the
+Check that encoded values are decoded correctly across the range of the
 knots.
 
 ```{r}
@@ -381,7 +383,7 @@ They will be distributed in a small range around zero.
 The aim of the zero threshold is to treat dot products in the range that
 would be produced by approximately orthogonal vectors as exactly zero.
 
-In the following analyses I will make life gard for the decoder by
+In the following analyses I will make life hard for the decoder by
 having 101 knots. This makes it more likely that at least one of the
 irrelevant knots will have a dot product above the zero threshold.
 
@@ -431,7 +433,7 @@ runif(n = 1e3, min = -0.1, max = 1.1) %>%
 ```
 
 -   The region considered identical to the knot value is smaller.
-- The decoded values don't quite lie on the expected line.
+-   The decoded values don't quite lie on the expected line.
 
 ```{r}
 runif(n = 1e3, min = -0.1, max = 1.1) %>% 
@@ -602,3 +604,795 @@ vsa_mk_atom_bipolar(1e4L) %>% vsa_decode_scalar_spline(ss, zero_thresh = -Inf)
 ```
 
 -   Some of the decoded values lie outside the range of the knots.
+
+# Regression decoding
+
+The decoder above is intended for use where we *design* a system that
+requires a vector representation of a scalars quantity to be converted
+to a numeric scalar to interface with some piece of equipment that can
+only accept numeric scalars as inputs.
+
+It is relatively common to use VSA representations as the core of a
+regression/classification task. The output transformation of reservoir
+computing can also be viewed as an equivalent task. In these tasks the
+transformation from the high-dimensional vector representation to a
+numeric scalar is implemented with standard statistical regression
+techniques.
+
+In this section, I will attempt to use standard statistical regression
+techniques to decode the encoded scalar representations. (This is being
+attempted without having recently read the relevant papers in using
+regression with VSA representations. In the event that this fails to
+work or becomes a horrible mess I will have to read those papers before
+making another attempt.)
+
+In using regression to decode VSA representations I will have to create
+a data matrix with one row per observation (the encoding of a value).
+One column will correspond to the dependent variable - the *target*
+value (i.e. the original scalar value that was encoded). The remaining
+columns correspond to the independent variables (predictors) - the VSA
+vector representation of the encoded scalar value. There will be one
+column for each element of the vector representation.
+
+The number of columns will far exceed the number of rows, so simple
+unregularised regression will fail. I will initially attempt to use
+regularised regression (elasticnet, implemented by `glmnet` in R).
+
+## One interval
+
+Start with the simplest possible encoder: one interval, bounded by two
+knots. Create some data, run the regression, and see what happens. At
+this stage I won't bother running replicates to assess variability
+across atoms. I will arbitrarily choose 101 equally spaced examples as
+the data.
+
+```{r}
+# use the 'default' VSA dimensionality
+vsa_dim <- 1e4L
+
+# create the spline specification
+ss_1 <- vsa_mk_scalar_encoder_spline_spec(vsa_dim, knots = c(1, 2))
+
+# create the numeric scalar values to be encoded
+x <- seq(1, 2, length.out = 101)
+
+# function to to take a set of numeric scalar values,
+# encode them as VSA vectors using the given spline specification,
+# and package the results as a data frame for regression modelling
+mk_df <- function(
+  x, # numeric - vector of scalar values to be encoded
+  ss # data frame - spline specification for scalar encoding
+) # value - data frame - one row per scalar, one column for the scalar and each VSA element
+{
+  tibble::tibble(x_num = x) %>% # put scalars as column of data frame
+  dplyr::rowwise() %>% 
+  dplyr::mutate( 
+    x_vsa = x_num %>% vsa_encode_scalar_spline(ss) %>% # encode each scalar
+      tibble(e = 1:length(.), e_val = .) %>% # name all the vector elements
+      tidyr::pivot_wider(names_from = e, names_prefix = "e_", values_from = e_val) %>% # transpose vector to columns
+      list() # package the value for a list column
+  ) %>% 
+  dplyr::ungroup() %>%
+  tidyr::unnest(x_vsa) # convert the nested df to columns
+}
+
+# create training data
+d_train <- mk_df(x, ss_1)
+# create testing data
+# use the same knot vectors, different sampling in vsa_add()
+d_test <- mk_df(x, ss_1)
+
+
+# take a quick look at the data
+d_train
+```
+
+The data has 101 observations where each has the encoded numeric value
+and the 10,000 elements of the encoded VSA representation.
+
+Fit a linear (i.e. Gaussian family) regression model, predicting the
+encoded numeric value from the VSA elements.
+
+Use `glmnet()` because it fits regularised regressions, allowing it to
+deal with the number of predictors being much greater than the number of
+observations. Also, it has been engineered for efficiency with large
+numbers of predictors.
+
+`glmnet()` can make use of parallel processing but it's not needed here
+as this code runs sufficiently rapidly on a modest laptop computer.
+
+`cva.glmnet()` in the code below runs cross-validation fits across a
+grid of $\alpha$ and $\lambda$ values so that we can choose the best
+regularisation scheme. $\alpha = 1$ corresponds to the ridge-regression
+penalty and $\alpha = 0$ corresponds to the lasso penalty. The $\lambda$
+parameter is the weighting of the elastic-net penalty.
+
+I will use the cross-validation analysis to select the parameters rather
+than testing on a hold-out sample, because it is less programming effort
+and I don't expect it to make a substantial difference to the results.
+
+```{r}
+# fit a set of models at a grid of alpha and lambda parameter values
+fit_1 <- glmnetUtils::cva.glmnet(x_num ~ ., data = d_train, family = "gaussian")
+fit_1
+summary(fit_1)
+
+# look at the goodness of fit as a function of the parameters
+plot(fit_1)
+```
+
+-   The minimum error value per curve appears to be lowest for the
+    $\alpha = 0$ (i.e. ridge regression) curve. That seems reasonable
+    given that all the VSA vector elements should be equally informative
+    of the outcome and equally correlated with each other.
+
+Look at the impact of the $\lambda$ parameter on goodness of fit for the
+$\alpha = 0$ curve.
+
+```{r}
+# check that we are looking at the correct curve (alpha = 0)
+fit_1$alpha[1]
+
+# extract the alpha = 0 model
+fit_1_alpha_0 <- fit_1$modlist[[1]]
+
+# look at the lambda curve
+plot(fit_1_alpha_0)
+
+# get a summary of the alpha = 0 model
+fit_1_alpha_0
+```
+
+-   The left dotted vertical line corresponds to minimum error. The
+    right dotted vertical line corresponds to the largest value of
+    lambda such that the error is within one standard-error of the
+    minimum - the so-called "one-standard-error" rule.
+-   The numbers along the top margin show the number of nonzero
+    coefficients in the regression models corresponding to the lambda
+    values. All the plausible models have a number of nonzero
+    coefficients equal to roughly half the dimensionality of the VSA
+    vectors.
+
+Look at the model selected by the one-standard-error rule.
+
+First look at how good the predictions are.
+
+```{r}
+# make a data frame with the original and regression-decoded scalar values
+d <- tibble::tibble(# the elements of both columns are in 1:1 correspondence
+  x_in = x, 
+  x_out = predict(fit_1, newdata = d_test, alpha = 0, s = "lambda.1se")
+)
+
+# summary of residuals
+summary(d$x_out - d$x_in)
+
+# histogram of residuals
+ggplot(d) + geom_histogram(aes(x = x_out - x_in), bins = 10)
+
+# plot of fit vs actual
+ggplot(d) + 
+  geom_vline(xintercept = c(1, 2), alpha = 0.3) +
+  geom_abline(slope = 1, intercept = 0, alpha = 0.3) +
+  geom_smooth(aes(x = x_in, y = x_out), method = "lm") +
+  geom_point(aes(x = x_in, y = x_out))
+```
+
+-   That's a pretty good fit.
+-   The slope of the fit is a little less than it should be. This is
+    probably due to the regularisation. (The regression coefficients are
+    shrunk towards zero.)
+
+Look at the model coefficients.
+
+```{r}
+# get the coefficients as a dense matrix
+fit_1_coef <- coef(fit_1, alpha = 0, s = "lambda.1se") %>% as.matrix()
+
+# look at the first few entries
+head(fit_1_coef, n = 10)
+
+# put coefficients (excluding intercept) in a data frame
+d_coef <- fit_1_coef[-1] %>% tibble::tibble(e = 1:length(.), coef = .)
+
+# distribution of coefficients
+ggplot(d_coef) + geom_histogram(aes(x = coef), bins = 100)
+```
+
+-   The fit has an intercept of 1.5, which corresponds to the midpoint
+    of the knot interval.
+
+-   Roughly half the coefficients are zero.
+
+-   Of the nonzero coefficients roughly half are distinctly positive and
+    the other half are distinctly negative.
+
+-   The magnitudes of the positive and negative coefficients are a
+    little less than $10^{-4}$ (which probably depends on the
+    dimensionality).
+
+    -   I suspect that magnitudes could be rounded to be exactly the
+        same value with minimal impact on the fit.
+
+Look at the relationship between the coefficients (taken as a vector)
+and the VSA knot vectors.
+
+```{r}
+# cosine of coefficients to first knot vector
+vsa_cos_sim(d_coef$coef, (ss_1$knots_vsa)[[1]])
+
+# cosine of coefficients to second knot vector
+vsa_cos_sim(d_coef$coef, (ss_1$knots_vsa)[[2]])
+
+# cosine of coefficients to difference of knot vectors
+vsa_cos_sim(d_coef$coef, (ss_1$knots_vsa)[[2]] - (ss_1$knots_vsa)[[1]])
+
+# cosine of rounded coefficients to difference of knot vectors
+vsa_cos_sim(sign(d_coef$coef), (ss_1$knots_vsa)[[2]] - (ss_1$knots_vsa)[[1]])
+```
+
+-   The coefficient vector is quite similar to the first and second knot
+    vectors.
+
+-   The coefficient vector is very similar to the difference of the
+    first and second knot vectors.
+
+-   The rounded coefficient vector is identical (up to scaling) to the
+    difference of the first and second knot vectors.
+
+    -   This explains why approximately half the coefficients are zero.
+        (The vector difference of two bipolar vectors will have
+        approximately half zero values.) \#\# Two equal intervals
+
+Create a linear spline encoder with two intervals of equal extent: two
+intervals, bounded by three knots. Create some data, run the regression,
+and see what happens. At this stage I won't bother running replicates to
+assess variability across atoms. I will arbitrarily choose 201 equally
+spaced examples as the data (to maintain the same number of observations
+per interval).
+
+```{r}
+# use the 'default' VSA dimensionality
+vsa_dim <- 1e4L
+
+# create the spline specification
+ss_2e <- vsa_mk_scalar_encoder_spline_spec(vsa_dim, knots = c(1, 2, 3))
+
+# create the numeric scalar values to be encoded
+x <- seq(1, 3, length.out = 201)
+
+# create training data
+d_train <- mk_df(x, ss_2e)
+# create testing data
+# use the same knot vectors, different sampling in vsa_add()
+d_test <- mk_df(x, ss_2e)
+```
+
+The data has 201 observations where each has the encoded numeric value
+and the 10,000 elements of the encoded VSA representation.
+
+Fit a linear (i.e. Gaussian family) regression model, predicting the
+encoded numeric value from the VSA elements.
+
+Use `glmnet()` because it fits regularised regressions, allowing it to
+deal with the number of predictors being much greater than the number of
+observations. Also, it has been engineered for efficiency with large
+numbers of predictors.
+
+`glmnet()` can make use of parallel processing but it's not needed here
+as this code runs sufficiently rapidly on a modest laptop computer.
+
+`cva.glmnet()` in the code below runs cross-validation fits across a
+grid of $\alpha$ and $\lambda$ values so that we can choose the best
+regularisation scheme. $\alpha = 1$ corresponds to the ridge-regression
+penalty and $\alpha = 0$ corresponds to the lasso penalty. The $\lambda$
+parameter is the weighting of the elastic-net penalty.
+
+I will use the cross-validation analysis to select the parameters rather
+than testing on a hold-out sample, because it is less programming effort
+and I don't expect it to make a substantial difference to the results.
+
+```{r}
+# fit a set of models at a grid of alpha and lambda parameter values
+fit_2e <- glmnetUtils::cva.glmnet(x_num ~ ., data = d_train, family = "gaussian")
+fit_2e
+summary(fit_2e)
+
+# look at the goodness of fit as a function of the parameters
+plot(fit_2e)
+```
+
+-   The minimum error value per curve appears to be lowest for the
+    $\alpha = 0$ (i.e. ridge regression) curve. That seems reasonable
+    given that all the VSA vector elements should be equally informative
+    of the outcome and equally correlated with each other.
+
+Look at the impact of the $\lambda$ parameter on goodness of fit for the
+$\alpha = 0$ curve.
+
+```{r}
+# check that we are looking at the correct curve (alpha = 0)
+fit_2e$alpha[1]
+
+# extract the alpha = 0 model
+fit_2e_alpha_0 <- fit_2e$modlist[[1]]
+
+# look at the lambda curve
+plot(fit_2e_alpha_0)
+
+# get a summary of the alpha = 0 model
+fit_2e_alpha_0
+```
+
+-   The left dotted vertical line corresponds to minimum error. The
+    right dotted vertical line corresponds to the largest value of
+    lambda such that the error is within one standard-error of the
+    minimum - the so-called "one-standard-error" rule.
+-   The numbers along the top margin show the number of nonzero
+    coefficients in the regression models corresponding to the lambda
+    values. All the plausible models have a number of nonzero
+    coefficients equal to roughly 75% of the dimensionality of the VSA
+    vectors.
+
+Look at the model selected by the one-standard-error rule.
+
+First look at how good the predictions are.
+
+```{r}
+# make a data frame with the original and regression-decoded scalar values
+d <- tibble::tibble(# the elements of both columns are in 1:1 correspondence
+  x_in = x, 
+  x_out = predict(fit_2e, newdata = d_test, alpha = 0, s = "lambda.1se")
+)
+
+# summary of residuals
+summary(d$x_out - d$x_in)
+
+# histogram of residuals
+ggplot(d) + geom_histogram(aes(x = x_out - x_in), bins = 10)
+
+# plot of fit vs actual
+ggplot(d) + 
+  geom_vline(xintercept = c(1, 2, 3), alpha = 0.3) +
+  geom_abline(slope = 1, intercept = 0, alpha = 0.3) +
+  geom_smooth(aes(x = x_in, y = x_out), method = "lm") +
+  geom_point(aes(x = x_in, y = x_out))
+```
+
+-   That's a pretty good fit.
+-   The slope of the fit is a little less than it should be. This is
+    probably due to the regularisation. (The regression coefficients are
+    shrunk towards zero.)
+
+Look at the model coefficients.
+
+```{r}
+# get the coefficients as a dense matrix
+fit_2e_coef <- coef(fit_2e, alpha = 0, s = "lambda.1se") %>% as.matrix()
+
+# look at the first few entries
+head(fit_2e_coef, n = 10)
+
+# put coefficients (excluding intercept) in a data frame
+d_coef <- fit_2e_coef[-1] %>% tibble::tibble(e = 1:length(.), coef = .)
+
+# distribution of coefficients
+ggplot(d_coef) + geom_histogram(aes(x = coef), bins = 100)
+```
+
+-   The fit has an intercept of approximately 2, which corresponds to
+    the midpoint of the knot range
+
+-   Roughly 25% of the coefficients are exactly zero.
+
+-   The remaining coefficients are split roughly equally between
+    distinctly positive, distinctly negative, and approximately zero.
+
+-   The magnitudes of the positive and negative coefficients are a
+    little less than $10^{-4}$ (which probably depends on the
+    dimensionality).
+
+    -   I suspect that magnitudes could be rounded to three unique
+        values with minimal impact on the fit.
+
+Look at the relationship between the coefficients (taken as a vector)
+and the VSA knot vectors.
+
+```{r}
+# cosine of coefficients to first knot vector
+vsa_cos_sim(d_coef$coef, (ss_2e$knots_vsa)[[1]])
+
+# cosine of coefficients to second knot vector
+vsa_cos_sim(d_coef$coef, (ss_2e$knots_vsa)[[2]])
+
+# cosine of coefficients to third knot vector
+vsa_cos_sim(d_coef$coef, (ss_2e$knots_vsa)[[3]])
+
+# cosine of coefficients to difference of knot vectors
+vsa_cos_sim(d_coef$coef, (ss_2e$knots_vsa)[[3]] - (ss_2e$knots_vsa)[[1]])
+
+# cosine of rounded coefficients to difference of knot vectors
+vsa_cos_sim(round(d_coef$coef * 1e4), (ss_2e$knots_vsa)[[3]] - (ss_2e$knots_vsa)[[1]])
+```
+
+-   The coefficient vector is quite similar to the first and third knot
+    vectors, but approximately orthogonal to the second knot vector.
+
+-   The coefficient vector is very similar to the difference of the
+    first and third knot vectors.
+
+-   The rounded coefficient vector is almost identical (up to scaling)
+    to the difference of the first and third knot vectors.
+
+## Three equal intervals
+
+Create a linear spline encoder with three intervals of equal extent:
+three intervals, bounded by four knots. Create some data, run the
+regression, and see what happens. At this stage I won't bother running
+replicates to assess variability across atoms. I will arbitrarily choose
+301 equally spaced examples as the data (to maintain the same number of
+observations per interval).
+
+```{r}
+# use the 'default' VSA dimensionality
+vsa_dim <- 1e4L
+
+# create the spline specification
+ss_3e <- vsa_mk_scalar_encoder_spline_spec(vsa_dim, knots = c(1, 2, 3, 4))
+
+# create the numeric scalar values to be encoded
+x <- seq(1, 4, length.out = 301)
+
+# create training data
+d_train <- mk_df(x, ss_3e)
+# create testing data
+# use the same knot vectors, different sampling in vsa_add()
+d_test <- mk_df(x, ss_3e)
+```
+
+The data has 301 observations where each has the encoded numeric value
+and the 10,000 elements of the encoded VSA representation.
+
+Fit a linear (i.e. Gaussian family) regression model, predicting the
+encoded numeric value from the VSA elements.
+
+Use `glmnet()` because it fits regularised regressions, allowing it to
+deal with the number of predictors being much greater than the number of
+observations. Also, it has been engineered for efficiency with large
+numbers of predictors.
+
+`glmnet()` can make use of parallel processing but it's not needed here
+as this code runs sufficiently rapidly on a modest laptop computer.
+
+`cva.glmnet()` in the code below runs cross-validation fits across a
+grid of $\alpha$ and $\lambda$ values so that we can choose the best
+regularisation scheme. $\alpha = 1$ corresponds to the ridge-regression
+penalty and $\alpha = 0$ corresponds to the lasso penalty. The $\lambda$
+parameter is the weighting of the elastic-net penalty.
+
+I will use the cross-validation analysis to select the parameters rather
+than testing on a hold-out sample, because it is less programming effort
+and I don't expect it to make a substantial difference to the results.
+
+```{r}
+# fit a set of models at a grid of alpha and lambda parameter values
+fit_3e <- glmnetUtils::cva.glmnet(x_num ~ ., data = d_train, family = "gaussian")
+fit_3e
+summary(fit_3e)
+
+# look at the goodness of fit as a function of the parameters
+plot(fit_3e)
+```
+
+-   The minimum error value per curve appears to be lowest for the
+    $\alpha = 0$ (i.e. ridge regression) curve. That seems reasonable
+    given that all the VSA vector elements should be equally informative
+    of the outcome and equally correlated with each other.
+
+Look at the impact of the $\lambda$ parameter on goodness of fit for the
+$\alpha = 0$ curve.
+
+```{r}
+# check that we are looking at the correct curve (alpha = 0)
+fit_3e$alpha[1]
+
+# extract the alpha = 0 model
+fit_3e_alpha_0 <- fit_3e$modlist[[1]]
+
+# look at the lambda curve
+plot(fit_3e_alpha_0)
+
+# get a summary of the alpha = 0 model
+fit_3e_alpha_0
+```
+
+-   The left dotted vertical line corresponds to minimum error. The
+    right dotted vertical line corresponds to the largest value of
+    lambda such that the error is within one standard-error of the
+    minimum - the so-called "one-standard-error" rule.
+-   The numbers along the top margin show the number of nonzero
+    coefficients in the regression models corresponding to the lambda
+    values. All the plausible models have a number of nonzero
+    coefficients equal to roughly 88% of the dimensionality of the VSA
+    vectors.
+
+Look at the model selected by the one-standard-error rule.
+
+First look at how good the predictions are.
+
+```{r}
+# make a data frame with the original and regression-decoded scalar values
+d <- tibble::tibble(# the elements of both columns are in 1:1 correspondence
+  x_in = x, 
+  x_out = predict(fit_3e, newdata = d_test, alpha = 0, s = "lambda.1se")
+)
+
+# summary of residuals
+summary(d$x_out - d$x_in)
+
+# histogram of residuals
+ggplot(d) + geom_histogram(aes(x = x_out - x_in), bins = 10)
+
+# plot of fit vs actual
+ggplot(d) + 
+  geom_vline(xintercept = c(1, 2, 3, 4), alpha = 0.3) +
+  geom_abline(slope = 1, intercept = 0, alpha = 0.3) +
+  geom_smooth(aes(x = x_in, y = x_out), method = "lm") +
+  geom_point(aes(x = x_in, y = x_out))
+```
+
+-   That's a pretty good fit.
+-   The slope of the fit is a little less than it should be. This is
+    probably due to the regularisation. (The regression coefficients are
+    shrunk towards zero.)
+
+Look at the model coefficients.
+
+```{r}
+# get the coefficients as a dense matrix
+fit_3e_coef <- coef(fit_3e, alpha = 0, s = "lambda.1se") %>% as.matrix()
+
+# look at the first few entries
+head(fit_3e_coef, n = 10)
+
+# put coefficients (excluding intercept) in a data frame
+d_coef <- fit_3e_coef[-1] %>% tibble::tibble(e = 1:length(.), coef = .)
+
+# distribution of coefficients
+ggplot(d_coef) + geom_histogram(aes(x = coef), bins = 100)
+```
+
+-   I suspect that the magnitudes could be rounded to seven unique
+    values with minimal impact on the fit.
+
+Look at the relationship between the coefficients (taken as a vector)
+and the VSA knot vectors.
+
+```{r}
+# try to model the rounded coefficients
+# as an additive function of the knot vectors
+d_coef_model <- as_tibble(ss_3e$knots_vsa, .name_repair = "unique")
+d_coef_model$coef <- round(d_coef$coef * 1e4)
+
+# check the distribution of the rounded coefficients
+table(d_coef_model$coef)
+
+# model the coefficients as a weighted sum of the knot vectors
+lm(coef ~ ., data = d_coef_model) %>% summary()
+```
+
+-   To a very good approximation
+    $c_i = -1.5 e_{1,i} + -0.5 e_{2,i} + 0.5 e_{3,i} + 1.5 e_{4,i}$
+
+## Three unequal intervals
+
+Create a linear spline encoder with three intervals of unequal extent:
+three intervals, bounded by four knots. Create some data, run the
+regression, and see what happens.
+
+```{r}
+# use the 'default' VSA dimensionality
+vsa_dim <- 1e4L
+
+# create the spline specification
+ss_3u <- vsa_mk_scalar_encoder_spline_spec(vsa_dim, knots = c(1, 2, 4, 8))
+
+# create the numeric scalar values to be encoded
+x <- seq(1, 8, length.out = 301)
+
+# create training data
+d_train <- mk_df(x, ss_3u)
+# create testing data
+# use the same knot vectors, different sampling in vsa_add()
+d_test <- mk_df(x, ss_3u)
+```
+
+The data has 301 observations where each has the encoded numeric value
+and the 10,000 elements of the encoded VSA representation.
+
+Fit a linear (i.e. Gaussian family) regression model, predicting the
+encoded numeric value from the VSA elements.
+
+```{r}
+# fit a set of models at a grid of alpha and lambda parameter values
+fit_3u <- glmnetUtils::cva.glmnet(x_num ~ ., data = d_train, family = "gaussian")
+fit_3u
+summary(fit_3u)
+
+# look at the goodness of fit as a function of the parameters
+plot(fit_3u)
+```
+
+-   The minimum error value per curve appears to be lowest for the
+    $\alpha = 0$ (i.e. ridge regression) curve. That seems reasonable
+    given that all the VSA vector elements should be equally informative
+    of the outcome and equally correlated with each other.
+
+Look at the impact of the $\lambda$ parameter on goodness of fit for the
+$\alpha = 0$ curve.
+
+```{r}
+# check that we are looking at the correct curve (alpha = 0)
+fit_3u$alpha[1]
+
+# extract the alpha = 0 model
+fit_3u_alpha_0 <- fit_3u$modlist[[1]]
+
+# look at the lambda curve
+plot(fit_3u_alpha_0)
+
+# get a summary of the alpha = 0 model
+fit_3u_alpha_0
+```
+
+-   The two dotted vertical lines are coincident.
+-   The numbers along the top margin show the number of nonzero
+    coefficients in the regression models corresponding to the lambda
+    values. All the plausible models have a number of nonzero
+    coefficients equal to roughly 88% of the dimensionality of the VSA
+    vectors.
+
+Look at the model selected by the one-standard-error rule.
+
+First look at how good the predictions are.
+
+```{r}
+# make a data frame with the original and regression-decoded scalar values
+d <- tibble::tibble(# the elements of both columns are in 1:1 correspondence
+  x_in = x, 
+  x_out = predict(fit_3u, newdata = d_test, alpha = 0, s = "lambda.1se")
+)
+
+# summary of residuals
+summary(d$x_out - d$x_in)
+
+# histogram of residuals
+ggplot(d) + geom_histogram(aes(x = x_out - x_in), bins = 10)
+
+# plot of fit vs actual
+ggplot(d) + 
+  geom_vline(xintercept = c(1, 2, 4, 8), alpha = 0.3) +
+  geom_abline(slope = 1, intercept = 0, alpha = 0.3) +
+  geom_smooth(aes(x = x_in, y = x_out), method = "lm") +
+  geom_point(aes(x = x_in, y = x_out))
+```
+
+-   That's a pretty good fit.
+-   The slope of the fit is a little less than it should be. This is
+    probably due to the regularisation. (The regression coefficients are
+    shrunk towards zero.)
+
+Look at the model coefficients.
+
+```{r}
+# get the coefficients as a dense matrix
+fit_3u_coef <- coef(fit_3u, alpha = 0, s = "lambda.1se") %>% as.matrix()
+
+# look at the first few entries
+head(fit_3u_coef, n = 10)
+
+# put coefficients (excluding intercept) in a data frame
+d_coef <- fit_3u_coef[-1] %>% tibble::tibble(e = 1:length(.), coef = .)
+
+# distribution of coefficients
+ggplot(d_coef) + geom_histogram(aes(x = coef), bins = 100)
+```
+
+-   I suspect that the magnitudes could be rounded to discrete values
+    with minimal impact on the fit.
+
+Look at the relationship between the coefficients (taken as a vector)
+and the VSA knot vectors.
+
+```{r}
+# try to model the coefficients (this time, unrounded)
+# as an additive function of the knot vectors
+d_coef_model <- as_tibble(ss_3u$knots_vsa, .name_repair = "unique")
+d_coef_model$coef <- d_coef$coef
+
+# model the coefficients as a weighted sum of the knot vectors
+lm(coef ~ ., data = d_coef_model) %>% summary()
+```
+
+-   That's a pretty good approximation $R^2 = 0.91$.
+
+## Nonlinear function of three unequal intervals
+
+Use the same data used for the previous section, but this time use
+$log_2(x)$ as the outcome of the regression. This is getting closer to
+the reservoir computing application where we are trying to decode some
+nonlinear function from the reservoir.
+
+Fit a linear (i.e. Gaussian family) regression model, predicting the
+logarithm of the encoded numeric value from the VSA elements.
+
+```{r}
+# fit a set of models at a grid of alpha and lambda parameter values
+fit_3un <- glmnetUtils::cva.glmnet(log2(x_num) ~ ., data = d_train, family = "gaussian")
+fit_3un
+summary(fit_3un)
+
+# look at the goodness of fit as a function of the parameters
+plot(fit_3un)
+```
+
+-   The minimum error value per curve appears to be lowest for the
+    $\alpha = 0$ (i.e. ridge regression) curve. That seems reasonable
+    given that all the VSA vector elements should be equally informative
+    of the outcome and equally correlated with each other.
+
+Look at the impact of the $\lambda$ parameter on goodness of fit for the
+$\alpha = 0$ curve.
+
+```{r}
+# check that we are looking at the correct curve (alpha = 0)
+fit_3un$alpha[1]
+
+# extract the alpha = 0 model
+fit_3un_alpha_0 <- fit_3un$modlist[[1]]
+
+# look at the lambda curve
+plot(fit_3un_alpha_0)
+
+# get a summary of the alpha = 0 model
+fit_3un_alpha_0
+```
+
+-   The left dotted vertical line corresponds to minimum error. The
+    right dotted vertical line corresponds to the largest value of
+    lambda such that the error is within one standard-error of the
+    minimum - the so-called "one-standard-error" rule.
+-   The numbers along the top margin show the number of nonzero
+    coefficients in the regression models corresponding to the lambda
+    values. All the plausible models have a number of nonzero
+    coefficients equal to roughly 88% of the dimensionality of the VSA
+    vectors.
+
+Look at the model selected by the one-standard-error rule.
+
+First look at how good the predictions are.
+
+```{r}
+# make a data frame with the original and regression-decoded scalar values
+d <- tibble::tibble(# the elements of both columns are in 1:1 correspondence
+  x_in = x, 
+  x_tgt = log2(x),
+  x_out = predict(fit_3un, newdata = d_test, alpha = 0, s = "lambda.1se")
+)
+
+# summary of residuals
+summary(d$x_out - d$x_tgt)
+
+# histogram of residuals
+ggplot(d) + geom_histogram(aes(x = x_out - x_tgt), bins = 10)
+
+# plot of fit vs actual
+ggplot(d) + 
+  geom_vline(xintercept = c(1, 2, 4, 8), alpha = 0.3) +
+  geom_path(aes(x = x_in, y = x_tgt), colour = "red") +
+  geom_point(aes(x = x_in, y = x_out))
+```
+
+-   That's a tolerably good fit. It's clearly a piecewise linear
+    approximation to the logarithmic curve.
+-   The approximation could be improved with more knots.

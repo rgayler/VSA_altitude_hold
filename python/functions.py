@@ -134,28 +134,6 @@ run_simulation <- function(
 
 # The time and input variables are added to the data frame for convenience.
 
-## ---- vsa_mag
-
-# function to calculate the magnitude of a VSA vector
-# Allow for the possibility that the vector might not be bipolar
-
-vsa_mag <- function(
-  v1 # numeric - VSA vector (not necessarily bipolar)
-) # value # numeric - magnitude of the VSA vector
-{
-  ### Set up the arguments ###
-  # The OCD error checking is probably more useful as documentation
-  
-  if(missing(v1)) 
-    stop("VSA vector argument (v1) must be specified")
-  
-  if(!is.vector(v1, mode = "numeric"))
-    stop("v1 must be an numeric vector")
-  
-  # No numerical analysis considerations 
-  sqrt(sum(v1*v1))
-}
-
 ## ---- vsa_dotprod
 
 # function to calculate the dot product  of two VSA vectors
@@ -647,6 +625,19 @@ vsa_decode_scalar_spline <- function(
 }
 '''
 
+## ---- vsa_mag
+
+# function to calculate the magnitude of a VSA vector
+# Allow for the possibility that the vector might not be bipolar
+
+def vsa_mag (
+  v1 # numeric - VSA vector (not necessarily bipolar)
+  ): # value # numeric - magnitude of the VSA vector
+
+  # No numerical analysis considerations 
+  return np.sqrt(np.sum(v1*v1))
+
+
 ## ---- vsa_mk_atom_bipolar
 
 # function to make an atomic VSA vector
@@ -666,7 +657,11 @@ def vsa_mk_atom_bipolar(
 ## ---- tests
 
 def main():
-    print(vsa_mk_atom_bipolar(10))
+
+    v = vsa_mk_atom_bipolar(10)
+
+    print(v)
+    print(vsa_mag(v))
 
 if __name__ == '__main__':
     main()

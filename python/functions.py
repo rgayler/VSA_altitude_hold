@@ -302,36 +302,6 @@ vsa_permute <- function(
   v1[perm]
 }
 
-## ---- vsa_multiply
-
-# function to multiply an arbitrary number of VSA vectors
-
-vsa_multiply <- function(
-  ... # >= 2 VSA vectors of identical dimension as arguments to multiply
-) # value # one VSA vector, the weighted sum (sampled) of the argument vectors
-{
-  ### Set up the arguments ###
-  # The OCD error checking is probably more useful as documentation
-  
-  args_list <- list(...)
-  args_n <- length(args_list)
-  
-  if(args_n < 2) 
-    stop("number of source VSA vector arguments must be >= 2")
-  
-  if(!all(sapply(args_list, is.vector, mode = "numeric")))
-    stop("all source VSA vectors must be numeric vectors")
-  
-  vsa_dim <- length(args_list[[1]])
-  
-  if(!all(sapply(args_list, length) == vsa_dim))
-    stop("all source VSA vectors must be the same length")
-  
-  ### Construct the result vector
-  # as.data.frame(args_list)
-  purrr::reduce(args_list, `*`)
-}
-
 ## ---- vsa_mk_sample_spec
 
 # function to make a sampling specification for adding VSA vectors
@@ -653,15 +623,46 @@ def vsa_mk_atom_bipolar(
   
   # Construct a random bipolar vector
   return 2 * (np.random.random(vsa_dim) > 0.5) - 1
+
+## ---- vsa_multiply
+
+# function to multiply an arbitrary number of VSA vectors
+
+def vsa_multiply(vectors
+     # >= 2 VSA vectors of identical dimension as arguments to multiply
+  ): # value # one VSA vector, the weighted sum (sampled) of the argument vectors
+
+
+    result = np.ones(len(vectors[0]))
+
+    for v in vectors:
+        result *= v
+
+    return result
+
  
-## ---- tests
+## ---- tests -----------------------------------------------------
+
+def vsa_print(x):
+    for v in x:
+        print('%+0.f' % v, end=' ')
+    print()
 
 def main():
 
-    v = vsa_mk_atom_bipolar(10)
+    N = 10
 
-    print(v)
-    print(vsa_mag(v))
+    v1 = vsa_mk_atom_bipolar(N)
+    v2 = vsa_mk_atom_bipolar(N)
+    v3 = vsa_mk_atom_bipolar(N)
+
+    vsa_print(v1)
+    vsa_print(v2)
+    vsa_print(v3)
+
+    print()
+
+    vsa_print(vsa_multiply([v1, v2, v3]))
 
 if __name__ == '__main__':
     main()

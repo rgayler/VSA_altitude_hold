@@ -427,58 +427,6 @@ vsa_add <- function(
 }
 
 # 
-## ---- vsa_mk_scalar_encoder_spline_spec
-
-# function to make the specification for a piecewise linear spline encoder
-
-vsa_mk_scalar_encoder_spline_spec <- function(
-  vsa_dim, # integer - dimensionality of VSA vectors
-  knots, # numeric vector - scalar knot locations (in increasing order)
-  seed = NULL # integer - seed for random number generator
-) # value # data structure representing linear spline encoder specification
-{
-  ### Set up the arguments ###
-  # The OCD error checking is probably more useful as documentation
-
-  if(missing(vsa_dim))
-    stop("vsa_dim must be specified")
-
-  if(!(is.vector(vsa_dim, mode = "integer") && length(vsa_dim) == 1))
-    stop("vsa_dim must be an integer")
-
-  if(vsa_dim < 1)
-    stop("vsa_dim must be (much) greater than zero")
-
-  if(!is.vector(knots, mode = "numeric"))
-    stop("knots must be a numeric vector")
-
-  if(length(knots) < 2)
-    stop("length(knots) must be >= 2")
-
-  if(!all(is.finite(knots)))
-    stop("all knot values must be nonmissing and finite")
-
-  if(length(knots) != length(unique(knots)))
-    stop("all knot values must be unique")
-  
-  if(!all(order(knots) == 1:length(knots)))
-    stop("knot values must be in increasing order")
-  
-  # check that the specified seed is an integer
-  if(!is.null(seed) && !(is.vector(seed, mode = "integer") && length(seed) == 1))
-    stop("seed must be an integer")
-  
-  # set the seed if it has been specified
-  if (!is.null(seed))
-    set.seed(seed)
-  
-  # generate VSA atoms corresponding to each of the knots
-  tibble::tibble(
-    knots_scalar = knots,
-    knots_vsa = purrr::map(knots, ~ vsa_mk_atom_bipolar(vsa_dim = vsa_dim))
-  )
-}
-
 ## ---- vsa_encode_scalar_spline
 
 # function to encode a scalar numeric value to a VSA vector
@@ -640,7 +588,25 @@ def vsa_multiply(vectors
 
     return result
 
- 
+## ---- vsa_mk_scalar_encoder_spline_spec
+
+# function to make the specification for a piecewise linear spline encoder
+
+def vsa_mk_scalar_encoder_spline_spec(
+  vsa_dim, # integer - dimensionality of VSA vectors
+  knots, # numeric vector - scalar knot locations (in increasing order)
+  seed = None # integer - seed for random number generator
+  ): # value # data structure representing linear spline encoder specification
+
+  # set the seed
+  np.random.seed(seed)
+  
+  # generate VSA atoms corresponding to each of the knots
+  return { 
+          'knots_scalar' : knots,
+          'knots_vsa' : [vsa_mk_atom_bipolar(vsa_dim) for _ in knots]
+          }
+
 ## ---- tests -----------------------------------------------------
 
 def vsa_print(x):
@@ -650,19 +616,8 @@ def vsa_print(x):
 
 def main():
 
-    N = 10
 
-    v1 = vsa_mk_atom_bipolar(N)
-    v2 = vsa_mk_atom_bipolar(N)
-    v3 = vsa_mk_atom_bipolar(N)
-
-    vsa_print(v1)
-    vsa_print(v2)
-    vsa_print(v3)
-
-    print()
-
-    vsa_print(vsa_multiply([v1, v2, v3]))
+    print(vsa_mk_scalar_encoder_spline_spec(10, np.linspace(0, 1, 5)))
 
 if __name__ == '__main__':
     main()

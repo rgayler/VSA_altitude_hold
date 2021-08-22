@@ -601,9 +601,7 @@ def main():
 
     v = spline_spec['knots_vsa'][0]
 
-    print(v)
-
-    # print(vsa_decode_scalar_spline(v, spline_spec))
+    print(vsa_decode_scalar_spline(v, spline_spec))
 
 if __name__ == '__main__':
     main()

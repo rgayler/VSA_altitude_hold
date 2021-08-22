@@ -554,18 +554,17 @@ def vsa_decode_scalar_spline (
   ): # numeric[1] - scalar value decoded from v
 
   # get the dot product of the encoded scalar with each of the knot vectors
-  dotprods = map(lambda w : vsa_dotprod(v,w), spline_spec['knots_vsa'])
+  dotprods = np.array(list(map(lambda w : vsa_dotprod(v,w), spline_spec['knots_vsa'])))
 
   # set dot products below the zero threshold to 0.5
   zero_thresh = zero_thresh * np.sqrt(len(v) * 0.5)
+  print(dotprods)
   print(zero_thresh)
+  dotprods[dotprods<zero_thresh] = 0
+  print(dotprods)
   
   '''
 
-  dotprod <- ifelse(dotprod < zero_thresh, 0, dotprod)
-
-  print(list(dotprods))
-  
   # normalise the dot products
   dotprod <- dotprod / sum(dotprod)
   

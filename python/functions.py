@@ -553,10 +553,12 @@ def vsa_decode_scalar_spline (
   zero_thresh = 4 # numeric[1] - zero threshold (in standard deviations)
   ): # numeric[1] - scalar value decoded from v
 
-  '''
   # get the dot product of the encoded scalar with each of the knot vectors
-  dotprod <- spline_spec$knots_vsa %>% purrr::map_dbl(.f = vsa_dotprod, v2 = v)
+  dotprods = map(lambda w : vsa_dotprod(v,w), spline_spec['knots_vsa'])
+
+  print(list(dotprods))
   
+  '''
   # set dot products below the zero threshold to 0.5
   zero_thresh <- zero_thresh * sqrt(length(v) * 0.5) # sd = sqrt(n p q) = sqrt(vsa_dim 0.5 0.5)
   dotprod <- ifelse(dotprod < zero_thresh, 0, dotprod)
@@ -583,9 +585,7 @@ def main():
 
     v = spline_spec['knots_vsa'][0]
 
-    print(vsa_dotprod(v, v))
-
-    #print(vsa_decode_scalar_spline(v, spline_spec))
+    print(vsa_decode_scalar_spline(v, spline_spec))
 
 if __name__ == '__main__':
     main()

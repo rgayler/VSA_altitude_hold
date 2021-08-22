@@ -491,45 +491,25 @@ vsa_encode_scalar_spline <- function(
   }
 }
 
+'''
+
+###################################################################################
+
 ## ---- vsa_decode_scalar_spline
 
 # function to encode a scalar numeric value to a VSA vector
 # This function uses a linear interpolation spline
 # to interpolate between a sequence of VSA vectors corresponding to the spline knots
 
-vsa_decode_scalar_spline <- function(
+def vsa_decode_scalar_spline (
   v, # numeric - VSA vector (not necessarily bipolar)
   spline_spec, # data frame - spline spec created by vsa_mk_scalar_encoder_spline_spec()
   zero_thresh = 4 # numeric[1] - zero threshold (in standard deviations)
-) # numeric[1] - scalar value decoded from v
-{
-  ### Set up the arguments ###
-  # The OCD error checking is probably more useful as documentation
-  
-  if(missing(v)) 
-    stop("VSA vector argument (v) must be specified")
-  
-  if(!is.vector(v, mode = "numeric"))
-    stop("v must be an numeric vector")
-  
-  if (missing(spline_spec))
-    stop("spline_spec must be specified")
-  
-  if ( 
-    !(
-      is_tibble(spline_spec) && 
-      all(c("knots_scalar", "knots_vsa") %in% names(spline_spec))
-    )
-  )
-    stop("spline_spec must be a spline specification object")
-  
-  if(!missing(zero_thresh) && 
-     !(is.vector(zero_thresh, mode = "numeric") && length(zero_thresh) == 1))
-    stop("zero_thresh must be numeric")
-  
+  ): # numeric[1] - scalar value decoded from v
+
+  '''
   # get the dot product of the encoded scalar with each of the knot vectors
-  dotprod <- spline_spec$knots_vsa %>% 
-    purrr::map_dbl(.f = vsa_dotprod, v2 = v)
+  dotprod <- spline_spec$knots_vsa %>% purrr::map_dbl(.f = vsa_dotprod, v2 = v)
   
   # set dot products below the zero threshold to 0.5
   zero_thresh <- zero_thresh * sqrt(length(v) * 0.5) # sd = sqrt(n p q) = sqrt(vsa_dim 0.5 0.5)
@@ -540,8 +520,9 @@ vsa_decode_scalar_spline <- function(
   
   # return the weighted sum of the knot scalara
   sum(dotprod * spline_spec$knots_scalar)
-}
-'''
+  '''
+
+  return 0
 
 ## ---- vsa_mag
 
@@ -616,8 +597,9 @@ def vsa_print(x):
 
 def main():
 
+    d = vsa_mk_scalar_encoder_spline_spec(10, np.linspace(0, 1, 5))
 
-    print(vsa_mk_scalar_encoder_spline_spec(10, np.linspace(0, 1, 5)))
+    print(d)
 
 if __name__ == '__main__':
     main()

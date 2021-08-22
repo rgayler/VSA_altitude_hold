@@ -134,36 +134,6 @@ run_simulation <- function(
 
 # The time and input variables are added to the data frame for convenience.
 
-## ---- vsa_dotprod
-
-# function to calculate the dot product  of two VSA vectors
-# Allow for the possibility that the vectors might not be bipolar
-
-vsa_dotprod <- function(
-  v1, v2 # numeric - VSA vectors of identical dimension (not necessarily bipolar)
-) # value # numeric - cosine similarity of the VSA vectors
-{
-  ### Set up the arguments ###
-  # The OCD error checking is probably more useful as documentation
-  
-  if(missing(v1) || missing(v2)) 
-    stop("two VSA vector arguments (v1, v2) must be specified")
-  
-  if(!is.vector(v1, mode = "numeric"))
-    stop("v1 must be a numeric vector")
-  
-  if(!is.vector(v2, mode = "numeric"))
-    stop("v2 must be a numeric vector")
-  
-  vsa_dim <- length(v1)
-  
-  if(length(v2) != vsa_dim)
-    stop("v1 and v2 must be the same length")
-  
-  # No numerical analysis considerations 
-  sum(v1*v2)
-}
-
 ## ---- vsa_cos_sim
 
 # function to calculate the cosine similarity  of two VSA vectors
@@ -495,35 +465,6 @@ vsa_encode_scalar_spline <- function(
 
 ###################################################################################
 
-## ---- vsa_decode_scalar_spline
-
-# function to encode a scalar numeric value to a VSA vector
-# This function uses a linear interpolation spline
-# to interpolate between a sequence of VSA vectors corresponding to the spline knots
-
-def vsa_decode_scalar_spline (
-  v, # numeric - VSA vector (not necessarily bipolar)
-  spline_spec, # data frame - spline spec created by vsa_mk_scalar_encoder_spline_spec()
-  zero_thresh = 4 # numeric[1] - zero threshold (in standard deviations)
-  ): # numeric[1] - scalar value decoded from v
-
-  '''
-  # get the dot product of the encoded scalar with each of the knot vectors
-  dotprod <- spline_spec$knots_vsa %>% purrr::map_dbl(.f = vsa_dotprod, v2 = v)
-  
-  # set dot products below the zero threshold to 0.5
-  zero_thresh <- zero_thresh * sqrt(length(v) * 0.5) # sd = sqrt(n p q) = sqrt(vsa_dim 0.5 0.5)
-  dotprod <- ifelse(dotprod < zero_thresh, 0, dotprod)
-  
-  # normalise the dot products
-  dotprod <- dotprod / sum(dotprod)
-  
-  # return the weighted sum of the knot scalara
-  sum(dotprod * spline_spec$knots_scalar)
-  '''
-
-  return 0
-
 ## ---- vsa_mag
 
 # function to calculate the magnitude of a VSA vector
@@ -588,6 +529,47 @@ def vsa_mk_scalar_encoder_spline_spec(
           'knots_vsa' : [vsa_mk_atom_bipolar(vsa_dim) for _ in knots]
           }
 
+## ---- vsa_dotprod
+
+# function to calculate the dot product  of two VSA vectors
+# Allow for the possibility that the vectors might not be bipolar
+
+def vsa_dotprod(
+  v1, v2 # numeric - VSA vectors of identical dimension (not necessarily bipolar)
+  ): # value # numeric - cosine similarity of the VSA vectors
+
+  # No numerical analysis considerations 
+  return np.sum(v1*v2)
+
+## ---- vsa_decode_scalar_spline
+
+# function to encode a scalar numeric value to a VSA vector
+# This function uses a linear interpolation spline
+# to interpolate between a sequence of VSA vectors corresponding to the spline knots
+
+def vsa_decode_scalar_spline (
+  v, # numeric - VSA vector (not necessarily bipolar)
+  spline_spec, # data frame - spline spec created by vsa_mk_scalar_encoder_spline_spec()
+  zero_thresh = 4 # numeric[1] - zero threshold (in standard deviations)
+  ): # numeric[1] - scalar value decoded from v
+
+  '''
+  # get the dot product of the encoded scalar with each of the knot vectors
+  dotprod <- spline_spec$knots_vsa %>% purrr::map_dbl(.f = vsa_dotprod, v2 = v)
+  
+  # set dot products below the zero threshold to 0.5
+  zero_thresh <- zero_thresh * sqrt(length(v) * 0.5) # sd = sqrt(n p q) = sqrt(vsa_dim 0.5 0.5)
+  dotprod <- ifelse(dotprod < zero_thresh, 0, dotprod)
+  
+  # normalise the dot products
+  dotprod <- dotprod / sum(dotprod)
+  
+  # return the weighted sum of the knot scalara
+  sum(dotprod * spline_spec$knots_scalar)
+  '''
+
+  return 0
+
 ## ---- tests -----------------------------------------------------
 
 def vsa_print(x):
@@ -601,7 +583,9 @@ def main():
 
     v = spline_spec['knots_vsa'][0]
 
-    print(vsa_decode_scalar_spline(v, spline_spec))
+    print(vsa_dotprod(v, v))
+
+    #print(vsa_decode_scalar_spline(v, spline_spec))
 
 if __name__ == '__main__':
     main()

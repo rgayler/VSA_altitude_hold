@@ -597,9 +597,13 @@ def vsa_print(x):
 
 def main():
 
-    d = vsa_mk_scalar_encoder_spline_spec(10, np.linspace(0, 1, 5))
+    spline_spec = vsa_mk_scalar_encoder_spline_spec(10, np.linspace(0, 1, 5))
 
-    print(d)
+    v = spline_spec['knots_vsa'][0]
+
+    print(v)
+
+    # print(vsa_decode_scalar_spline(v, spline_spec))
 
 if __name__ == '__main__':
     main()

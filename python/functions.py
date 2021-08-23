@@ -556,23 +556,22 @@ def vsa_decode_scalar_spline (
   # get the dot product of the encoded scalar with each of the knot vectors
   dotprods = np.array(list(map(lambda w : vsa_dotprod(v,w), spline_spec['knots_vsa'])))
 
+  print(dotprods)
+
   # set dot products below the zero threshold to 0.5
   zero_thresh = zero_thresh * np.sqrt(len(v) * 0.5)
-  print(dotprods)
   print(zero_thresh)
   dotprods[dotprods<zero_thresh] = 0
+
   print(dotprods)
-  
-  '''
 
   # normalise the dot products
-  dotprod <- dotprod / sum(dotprod)
-  
-  # return the weighted sum of the knot scalara
-  sum(dotprod * spline_spec$knots_scalar)
-  '''
+  dotprods = dotprods / np.sum(dotprods)
 
-  return 0
+  print(dotprods)
+
+  # return the weighted sum of the knot scalara
+  return 0  # np.sum(dotprod * spline_spec$knots_scalar)
 
 ## ---- tests -----------------------------------------------------
 

@@ -673,7 +673,7 @@ vsa_decode_scalar_spline <- function(
   dotprod <- spline_spec$knots_vsa %>% 
     purrr::map_dbl(.f = vsa_dotprod, v2 = v)
   
-  # set dot products below the zero threshold to 0.5
+  # set dot products below the zero-threshold to 0
   zero_thresh <- zero_thresh * sqrt(length(v) * 0.5) # sd = sqrt(n p q) = sqrt(vsa_dim 0.5 0.5)
   dotprod <- ifelse(dotprod < zero_thresh, 0, dotprod)
   

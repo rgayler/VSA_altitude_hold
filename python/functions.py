@@ -128,6 +128,50 @@ def vsa_decode_scalar_spline (
   # return the weighted sum of the knot scalars
   return np.sum(dotprods * spline_spec['knots_scalar'])
 
+## ---- vsa_add -------------------------------------------------------------------------
+
+# function to add (weighted sum) an arbitrary number of VSA vectors given as arguments
+# Weighted add is implemented as weighted sampling from the source vectors
+# If sample_spec is given it specifies which argument vector is the source for
+# each element of the output vector If sample_wt is given the sample
+# specification is generated randomly If neither sample_spec or sample_wt is
+# given then sample_wt is constructed with equal weight for each argument
+# vector
+
+def vsa_add(
+  vectors,
+  sample_spec=None, # integer vector - source (argument VSA vector) for each element of result
+  sample_wt=None    # numeric vector - argument vector sampling weights
+  ): # value # one VSA vector, the weighted sum (sampled) of the argument vectors
+
+  vsa_dim = len(vectors[0])
+
+  return 0
+  
+  '''
+  if sample_spec is None:
+
+    # sample spec not supplied - make a new random one
+    # create a sampling weight vector if not supplied
+    if sample_wt is None:
+      sample_wt = rep(1, length.out = args_n) # equal weighting for all source VSA vectors
+    
+    # For each element of the result work out which source VSA vector to sample
+    # sample_spec <- sample.int(n = args_n, size = vsa_dim,
+    #                           replace = TRUE, prob = sample_wt)
+    sample_spec = vsa_mk_sample_spec(vsa_dim, sample_wt)
+
+  ### Set up the selection matrix ###
+  # Each row corresponds to an element of the output vector
+  # Each row specifies the (row,col) cell to select from the VSA source vectors
+  sel <- as.matrix(data.frame(row = 1L:vsa_dim, col = sample_spec),
+                   ncol = 2, byrow = FALSE)
+  
+  ### Construct the result vector
+  as.data.frame(args_list)[sel]
+
+'''
+
 ## ---- tests -----------------------------------------------------
 
 def vsa_print(x):
@@ -137,7 +181,15 @@ def vsa_print(x):
 
 def main():
 
-    print(vsa_mk_sample_spec(20, (0.1, 0.5, 0.4)))
+    DIM = 20
+    COUNT = 5
+
+    vecs = [vsa_mk_atom_bipolar(DIM, 0) for _ in range(COUNT)]
+
+    for vec in vecs:
+        vsa_print(vec)
+ 
+    sample_spec = vsa_mk_sample_spec(DIM, (0.1, 0.5, 0.4))
 
 if __name__ == '__main__':
     main()

@@ -157,21 +157,7 @@ def vsa_add(
     # For each element of the result work out which source VSA vector to sample
     sample_spec = vsa_mk_sample_spec(vsa_dim, sample_wt, 0)
 
-  print('\nsample_spec:')
-  print(sample_spec)
-  print()
-
-  indices = [(j,k) for (j,k) in enumerate(sample_spec)]
-
-  print(indices)
-  print()
-
-  result = np.zeros(vsa_dim)
-
-  for (j,k) in indices:
-      result[j] = vectors[k][j]
-
-  return result
+  return np.array([vectors[k][j] for (j,k) in enumerate(sample_spec)])
 
 ## ---- tests -----------------------------------------------------
 

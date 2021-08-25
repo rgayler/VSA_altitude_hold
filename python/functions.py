@@ -155,21 +155,23 @@ def vsa_add(
       sample_wt = np.ones(count) / count # equal weighting for all source VSA vectors
 
     # For each element of the result work out which source VSA vector to sample
-    # sample_spec <- sample.int(n = args_n, size = vsa_dim,
-    #                           replace = TRUE, prob = sample_wt)
-    sample_spec = vsa_mk_sample_spec(vsa_dim, sample_wt)
+    sample_spec = vsa_mk_sample_spec(vsa_dim, sample_wt, 0)
 
-  return 0
+  print('\nsample_spec:')
+  print(sample_spec)
+  print()
 
+  indices = [(j,k) for (j,k) in enumerate(sample_spec)]
 
-  ### Set up the selection matrix ###
-  # Each row corresponds to an element of the output vector
-  # Each row specifies the (row,col) cell to select from the VSA source vectors
-  # sel <- as.matrix(data.frame(row = 1L:vsa_dim, col = sample_spec), ncol = 2, byrow = FALSE)
-  
-  ### Construct the result vector
-  # as.data.frame(args_list)[sel]
+  print(indices)
+  print()
 
+  result = np.zeros(vsa_dim)
+
+  for (j,k) in indices:
+      result[j] = vectors[k][j]
+
+  return result
 
 ## ---- tests -----------------------------------------------------
 
@@ -185,10 +187,12 @@ def main():
 
     vecs = [vsa_mk_atom_bipolar(DIM, 0) for _ in range(COUNT)]
 
+    print('vectors:')
     for vec in vecs:
         vsa_print(vec)
  
-    vsa_add(vecs)
+    print('\n')
+    vsa_print(vsa_add(vecs))
 
 if __name__ == '__main__':
     main()

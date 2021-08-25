@@ -144,33 +144,32 @@ def vsa_add(
   sample_wt=None    # numeric vector - argument vector sampling weights
   ): # value # one VSA vector, the weighted sum (sampled) of the argument vectors
 
+  count = len(vectors)
   vsa_dim = len(vectors[0])
 
-  return 0
-  
-  '''
   if sample_spec is None:
 
     # sample spec not supplied - make a new random one
     # create a sampling weight vector if not supplied
     if sample_wt is None:
-      sample_wt = rep(1, length.out = args_n) # equal weighting for all source VSA vectors
-    
+      sample_wt = np.ones(count) / count # equal weighting for all source VSA vectors
+
     # For each element of the result work out which source VSA vector to sample
     # sample_spec <- sample.int(n = args_n, size = vsa_dim,
     #                           replace = TRUE, prob = sample_wt)
     sample_spec = vsa_mk_sample_spec(vsa_dim, sample_wt)
 
+  return 0
+
+
   ### Set up the selection matrix ###
   # Each row corresponds to an element of the output vector
   # Each row specifies the (row,col) cell to select from the VSA source vectors
-  sel <- as.matrix(data.frame(row = 1L:vsa_dim, col = sample_spec),
-                   ncol = 2, byrow = FALSE)
+  # sel <- as.matrix(data.frame(row = 1L:vsa_dim, col = sample_spec), ncol = 2, byrow = FALSE)
   
   ### Construct the result vector
-  as.data.frame(args_list)[sel]
+  # as.data.frame(args_list)[sel]
 
-'''
 
 ## ---- tests -----------------------------------------------------
 
@@ -189,7 +188,7 @@ def main():
     for vec in vecs:
         vsa_print(vec)
  
-    sample_spec = vsa_mk_sample_spec(DIM, (0.1, 0.5, 0.4))
+    vsa_add(vecs)
 
 if __name__ == '__main__':
     main()

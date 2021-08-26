@@ -140,7 +140,7 @@ def vsa_decode_scalar_spline (
 
 def vsa_add(
   vectors,
-  sample_spec=None, # integer vector - source (argument VSA vector) for each element of result
+  sample_spec=None, # int vec - source (argument VSA vector) for each element of result
   sample_wt=None    # numeric vector - argument vector sampling weights
   ): # value # one VSA vector, the weighted sum (sampled) of the argument vectors
 
@@ -159,6 +159,47 @@ def vsa_add(
 
   return np.array([vectors[k][j] for (j,k) in enumerate(sample_spec)])
 
+## ---- vsa_permute -----------------------------------------------
+
+# function to apply the specified permutation to the VSA vector
+
+def vsa_permute(
+  v1, # numeric - VSA vector (not necessarily bipolar)
+  perm # integer vector - specification of a permutation
+  ): # value # permutation of input VSA vector
+
+  # apply the permutation
+  return [v1[k] for k in perm]
+
+## ---- vsa_mk_perm ------------------------------------------------
+
+# function to make a permutation
+
+def vsa_mk_perm(
+  vsa_dim, # integer - dimensionality of VSA vector
+  seed = None # integer - seed for random number generator
+  ): # value # one randomly generated permutation specification
+  # this is an integer vector of length vsa_dim
+
+  # if seed is set the the vector is fixed
+  # otherwise it is randomised
+  np.random.seed(seed)
+  
+  # Construct a random permutation of 1:vsa_dim
+  return np.random.choice(vsa_dim, vsa_dim, False)
+
+## ---- vsa_mk_inv_perm --------------------------------------------
+
+# function to make a permutation
+
+def vsa_mk_inv_perm(
+  perm # integer vector - specification of a permutation
+  ): # value # integer vector [length(perm)] - specification of inverse permutation
+
+  # Invert the permutation
+  return np.argsort(perm)
+
+
 ## ---- tests -----------------------------------------------------
 
 def vsa_print(x):
@@ -168,6 +209,7 @@ def vsa_print(x):
 
 def main():
 
+    '''
     DIM = 20
     COUNT = 5
 
@@ -179,6 +221,18 @@ def main():
  
     print('\n')
     vsa_print(vsa_add(vecs))
+    '''
+
+
+    DIM = 10
+    v = vsa_mk_atom_bipolar(DIM)
+    p = vsa_mk_perm(DIM, 0)
+    ip = vsa_mk_inv_perm(p)
+    print(v)
+    vi = v[p]
+    print(vi)
+    print(vi[ip])
+    print(np.all(v == vi[ip]))
 
 if __name__ == '__main__':
     main()

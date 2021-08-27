@@ -119,58 +119,7 @@ run_simulation <- function(
 
 # The time and input variables are added to the data frame for convenience.
 
-## ---- vsa_cos_sim
 
-# function to calculate the cosine similarity  of two VSA vectors
-# Allow for the possibility that the vectors might not be bipolar
-
-vsa_cos_sim <- function(
-  v1, v2 # numeric - VSA vectors of identical dimension (not necessarily bipolar)
-) # value # numeric - cosine similarity of the VSA vectors
-{
-  ### Set up the arguments ###
-  # The OCD error checking is probably more useful as documentation
-  
-  if(missing(v1) || missing(v2)) 
-    stop("two VSA vector arguments must be specified")
-  
-  if(!is.vector(v1, mode = "numeric"))
-    stop("v1 must be an numeric vector")
-  
-  if(!is.vector(v2, mode = "numeric"))
-    stop("v2 must be an numeric vector")
-  
-  vsa_dim <- length(v1)
-  
-  if(length(v2) != vsa_dim)
-    stop("v1 and v2 must be the same length")
-  
-  vsa_dotprod(v1, v2) / (vsa_mag(v1) * vsa_mag(v2))
-}
-
-## ---- vsa_negate
-
-# Function to calculate the negation of a VSA vector
-# (Reverse the direction of the vector)
-# Allow for the possibility that the vector might not be bipolar
-
-vsa_negate <- function(
-  v1 # numeric - VSA vector (not necessarily bipolar)
-) # value # negation of input VSA vector
-{
-  ### Set up the arguments ###
-  # The OCD error checking is probably more useful as documentation
-  
-  if(missing(v1)) 
-    stop("VSA vector argument (v1) must be specified")
-  
-  if(!is.vector(v1, mode = "numeric"))
-    stop("v1 must be an numeric vector")
-  
-  -v1
-}
-
- 
   ### Set up the selection matrix ###
   # Each row corresponds to an element of the output vector
   # Each row specifies the (row,col) cell to select from the VSA source vectors

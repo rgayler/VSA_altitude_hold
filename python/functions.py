@@ -199,7 +199,32 @@ def vsa_mk_inv_perm(
   # Invert the permutation
   return np.argsort(perm)
 
+## ---- vsa_cos_sim ------------------------------------------------
 
+# function to calculate the cosine similarity  of two VSA vectors
+# Allow for the possibility that the vectors might not be bipolar
+
+def vsa_cos_sim(
+  v1, v2 # numeric - VSA vectors of identical dimension (not necessarily bipolar)
+  ): # value # numeric - cosine similarity of the VSA vectors
+
+  
+  return vsa_dotprod(v1, v2) / (vsa_mag(v1) * vsa_mag(v2))
+
+
+## ---- vsa_negate -------------------------------------------------
+
+# Function to calculate the negation of a VSA vector
+# (Reverse the direction of the vector)
+# Allow for the possibility that the vector might not be bipolar
+
+def vsa_negate(
+  v1 # numeric - VSA vector (not necessarily bipolar)
+  ): # value # negation of input VSA vector
+
+  
+  return -v1
+ 
 ## ---- tests -----------------------------------------------------
 
 def vsa_print(x):
@@ -208,6 +233,7 @@ def vsa_print(x):
     print()
 
 def main():
+
 
     '''
     DIM = 20
@@ -221,7 +247,6 @@ def main():
  
     print('\n')
     vsa_print(vsa_add(vecs))
-    '''
 
 
     DIM = 10
@@ -233,6 +258,21 @@ def main():
     print(vi)
     print(vi[ip])
     print(np.all(v == vi[ip]))
+
+    DIM = 1000
+
+    a = vsa_mk_atom_bipolar(DIM)
+    b = vsa_mk_atom_bipolar(DIM)
+
+    print(vsa_cos_sim(a, a))
+
+    '''
+
+    DIM = 10
+    v = vsa_mk_atom_bipolar(DIM)
+    vsa_print(v)
+    vsa_print(vsa_negate(v))
+
 
 if __name__ == '__main__':
     main()

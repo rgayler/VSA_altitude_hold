@@ -224,6 +224,47 @@ def vsa_negate(
 
   
   return -v1
+
+## ---- vsa_encode_scalar_spline -------------------------------------
+
+# function to encode a scalar numeric value to a VSA vector This function uses
+# a linear interpolation spline to interpolate between a sequence of VSA
+# vectors corresponding to the spline knots
+
+def vsa_encode_scalar_spline(
+  x, # numeric[1] - scalar value to be encoded
+  spline_spec # data frame - spline spec created by vsa_mk_scalar_encoder_spline_spec()
+  ): # numeric # one VSA vector, the encoding of the scalar value
+
+    '''
+    # Map the scalar into a continuous index across the knots
+    # Linearly interpolate the input scalar onto a scale in which knots correspond to  1:n
+    i = approx(
+        x = spline_spec$knots_scalar, y = seq_along(spline_spec$knots_scalar), 
+        rule = 2, # clip x to fit the range of the knots
+        xout = x
+        )$y # get the interpolated value only
+
+    # Get the knot indices immediately above and below the index value
+    i_lo = np.floor(i)
+    i_hi = np.ceil(i)
+
+    # Return the VSA vector corresponding to the index value
+    if i_lo == i_hi: # check if index is on a knot
+        # Exactly on a knot so return the corresponding knot VSA vector
+        return spline_spec$knots_vsa[[i]] 
+
+    # Between two knots
+    # Return the weighted sum of the corresponding knot VSA vectors
+    i_offset = i - i_lo
+    return vsa_add(
+      spline_spec$knots_vsa[[i_lo]], spline_spec$knots_vsa[[i_hi]],
+      sample_wt = c(1 - i_offset, i_offset)
+    )
+    '''
+
+    return None
+
  
 ## ---- tests -----------------------------------------------------
 
@@ -266,12 +307,16 @@ def main():
 
     print(vsa_cos_sim(a, a))
 
-    '''
 
     DIM = 10
     v = vsa_mk_atom_bipolar(DIM)
     vsa_print(v)
     vsa_print(vsa_negate(v))
+    '''
+
+    DIM = 10
+    KNOTS = .1, .2, .3
+    spline_spec = vsa_mk_scalar_encoder_spline_spec(DIM, KNOTS, 0)
 
 
 if __name__ == '__main__':

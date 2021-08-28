@@ -316,7 +316,7 @@ def main():
     DIM = 10
     KNOTS = .1, .2, .3
     spline_spec = vsa_mk_scalar_encoder_spline_spec(DIM, KNOTS, 0)
-    print(vsa_encode_scalar_spline(1.5, spline_spec))
+    print(vsa_encode_scalar_spline(.15, spline_spec))
 
 if __name__ == '__main__':
     main()

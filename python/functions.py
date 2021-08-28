@@ -236,15 +236,14 @@ def vsa_encode_scalar_spline(
   spline_spec # data frame - spline spec created by vsa_mk_scalar_encoder_spline_spec()
   ): # numeric # one VSA vector, the encoding of the scalar value
 
-    '''
-    # Map the scalar into a continuous index across the knots
-    # Linearly interpolate the input scalar onto a scale in which knots correspond to  1:n
-    i = approx(
-        x = spline_spec$knots_scalar, y = seq_along(spline_spec$knots_scalar), 
-        rule = 2, # clip x to fit the range of the knots
-        xout = x
-        )$y # get the interpolated value only
+    knots_scalar = spline_spec['knots_scalar']
 
+    # Map the scalar into a continuous index across the knots
+    # Linearly interpolate the input scalar onto a scale in which knots
+    # correspond to  0:(n-1)
+    i = np.interp(x, knots_scalar, range(len(knots_scalar)))
+
+    '''
     # Get the knot indices immediately above and below the index value
     i_lo = np.floor(i)
     i_hi = np.ceil(i)

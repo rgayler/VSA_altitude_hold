@@ -243,16 +243,16 @@ def vsa_encode_scalar_spline(
     # correspond to  0:(n-1)
     i = np.interp(x, knots_scalar, range(len(knots_scalar)))
 
-    '''
     # Get the knot indices immediately above and below the index value
-    i_lo = np.floor(i)
-    i_hi = np.ceil(i)
+    i_lo = int(np.floor(i))
+    i_hi = int(np.ceil(i))
 
     # Return the VSA vector corresponding to the index value
     if i_lo == i_hi: # check if index is on a knot
         # Exactly on a knot so return the corresponding knot VSA vector
-        return spline_spec$knots_vsa[[i]] 
+        return spline_spec['knots_vsa'][int(i)] 
 
+    '''
     # Between two knots
     # Return the weighted sum of the corresponding knot VSA vectors
     i_offset = i - i_lo

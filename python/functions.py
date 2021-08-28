@@ -255,17 +255,10 @@ def vsa_encode_scalar_spline(
     # Between two knots
     # Return the weighted sum of the corresponding knot VSA vectors
     i_offset = i - i_lo
-    print(i, i_lo, i_hi, i_offset)
-    '''
-    return vsa_add(
-      spline_spec$knots_vsa[[i_lo]],
-      spline_spec$knots_vsa[[i_hi]],
-      sample_wt = 1 - i_offset, i_offset
-    )
-    '''
-    return None
+    vecs = spline_spec['knots_vsa']
+    return vsa_add([vecs[i_lo], vecs[i_hi]], 
+                   sample_wt = (1 - i_offset, i_offset))
 
- 
 ## ---- tests -----------------------------------------------------
 
 def vsa_print(x):

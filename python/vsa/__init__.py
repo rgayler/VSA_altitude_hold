@@ -8,12 +8,12 @@ MIT License
 
 import numpy as np
 
-## ---- vsa_mk_sample_spec --------------------------------------------------------
+## ---- mk_sample_spec --------------------------------------------------------
 
 # function to make a sampling specification for adding VSA vectors
 
-def vsa_mk_sample_spec(
-  vsa_dim, # integer - dimensionality of VSA vectors
+def mk_sample_spec(
+  dim, # integer - dimensionality of VSA vectors
   sample_wt, # numeric vector - VSA vector sampling weights
   seed = None # integer - seed for random number generator
 ): # value # one VSA vector, the weighted sum (sampled) of the argument vectors
@@ -22,14 +22,14 @@ def vsa_mk_sample_spec(
   # otherwise it is randomised
   np.random.seed(seed)
   
-  return np.random.choice(len(sample_wt), size=vsa_dim, replace=True, p=sample_wt)
+  return np.random.choice(len(sample_wt), size=dim, replace=True, p=sample_wt)
 
-## ---- vsa_mag --------------------------------------------------------------------
+## ---- mag --------------------------------------------------------------------
 
 # function to calculate the magnitude of a VSA vector
 # Allow for the possibility that the vector might not be bipolar
 
-def vsa_mag (
+def mag (
   v1 # numeric - VSA vector (not necessarily bipolar)
   ): # value # numeric - magnitude of the VSA vector
 
@@ -37,27 +37,27 @@ def vsa_mag (
   return np.sqrt(np.sum(v1*v1))
 
 
-## ---- vsa_mk_atom_bipolar ---------------------------------------------------------
+## ---- mk_atom_bipolar ---------------------------------------------------------
 
 # function to make an atomic VSA vector
 
-def vsa_mk_atom_bipolar(
-  vsa_dim, # integer - dimensionality of VSA vector
+def mk_atom_bipolar(
+  dim, # integer - dimensionality of VSA vector
   seed = None # integer - seed for random number generator
-  ): # value # one randomly selected VSA vector of dimension vsa_dim
+  ): # value # one randomly selected VSA vector of dimension dim
   
   # if seed is set the the vector is fixed
   # otherwise it is randomised
   np.random.seed(seed)
   
   # Construct a random bipolar vector
-  return 2 * (np.random.random(vsa_dim) > 0.5) - 1
+  return 2 * (np.random.random(dim) > 0.5) - 1
 
-## ---- vsa_multiply ----------------------------------------------------------------
+## ---- multiply ----------------------------------------------------------------
 
 # function to multiply an arbitrary number of VSA vectors
 
-def vsa_multiply(vectors
+def multiply(vectors
      # >= 2 VSA vectors of identical dimension as arguments to multiply
   ): # value # one VSA vector, the weighted sum (sampled) of the argument vectors
 
@@ -69,12 +69,12 @@ def vsa_multiply(vectors
 
     return result
 
-## ---- vsa_mk_scalar_encoder_spline_spec --------------------------------------------
+## ---- mk_scalar_encoder_spline_spec --------------------------------------------
 
 # function to make the specification for a piecewise linear spline encoder
 
-def vsa_mk_scalar_encoder_spline_spec(
-  vsa_dim, # integer - dimensionality of VSA vectors
+def mk_scalar_encoder_spline_spec(
+  dim, # integer - dimensionality of VSA vectors
   knots, # numeric vector - scalar knot locations (in increasing order)
   seed = None # integer - seed for random number generator
   ): # value # data structure representing linear spline encoder specification
@@ -85,35 +85,35 @@ def vsa_mk_scalar_encoder_spline_spec(
   # generate VSA atoms corresponding to each of the knots
   return { 
           'knots_scalar' : knots,
-          'knots_vsa' : [vsa_mk_atom_bipolar(vsa_dim) for _ in knots]
+          'knots_vsa' : [mk_atom_bipolar(dim) for _ in knots]
           }
 
-## ---- vsa_dotprod -------------------------------------------------------------------
+## ---- dotprod -------------------------------------------------------------------
 
 # function to calculate the dot product  of two VSA vectors
 # Allow for the possibility that the vectors might not be bipolar
 
-def vsa_dotprod(
+def dotprod(
   v1, v2 # numeric - VSA vectors of identical dimension (not necessarily bipolar)
   ): # value # numeric - cosine similarity of the VSA vectors
 
   # No numerical analysis considerations 
   return np.sum(v1*v2)
 
-## ---- vsa_decode_scalar_spline -------------------------------------------------------
+## ---- decode_scalar_spline -------------------------------------------------------
 
 # function to encode a scalar numeric value to a VSA vector
 # This function uses a linear interpolation spline
 # to interpolate between a sequence of VSA vectors corresponding to the spline knots
 
-def vsa_decode_scalar_spline (
+def decode_scalar_spline (
   v, # numeric - VSA vector (not necessarily bipolar)
-  spline_spec, # data frame - spline spec created by vsa_mk_scalar_encoder_spline_spec()
+  spline_spec, # data frame - spline spec created by mk_scalar_encoder_spline_spec()
   zero_thresh = 4 # numeric[1] - zero threshold (in standard deviations)
   ): # numeric[1] - scalar value decoded from v
 
   # get the dot product of the encoded scalar with each of the knot vectors
-  dotprods = np.array(list(map(lambda w : vsa_dotprod(v,w), spline_spec['knots_vsa'])))
+  dotprods = np.array(list(map(lambda w : dotprod(v,w), spline_spec['knots_vsa'])))
 
   # set dot products below the zero threshold to 0.5
   zero_thresh = zero_thresh * np.sqrt(len(v) * 0.5)
@@ -125,7 +125,7 @@ def vsa_decode_scalar_spline (
   # return the weighted sum of the knot scalars
   return np.sum(dotprods * spline_spec['knots_scalar'])
 
-## ---- vsa_add -------------------------------------------------------------------------
+## ---- add -------------------------------------------------------------------------
 
 # function to add (weighted sum) an arbitrary number of VSA vectors given as arguments
 # Weighted add is implemented as weighted sampling from the source vectors
@@ -135,14 +135,14 @@ def vsa_decode_scalar_spline (
 # given then sample_wt is constructed with equal weight for each argument
 # vector
 
-def vsa_add(
+def add(
   vectors,
   sample_spec=None, # int vec - source (argument VSA vector) for each element of result
   sample_wt=None    # numeric vector - argument vector sampling weights
   ): # value # one VSA vector, the weighted sum (sampled) of the argument vectors
 
   count = len(vectors)
-  vsa_dim = len(vectors[0])
+  dim = len(vectors[0])
 
   if sample_spec is None:
 
@@ -152,15 +152,15 @@ def vsa_add(
       sample_wt = np.ones(count) / count # equal weighting for all source VSA vectors
 
     # For each element of the result work out which source VSA vector to sample
-    sample_spec = vsa_mk_sample_spec(vsa_dim, sample_wt, 0)
+    sample_spec = mk_sample_spec(dim, sample_wt, 0)
 
   return np.array([vectors[k][j] for (j,k) in enumerate(sample_spec)])
 
-## ---- vsa_permute -----------------------------------------------
+## ---- permute -----------------------------------------------
 
 # function to apply the specified permutation to the VSA vector
 
-def vsa_permute(
+def permute(
   v1, # numeric - VSA vector (not necessarily bipolar)
   perm # integer vector - specification of a permutation
   ): # value # permutation of input VSA vector
@@ -168,69 +168,69 @@ def vsa_permute(
   # apply the permutation
   return [v1[k] for k in perm]
 
-## ---- vsa_mk_perm ------------------------------------------------
+## ---- mk_perm ------------------------------------------------
 
 # function to make a permutation
 
-def vsa_mk_perm(
-  vsa_dim, # integer - dimensionality of VSA vector
+def mk_perm(
+  dim, # integer - dimensionality of VSA vector
   seed = None # integer - seed for random number generator
   ): # value # one randomly generated permutation specification
-  # this is an integer vector of length vsa_dim
+  # this is an integer vector of length dim
 
   # if seed is set the the vector is fixed
   # otherwise it is randomised
   np.random.seed(seed)
   
-  # Construct a random permutation of 1:vsa_dim
-  return np.random.choice(vsa_dim, vsa_dim, False)
+  # Construct a random permutation of 1:dim
+  return np.random.choice(dim, dim, False)
 
-## ---- vsa_mk_inv_perm --------------------------------------------
+## ---- mk_inv_perm --------------------------------------------
 
 # function to make a permutation
 
-def vsa_mk_inv_perm(
+def mk_inv_perm(
   perm # integer vector - specification of a permutation
   ): # value # integer vector [length(perm)] - specification of inverse permutation
 
   # Invert the permutation
   return np.argsort(perm)
 
-## ---- vsa_cos_sim ------------------------------------------------
+## ---- cos_sim ------------------------------------------------
 
 # function to calculate the cosine similarity  of two VSA vectors
 # Allow for the possibility that the vectors might not be bipolar
 
-def vsa_cos_sim(
+def cos_sim(
   v1, v2 # numeric - VSA vectors of identical dimension (not necessarily bipolar)
   ): # value # numeric - cosine similarity of the VSA vectors
 
   
-  return vsa_dotprod(v1, v2) / (vsa_mag(v1) * vsa_mag(v2))
+  return dotprod(v1, v2) / (mag(v1) * mag(v2))
 
 
-## ---- vsa_negate -------------------------------------------------
+## ---- negate -------------------------------------------------
 
 # Function to calculate the negation of a VSA vector
 # (Reverse the direction of the vector)
 # Allow for the possibility that the vector might not be bipolar
 
-def vsa_negate(
+def negate(
   v1 # numeric - VSA vector (not necessarily bipolar)
   ): # value # negation of input VSA vector
 
   
   return -v1
 
-## ---- vsa_encode_scalar_spline -------------------------------------
+## ---- encode_scalar_spline -------------------------------------
 
 # function to encode a scalar numeric value to a VSA vector This function uses
 # a linear interpolation spline to interpolate between a sequence of VSA
 # vectors corresponding to the spline knots
 
-def vsa_encode_scalar_spline(
+def encode_scalar_spline(
   x, # numeric[1] - scalar value to be encoded
-  spline_spec # data frame - spline spec created by vsa_mk_scalar_encoder_spline_spec()
+  spline_spec # data frame - spline spec created by mk_scalar_encoder_spline_spec()
   ): # numeric # one VSA vector, the encoding of the scalar value
 
     knots_scalar = spline_spec['knots_scalar']
@@ -253,5 +253,5 @@ def vsa_encode_scalar_spline(
     # Return the weighted sum of the corresponding knot VSA vectors
     i_offset = i - i_lo
     vecs = spline_spec['knots_vsa']
-    return vsa_add([vecs[i_lo], vecs[i_hi]], 
+    return add([vecs[i_lo], vecs[i_hi]], 
                    sample_wt = (1 - i_offset, i_offset))

@@ -2,11 +2,11 @@
 
 import vsa
 
-'''
 
 # make an encoder specification with realistic vector dimension
-ss <- vsa_mk_scalar_encoder_spline_spec(vsa_dim = 1e3L, knots = c(-1, 1, 2, 4))
+ss = vsa.mk_scalar_encoder_spline_spec(1000, (-1, 1, 2, 4))
 
+'''
 # get the vectors corresponding to the knots
 v1 <- ss$knots_vsa[[1]]
 v2 <- ss$knots_vsa[[2]]
@@ -20,12 +20,12 @@ d <- tibble::tibble(
   dplyr::rowwise() %>% 
   dplyr::mutate(
     # encode each value of x
-    v_x = vsa_encode_scalar_spline(x[[1]], ss) %>% list(),
+    v_x = vsa.encode_scalar_spline(x[[1]], ss) %>% list(),
     # get the cosine between the encoded x and each of the knot vectors
-    cos_1 = vsa_cos_sim(v_x, v1),
-    cos_2 = vsa_cos_sim(v_x, v2),
-    cos_3 = vsa_cos_sim(v_x, v3),
-    cos_4 = vsa_cos_sim(v_x, v4)
+    cos_1 = vsa.cos_sim(v_x, v1),
+    cos_2 = vsa.cos_sim(v_x, v2),
+    cos_3 = vsa.cos_sim(v_x, v3),
+    cos_4 = vsa.cos_sim(v_x, v4)
   ) %>% 
   dplyr::ungroup() %>%
   dplyr::select(-v_x) %>% 

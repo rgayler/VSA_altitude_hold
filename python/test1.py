@@ -15,37 +15,21 @@ v2 = vecs[1]
 v3 = vecs[2]
 v4 = vecs[3]
 
-
 # make a sequence of scalar values that (more than) span the knot range
 x = np.arange(-1.5, 4.5, .05)
 
 # get the cosine between the encoded x and each of the knot vectors
 cos_1 = [vsa.cos_sim(vsa.encode_scalar_spline(xval, ss), v1) for xval in x]
 cos_2 = [vsa.cos_sim(vsa.encode_scalar_spline(xval, ss), v2) for xval in x]
+cos_3 = [vsa.cos_sim(vsa.encode_scalar_spline(xval, ss), v3) for xval in x]
+cos_4 = [vsa.cos_sim(vsa.encode_scalar_spline(xval, ss), v4) for xval in x]
 
-plt.plot(cos_1)
-plt.plot(cos_2)
+# plot the cosines
+plt.plot(cos_1, '.')
+plt.plot(cos_2, '.')
+plt.plot(cos_3, '.')
+plt.plot(cos_4, '.')
+plt.xlabel('x')
+plt.ylabel('cos')
+plt.legend(['knot1', 'knot2', 'knot3', 'knot4'])
 plt.show()
-
-'''
-d = tibble::tibble(
-  dplyr::rowwise() %>% 
-  dplyr::mutate(
-    # encode each value of x
-    v_x = vsa.encode_scalar_spline(x[[1]], ss) %>% list(),
-    cos_1 = vsa.cos_sim(v_x, v1),
-    cos_2 = vsa.cos_sim(v_x, v2),
-    cos_3 = vsa.cos_sim(v_x, v3),
-    cos_4 = vsa.cos_sim(v_x, v4)
-  ) %>% 
-  dplyr::ungroup() %>%
-  dplyr::select(-v_x) %>% 
-  tidyr::pivot_longer(cos_1:cos_4, 
-                      names_to = "knot", names_prefix = "cos_", 
-                      values_to = "cos")
-
-d %>% ggplot(aes(x = x)) +
-  geom_hline(yintercept = c(0, 1), alpha = 0.3) +
-  geom_vline(xintercept = c(-1, 1, 2, 4), alpha = 0.3) +
-  geom_point(aes(y = cos, colour = knot))
-'''

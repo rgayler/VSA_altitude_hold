@@ -2,19 +2,25 @@
 
 import vsa
 
+import numpy as np
+import matplotlib.pyplot as plt
 
 # make an encoder specification with realistic vector dimension
 ss = vsa.mk_scalar_encoder_spline_spec(1000, (-1, 1, 2, 4))
 
-'''
 # get the vectors corresponding to the knots
-v1 <- ss$knots_vsa[[1]]
-v2 <- ss$knots_vsa[[2]]
-v3 <- ss$knots_vsa[[3]]
-v4 <- ss$knots_vsa[[4]]
+vecs = ss['knots_vsa']
+v1 = vecs[0]
+v2 = vecs[1]
+v3 = vecs[2]
+v4 = vecs[3]
+
 
 # make a sequence of scalar values that (more than) span the knot range
-d <- tibble::tibble(
+x = np.arange(-1.5, 4.5, .05)
+print(x)
+'''
+d = tibble::tibble(
   x = seq(from = -1.5, to = 4.5, by = 0.05)
 ) %>% 
   dplyr::rowwise() %>% 

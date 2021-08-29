@@ -1,15 +1,12 @@
-#!/usr/bin/env python3
-#
-# These are all the functions used across multiple notebooks.
-# Functions used in a single notebook are defined in that notebook.
-# These functions are `sourced` into each notebook in the setup chunk.
-#
-# Each function is labelled with a  '## ---- some_function_name' section header
-# to identify the function for displaying the code in the notebook.
-# See https://bookdown.org/yihui/rmarkdown-cookbook/read-chunk.html
+'''
+VSA functions
+
+Copyright (c) 2021 Ross W. Gayler and Simon D. Levy
+
+MIT License
+'''
 
 import numpy as np
-import matplotlib.pyplot as plt
 
 ## ---- vsa_mk_sample_spec --------------------------------------------------------
 
@@ -258,59 +255,3 @@ def vsa_encode_scalar_spline(
     vecs = spline_spec['knots_vsa']
     return vsa_add([vecs[i_lo], vecs[i_hi]], 
                    sample_wt = (1 - i_offset, i_offset))
-
-## ---- tests -----------------------------------------------------
-
-def vsa_print(x):
-    for v in x:
-        print('%+0.f' % v, end=' ')
-    print()
-
-def main():
-
-
-    '''
-    DIM = 20
-    COUNT = 5
-
-    vecs = [vsa_mk_atom_bipolar(DIM, 0) for _ in range(COUNT)]
-
-    print('vectors:')
-    for vec in vecs:
-        vsa_print(vec)
- 
-    print('\n')
-    vsa_print(vsa_add(vecs))
-
-
-    DIM = 10
-    v = vsa_mk_atom_bipolar(DIM)
-    p = vsa_mk_perm(DIM, 0)
-    ip = vsa_mk_inv_perm(p)
-    print(v)
-    vi = v[p]
-    print(vi)
-    print(vi[ip])
-    print(np.all(v == vi[ip]))
-
-    DIM = 1000
-
-    a = vsa_mk_atom_bipolar(DIM)
-    b = vsa_mk_atom_bipolar(DIM)
-
-    print(vsa_cos_sim(a, a))
-
-
-    DIM = 10
-    v = vsa_mk_atom_bipolar(DIM)
-    vsa_print(v)
-    vsa_print(vsa_negate(v))
-    '''
-
-    DIM = 10
-    KNOTS = .1, .2, .3
-    spline_spec = vsa_mk_scalar_encoder_spline_spec(DIM, KNOTS, 0)
-    print(vsa_encode_scalar_spline(.15, spline_spec))
-
-if __name__ == '__main__':
-    main()

@@ -21,8 +21,10 @@ x = np.arange(-1.5, 4.5, .05)
 
 # get the cosine between the encoded x and each of the knot vectors
 cos_1 = [vsa.cos_sim(vsa.encode_scalar_spline(xval, ss), v1) for xval in x]
+cos_2 = [vsa.cos_sim(vsa.encode_scalar_spline(xval, ss), v2) for xval in x]
 
 plt.plot(cos_1)
+plt.plot(cos_2)
 plt.show()
 
 '''

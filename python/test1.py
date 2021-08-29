@@ -18,16 +18,19 @@ v4 = vecs[3]
 
 # make a sequence of scalar values that (more than) span the knot range
 x = np.arange(-1.5, 4.5, .05)
-print(x)
+
+# get the cosine between the encoded x and each of the knot vectors
+cos_1 = [vsa.cos_sim(vsa.encode_scalar_spline(xval, ss), v1) for xval in x]
+
+plt.plot(cos_1)
+plt.show()
+
 '''
 d = tibble::tibble(
-  x = seq(from = -1.5, to = 4.5, by = 0.05)
-) %>% 
   dplyr::rowwise() %>% 
   dplyr::mutate(
     # encode each value of x
     v_x = vsa.encode_scalar_spline(x[[1]], ss) %>% list(),
-    # get the cosine between the encoded x and each of the knot vectors
     cos_1 = vsa.cos_sim(v_x, v1),
     cos_2 = vsa.cos_sim(v_x, v2),
     cos_3 = vsa.cos_sim(v_x, v3),

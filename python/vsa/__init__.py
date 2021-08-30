@@ -16,14 +16,15 @@ import numpy as np
 def mk_sample_spec(
   dim,        # integer - dimensionality of VSA vectors
   sample_wt,  # numeric vector - VSA vector sampling weights
-  seed=None # integer - seed for random number generator
+  seed=None   # integer - seed for random number generator
 ):  # returns VSA vector, the weighted sum (sampled) of the argument vectors
 
-  # if seed is set the sampling specification vector is fixed
-  # otherwise it is randomised
-  np.random.seed(seed)
-  
-  return np.random.choice(len(sample_wt), size=dim, replace=True, p=sample_wt)
+    # if seed is set the sampling specification vector is fixed
+    # otherwise it is randomised
+    np.random.seed(seed)
+
+    return np.random.choice(len(sample_wt), size=dim, replace=True,
+                            p=sample_wt)
 
 # ---- mag -------------------------------------------------------------------
 
@@ -31,12 +32,12 @@ def mk_sample_spec(
 # Allow for the possibility that the vector might not be bipolar
 
 
-def mag (
+def mag(
   v1  # numeric - VSA vector (not necessarily bipolar)
   ):  # value # numeric - magnitude of the VSA vector
 
-  # No numerical analysis considerations 
-  return np.sqrt(np.sum(v1*v1))
+    # No numerical analysis considerations
+    return np.sqrt(np.sum(v1*v1))
 
 
 # ---- mk_atom_bipolar -------------------------------------------------------
@@ -48,23 +49,22 @@ def mk_atom_bipolar(
   dim,         # dimensionality of VSA vector
   seed=None  # seed for random number generator
   ):           # value # one randomly selected VSA vector of dimension dim
-  
-  # if seed is set the the vector is fixed
-  # otherwise it is randomised
-  np.random.seed(seed)
-  
-  # Construct a random bipolar vector
-  return 2 * (np.random.random(dim) > 0.5) - 1
+
+    # if seed is set the the vector is fixed
+    # otherwise it is randomised
+    np.random.seed(seed)
+
+    # Construct a random bipolar vector
+    return 2 * (np.random.random(dim) > 0.5) - 1
 
 # ---- multiply --------------------------------------------------------------
 
 # function to multiply an arbitrary number of VSA vectors
 
 
-def multiply(vectors
-     # >= 2 VSA vectors of identical dimension as arguments to multiply
-  ): # returns the weighted sum (sampled) of the argument vectors
-
+def multiply(
+  vectors  # >= 2 VSA vectors of identical dimension as arguments to multiply
+  ):  # returns the weighted sum (sampled) of the argument vectors
 
     result = np.ones(len(vectors[0]))
 
@@ -84,14 +84,14 @@ def mk_scalar_encoder_spline_spec(
   seed=None  # integer - seed for random number generator
   ):           # returns dictionary for linear spline encoder specification
 
-  # set the seed
-  np.random.seed(seed)
-  
-  # generate VSA atoms corresponding to each of the knots
-  return { 
-          'knots_scalar' : knots,
-          'knots_vsa' : [mk_atom_bipolar(dim) for _ in knots]
-          }
+    # set the seed
+    np.random.seed(seed)
+
+    # generate VSA atoms corresponding to each of the knots
+    return {
+            'knots_scalar': knots,
+            'knots_vsa': [mk_atom_bipolar(dim) for _ in knots]
+           }
 
 # ---- dotprod ---------------------------------------------------------------
 
@@ -103,8 +103,8 @@ def dotprod(
   v1, v2  # VSA vectors of identical dimension (not necessarily bipolar)
   ):      # returns cosine similarity of the VSA vectors
 
-  # No numerical analysis considerations 
-  return np.sum(v1*v2)
+    # No numerical analysis considerations
+    return np.sum(v1*v2)
 
 # ---- decode_scalar_spline --------------------------------------------------
 
@@ -113,25 +113,25 @@ def dotprod(
 # sequence of VSA vectors corresponding to the spline knots
 
 
-def decode_scalar_spline (
-  v,               # numeric - VSA vector (not necessarily bipolar)
-  spline_spec,     # spline spec from mk_scalar_encoder_spline_spec()
-  zero_thresh = 4  # zero threshold (in standard deviations)
+def decode_scalar_spline(
+  v,             # numeric - VSA vector (not necessarily bipolar)
+  spline_spec,   # spline spec from mk_scalar_encoder_spline_spec()
+  zero_thresh=4  # zero threshold (in standard deviations)
   ):  # returns scalar value decoded from v
 
-  # get the dot product of the encoded scalar with each of the knot vectors
-  dotprods = np.array(list(map(lambda w : dotprod(v,w),
-                                          spline_spec['knots_vsa'])))
+    # get the dot product of the encoded scalar with each of the knot vectors
+    dotprods = np.array(list(map(lambda w: dotprod(v, w),
+                                 spline_spec['knots_vsa'])))
 
-  # set dot products below the zero threshold to 0.5
-  zero_thresh = zero_thresh * np.sqrt(len(v) * 0.5)
-  dotprods[dotprods<zero_thresh] = 0
+    # set dot products below the zero threshold to 0.5
+    zero_thresh = zero_thresh * np.sqrt(len(v) * 0.5)
+    dotprods[dotprods < zero_thresh] = 0
 
-  # normalise the dot products
-  dotprods = dotprods / np.sum(dotprods)
+    # normalise the dot products
+    dotprods = dotprods / np.sum(dotprods)
 
-  # return the weighted sum of the knot scalars
-  return np.sum(dotprods * spline_spec['knots_scalar'])
+    # return the weighted sum of the knot scalars
+    return np.sum(dotprods * spline_spec['knots_scalar'])
 
 # ---- add -------------------------------------------------------------------
 

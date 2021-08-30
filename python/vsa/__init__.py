@@ -147,7 +147,8 @@ def decode_scalar_spline(
 def add(
   vectors,
   sample_spec=None,  # source (argument VSA vector) for each element of result
-  sample_wt=None     # numeric vector - argument vector sampling weights
+  sample_wt=None,    # numeric vector - argument vector sampling weights
+  seed=None          # integer - seed for random number generator
   ):  # returns VSA vector, the weighted sum (sampled) of the argument vectors
 
     count = len(vectors)
@@ -163,7 +164,7 @@ def add(
 
         # For each element of the result work out which source VSA vector to
         # sample
-        sample_spec = mk_sample_spec(dim, sample_wt, 0)
+        sample_spec = mk_sample_spec(dim, sample_wt, seed)
 
     return np.array([vectors[k][j] for (j, k) in enumerate(sample_spec)])
 

@@ -9,7 +9,7 @@ import vsa
 import numpy as np
 import matplotlib.pyplot as plt
 
-for dims in 1000,10000:
+for dims in 1000, 10000:
 
     # make an encoder specification with realistic vector dimension
     ss = vsa.mk_scalar_encoder_spline_spec(dims, (-1, 1, 2, 4))

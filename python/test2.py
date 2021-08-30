@@ -6,23 +6,24 @@ Replicates second two figures from
 
 import vsa
 
-import numpy as np
 import matplotlib.pyplot as plt
 
-dims = 10000
+DIMS = 10000
+N = 1000  # number of pairs to create
+BINS = 30
 
 # make an encoder specification with realistic vector dimension
-ss = vsa.mk_scalar_encoder_spline_spec(dims, (0, 1))
+ss = vsa.mk_scalar_encoder_spline_spec(DIMS, (0, 1))
 
-# generate n pairs of encodings of the same scalar (x)
-x = 0.5   # scalar to encode (in the range 0 .. 1)
-n = 1000  # number of pairs to create
+for x in 0.5, 0.05:
 
-# make a one-column data frame with the cos similarity of each vector pair
-cos = [vsa.cos_sim(vsa.encode_scalar_spline(x, ss),
-                   vsa.encode_scalar_spline(x, ss)) for _ in range(n)]
+    # generate n pairs of encodings of the same scalar (x) and make a
+    # one-column data frame with the cos similarity of each vector pair
+    cos = [vsa.cos_sim(vsa.encode_scalar_spline(x, ss),
+                       vsa.encode_scalar_spline(x, ss)) for _ in range(N)]
 
-plt.hist(cos)
-plt.xlabel('cos')
-plt.ylabel('count')
-plt.show()
+    plt.hist(cos, bins=BINS)
+    plt.xlabel('cos')
+    plt.ylabel('count')
+    plt.title('x = %2.2f' % x)
+    plt.show()

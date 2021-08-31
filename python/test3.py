@@ -12,36 +12,13 @@ def report(expected, actual):
 # make an encoder specification with realistic vector dimension
 ss = vsa.mk_scalar_encoder_spline_spec(10000, (-1, 1, 2, 4))
 
-report(-1, vsa.decode_scalar_spline(vsa.encode_scalar_spline(-1.5, ss), ss))
+for expected, encoded in ((-1, -1.5), (-1, -1), (0, 0), (1, 1), (1.5, 1.5)):
 
-'''
-vsa.encode_scalar_spline(ss) %>% vsa.decode_scalar_spline(ss)
+    obtained = vsa.decode_scalar_spline(vsa.encode_scalar_spline(encoded, ss), ss)
 
-vsa.encode_scalar_spline(ss) %>% vsa.decode_scalar_spline(ss)
+    print('Expect: %f; got %f' % (expected, obtained))
 
-vsa.encode_scalar_spline(ss) %>% vsa.decode_scalar_spline(ss)
-
-vsa.encode_scalar_spline(ss) %>% vsa.decode_scalar_spline(ss)
-
-vsa.encode_scalar_spline(ss) %>% vsa.decode_scalar_spline(ss)
-
-vsa.encode_scalar_spline(ss) %>% vsa.decode_scalar_spline(ss)
-
-vsa.encode_scalar_spline(ss) %>% vsa.decode_scalar_spline(ss)
-
-vsa.encode_scalar_spline(ss) %>% vsa.decode_scalar_spline(ss)
 
 # The decoded values at the knots are exactly correct.
 # The decoded values between the knots are approximately correct.
 # Check the random variation of intermediate values.
-
-vsa.encode_scalar_spline(ss) %>% vsa.decode_scalar_spline(ss)
-
-vsa.encode_scalar_spline(ss) %>% vsa.decode_scalar_spline(ss)
-
-vsa.encode_scalar_spline(ss) %>% vsa.decode_scalar_spline(ss)
-
-vsa.encode_scalar_spline(ss) %>% vsa.decode_scalar_spline(ss)
-
-vsa.encode_scalar_spline(ss) %>% vsa.decode_scalar_spline(ss)
-'''

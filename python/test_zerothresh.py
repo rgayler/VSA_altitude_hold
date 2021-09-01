@@ -14,9 +14,9 @@ def plotvert(x):
     plt.plot([x, x], [-0.1, +1.1], color=(.5, .5, .5), linewidth=1)
 
 
-def test(maxknot, maxval, zero_threshes):
+def test(knotmax, maxval, zero_threshes):
 
-    ss = vsa.mk_scalar_encoder_spline_spec(10000, np.linspace(0, maxknot, 100))
+    ss = vsa.mk_scalar_encoder_spline_spec(10000, np.linspace(0, knotmax, 100))
 
     x_in = [x for x in np.linspace(-0.1, maxval, 1000)]
 
@@ -34,9 +34,9 @@ def test(maxknot, maxval, zero_threshes):
         plotvert(1)
         plt.xlabel('x_in')
         plt.ylabel('x_out')
-        plt.title('zero_thresh = %d' % zero_thresh)
+        plt.title('knots = 0:%d   zero_thresh = %d' % (knotmax, zero_thresh))
         plt.show()
 
 
-# test(100, 1.1, (8, 6, 5))
+test(100, 1.1, (8, 6, 5))
 test(2, 2.1, (4, 2, 1, 0))

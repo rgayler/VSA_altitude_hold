@@ -9,27 +9,28 @@ import numpy as np
 import scipy.stats as stats
 import matplotlib.pyplot as plt
 
+
+def plotvert(x):
+    plt.plot([x, x], [-0.1, +1.1], color=(.5, .5, .5), linewidth=1)
+
+
 ss = vsa.mk_scalar_encoder_spline_spec(10000, np.arange(100))
 
-x_in = [x for x in np.linspace(-0.1, +1.1, 100)]
+x_in = [x for x in np.linspace(-0.1, +1.1, 1000)]
 
-zero_thresh = 8
+for zero_thresh in 8, 6, 5:
 
-x_out = [vsa.decode_scalar_spline(
-    vsa.encode_scalar_spline(x, ss), ss, zero_thresh) for x in x_in]
+    x_out = [vsa.decode_scalar_spline(
+        vsa.encode_scalar_spline(x, ss), ss, zero_thresh) for x in x_in]
 
-r = stats.linregress(x_in, x_out)
+    r = stats.linregress(x_in, x_out)
 
-plt.scatter(x_in, x_out, s=0.1)
-plt.xlim([-0.1, +1.1])
-#plt.plot(x_in, r.intercept + r.slope*x_in, 'r')
-plt.xlabel('x_in')
-plt.ylabel('x_out')
-plt.title('zero_thresh = %d' % zero_thresh)
-plt.show()
-
-'''
-geom_vline(xintercept = 0:1, alpha = 0.3) +
-geom_abline(slope = 1, intercept = 0, colour = "red", alpha = 0.5) +
-geom_point(aes(x = x_in, y = x_out), size = 0.1, alpha = 0.5) +
-'''
+    plt.scatter(x_in, x_out, color='k', s=0.1)
+    plt.xlim([-0.1, +1.1])
+    plt.plot(x_in, r.intercept + r.slope*np.array(x_in), 'r', linewidth=1)
+    plotvert(0)
+    plotvert(1)
+    plt.xlabel('x_in')
+    plt.ylabel('x_out')
+    plt.title('zero_thresh = %d' % zero_thresh)
+    plt.show()

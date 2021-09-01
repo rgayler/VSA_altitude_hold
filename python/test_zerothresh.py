@@ -14,23 +14,29 @@ def plotvert(x):
     plt.plot([x, x], [-0.1, +1.1], color=(.5, .5, .5), linewidth=1)
 
 
-ss = vsa.mk_scalar_encoder_spline_spec(10000, np.arange(100))
+def test(maxknot, maxval, zero_threshes):
 
-x_in = [x for x in np.linspace(-0.1, +1.1, 1000)]
+    ss = vsa.mk_scalar_encoder_spline_spec(10000, np.linspace(0, maxknot, 100))
 
-for zero_thresh in 8, 6, 5:
+    x_in = [x for x in np.linspace(-0.1, maxval, 1000)]
 
-    x_out = [vsa.decode_scalar_spline(
-        vsa.encode_scalar_spline(x, ss), ss, zero_thresh) for x in x_in]
+    for zero_thresh in zero_threshes:
 
-    r = stats.linregress(x_in, x_out)
+        x_out = [vsa.decode_scalar_spline(
+            vsa.encode_scalar_spline(x, ss), ss, zero_thresh) for x in x_in]
 
-    plt.scatter(x_in, x_out, color='k', s=0.1)
-    plt.xlim([-0.1, +1.1])
-    plt.plot(x_in, r.intercept + r.slope*np.array(x_in), 'r', linewidth=1)
-    plotvert(0)
-    plotvert(1)
-    plt.xlabel('x_in')
-    plt.ylabel('x_out')
-    plt.title('zero_thresh = %d' % zero_thresh)
-    plt.show()
+        r = stats.linregress(x_in, x_out)
+
+        plt.scatter(x_in, x_out, color='k', s=0.1)
+        plt.xlim([-0.1, +1.1])
+        plt.plot(x_in, r.intercept + r.slope*np.array(x_in), 'r', linewidth=1)
+        plotvert(0)
+        plotvert(1)
+        plt.xlabel('x_in')
+        plt.ylabel('x_out')
+        plt.title('zero_thresh = %d' % zero_thresh)
+        plt.show()
+
+
+# test(100, 1.1, (8, 6, 5))
+test(2, 2.1, (4, 2, 1, 0))

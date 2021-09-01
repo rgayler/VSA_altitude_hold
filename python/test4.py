@@ -6,10 +6,21 @@ Replicates third pair of figures from
 
 import vsa
 import numpy as np
+import matplotlib.pyplot as plt
 
 ss = vsa.mk_scalar_encoder_spline_spec(10000, np.arange(100))
 
-print(ss)
+x_in = [x for x in np.linspace(-0.1, +1.1, 1000)]
+
+zero_thresh = 8
+
+x_out = x_in
+
+plt.plot(x_out, x_in)
+plt.xlabel('x_in')
+plt.ylabel('x_out')
+plt.title('zero_thresh = %d' % zero_thresh)
+plt.show()
 
 '''
 # encode and decode random values over the first knot interval

@@ -14,28 +14,17 @@ x_in = [x for x in np.linspace(-0.1, +1.1, 1000)]
 
 zero_thresh = 8
 
-x_out = x_in
+x_out = [vsa.decode_scalar_spline(
+    vsa.encode_scalar_spline(x, ss), ss, zero_thresh) for x in x_in]
 
-plt.plot(x_out, x_in)
+plt.scatter(x_out, x_in, s=0.1)
 plt.xlabel('x_in')
 plt.ylabel('x_out')
 plt.title('zero_thresh = %d' % zero_thresh)
 plt.show()
 
 '''
-# encode and decode random values over the first knot interval
-runif(n = 1e3, min = -0.1, max = 1.1) %>% 
-  tibble::tibble(x_in = .) %>% 
-  dplyr::rowwise() %>% 
-  dplyr::mutate(
-    x_out = x_in %>% 
-      vsa_encode_scalar_spline(ss) %>% 
-      vsa_decode_scalar_spline(ss, zero_thresh = 8)
-  ) %>% 
-  dplyr::ungroup() %>% 
-  ggplot() +
-  geom_vline(xintercept = 0:1, alpha = 0.3) +
-  geom_abline(slope = 1, intercept = 0, colour = "red", alpha = 0.5) +
-  geom_point(aes(x = x_in, y = x_out), size = 0.1, alpha = 0.5) +
-  ggtitle("zero_thresh = 8")
-  '''
+geom_vline(xintercept = 0:1, alpha = 0.3) +
+geom_abline(slope = 1, intercept = 0, colour = "red", alpha = 0.5) +
+geom_point(aes(x = x_in, y = x_out), size = 0.1, alpha = 0.5) +
+'''

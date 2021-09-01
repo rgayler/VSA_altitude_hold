@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 '''
-Replicates third pair of figures from
+Replicates figures from 3.2 Zero threshold section of
   https://rgayler.github.io/VSA_altitude_hold/encoder_spline.html
 '''
 

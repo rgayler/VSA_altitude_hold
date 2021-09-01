@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 '''
-Replicates first two figures from
+Replicates first pair of figures from
   https://rgayler.github.io/VSA_altitude_hold/encoder_spline.html
 '''
 

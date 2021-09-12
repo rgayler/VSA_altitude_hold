@@ -1,0 +1,2442 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Ross Gayler" />
+
+
+<title>VSA Implementation of PID Task Analysis</title>
+
+<script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/master/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">VSA_altitude_hold</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/rgayler/VSA_altitude_hold">
+    <span class="fa fa-github"></span>
+     
+    Source code
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">VSA Implementation of PID Task Analysis</h1>
+<h4 class="author">Ross Gayler</h4>
+<h4 class="date">2021-0</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks">
+Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2021-09-12
+</p>
+<p>
+<strong>Checks:</strong>
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+7
+<span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span>
+0
+</p>
+<p>
+<strong>Knit directory:</strong>
+<code>VSA_altitude_hold/</code>
+<span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/jdblischak/workflowr">workflowr</a> (version
+1.6.2). The <em>Checks</em> tab describes the
+reproducibility checks that were applied when the results were created.
+The <em>Past versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>R Markdown file:</strong> up-to-date
+</a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git repository, you
+know the exact version of the code that produced these results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>Environment:</strong> empty
+</a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the global
+environment can affect the analysis in your R Markdown file in unknown ways.
+For reproduciblity it’s best to always run the code in an empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20210617code">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>Seed:</strong> <code>set.seed(20210617)</code>
+</a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20210617code" class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20210617)</code> was run prior to running the code in the R Markdown file.
+Setting a seed ensures that any results that rely on randomness, e.g.
+subsampling or permutations, are reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>Session information:</strong> recorded
+</a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package versions is
+critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>Cache:</strong> none
+</a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be confident
+that you successfully produced the results during this run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>File paths:</strong> relative
+</a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr project
+makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomrgaylerVSAaltitudeholdtree98e6cf4160c6cfd9bf903605f3aab84a632dea1ftargetblank98e6cf4a">
+<span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<strong>Repository version:</strong> <a href="https://github.com/rgayler/VSA_altitude_hold/tree/98e6cf4160c6cfd9bf903605f3aab84a632dea1f" target="_blank">98e6cf4</a>
+</a>
+</p>
+</div>
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomrgaylerVSAaltitudeholdtree98e6cf4160c6cfd9bf903605f3aab84a632dea1ftargetblank98e6cf4a" class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development and
+connecting the code version to the results is critical for reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version <a href="https://github.com/rgayler/VSA_altitude_hold/tree/98e6cf4160c6cfd9bf903605f3aab84a632dea1f" target="_blank">98e6cf4</a>.
+See the <em>Past versions</em> tab to see a history of the changes made to the
+R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for the
+analysis have been committed to Git prior to generating the results (you can
+use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only
+checks the R Markdown file, but you know if there are other scripts or data
+files that it depends on. Below is the status of the Git repository when the
+results were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    renv/library/
+    Ignored:    renv/local/
+    Ignored:    renv/staging/
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not included in
+this status report because it is ok for generated content to have uncommitted
+changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the repository in which changes were made
+to the R Markdown (<code>analysis/PID_task_analysis_VSA.Rmd</code>) and HTML (<code>docs/PID_task_analysis_VSA.html</code>)
+files. If you’ve configured a remote Git repository (see
+<code>?wflow_git_remote</code>), click on the hyperlinks in the table below to
+view the files as they were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/98e6cf4160c6cfd9bf903605f3aab84a632dea1f/analysis/PID_task_analysis_VSA.Rmd" target="_blank">98e6cf4</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-09-12
+</td>
+<td>
+WIP
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/cfe02a72e5db2f4bdfcc4c0ea2b9399de928fb4a/analysis/PID_task_analysis_VSA.Rmd" target="_blank">cfe02a7</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-09-12
+</td>
+<td>
+WIP
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/65a4b46c4e42d6261a2a497015430117c4c336c4/analysis/PID_task_analysis_VSA.Rmd" target="_blank">65a4b46</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-09-12
+</td>
+<td>
+WIP
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/rgayler/VSA_altitude_hold/65a4b46c4e42d6261a2a497015430117c4c336c4/docs/PID_task_analysis_VSA.html" target="_blank">65a4b46</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-09-12
+</td>
+<td>
+WIP
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/89b2f223e042f3566e88739d1ac6721dd14f0850/analysis/PID_task_analysis_VSA.Rmd" target="_blank">89b2f22</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-09-12
+</td>
+<td>
+WIP
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/rgayler/VSA_altitude_hold/89b2f223e042f3566e88739d1ac6721dd14f0850/docs/PID_task_analysis_VSA.html" target="_blank">89b2f22</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-09-12
+</td>
+<td>
+WIP
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/c51f761a532f129db55dbcb712872153f6e084ec/analysis/PID_task_analysis_VSA.Rmd" target="_blank">c51f761</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-09-12
+</td>
+<td>
+WIP
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/rgayler/VSA_altitude_hold/c51f761a532f129db55dbcb712872153f6e084ec/docs/PID_task_analysis_VSA.html" target="_blank">c51f761</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-09-12
+</td>
+<td>
+WIP
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/da1f2fa6503ffe573d33bd29645902ff62f4294e/analysis/PID_task_analysis_VSA.Rmd" target="_blank">da1f2fa</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-09-12
+</td>
+<td>
+WIP
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/rgayler/VSA_altitude_hold/da1f2fa6503ffe573d33bd29645902ff62f4294e/docs/PID_task_analysis_VSA.html" target="_blank">da1f2fa</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-09-12
+</td>
+<td>
+WIP
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/d27c37839fb743dd1a4bb77763f2bc67031a0b65/analysis/PID_task_analysis_VSA.Rmd" target="_blank">d27c378</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-09-12
+</td>
+<td>
+WIP
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/rgayler/VSA_altitude_hold/d27c37839fb743dd1a4bb77763f2bc67031a0b65/docs/PID_task_analysis_VSA.html" target="_blank">d27c378</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-09-12
+</td>
+<td>
+WIP
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/rgayler/VSA_altitude_hold/2e8351723f361ceca01e2a84f197a35d6c445a29/docs/PID_task_analysis_VSA.html" target="_blank">2e83517</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-09-11
+</td>
+<td>
+WIP
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/ff213fa9196db87c769ebfdbb0383f7e94da13be/analysis/PID_task_analysis_VSA.Rmd" target="_blank">ff213fa</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-09-11
+</td>
+<td>
+WIP
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/9a1cae9800a32afa87266847458cfa4ef86f2c36/analysis/PID_task_analysis_VSA.Rmd" target="_blank">9a1cae9</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-09-10
+</td>
+<td>
+WIP
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<p>This notebook attempts to make a VSA implementation of the statistical
+model of the PID input/output function developed in the <a href="PID_task_analysis.html">PID Task
+Analysis notebook</a>.</p>
+<p>The scalar inputs are represented using the spline encoding developed in
+the <a href="encoder_spline_html">Linear Interpolation Spline notebook</a>.</p>
+<p>The VSA representations of the inputs are informed by the encodings
+developed in the <a href="PID_task_analysis.html#feature-engineering">feature engineering
+section</a>.</p>
+<p>The knots of the splines are chosen to allow curvature in the response
+surface where it is needed.</p>
+<p>The input/output function will be learned by regression from the
+multi-target data set.</p>
+<p><span class="math inline">\(e\)</span> and <span class="math inline">\(e_{orth}\)</span> will be used as the input variables and I will ignore
+the VSA calculation of those quantities in this notebook (except for the
+final section where I unsuccessfully attempt to use <span class="math inline">\(k_{tgt}\)</span>, <span class="math inline">\(z\)</span>, and
+<span class="math inline">\(dz\)</span> as the input variables).</p>
+<p>We will build up the model incrementally to check that things are
+working as expected.</p>
+<div id="read-data" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> Read data</h1>
+<p>This notebook is based on the data generated by the simulation runs with
+multiple target altitudes per run.</p>
+<p>Read the data from the simulations and mathematically reconstruct the
+values of the nodes not included in the input files.</p>
+<p>Only a small subset of the nodes will be used in this notebook.</p>
+<pre class="r"><code># function to clip value to a range
+clip &lt;- function(
+  x, # numeric
+  x_min, # numeric[1] - minimum output value
+  x_max  # numeric[1] - maximum output value
+) # value # numeric - x constrained to the range [x_min, x_max]
+  {
+  x %&gt;% pmax(x_min) %&gt;% pmin(x_max)
+}
+
+# function to extract a numeric parameter value from the file name
+get_param_num &lt;- function(
+  file, # character - vector of file names
+  regexp # character[1] - regular expression for &quot;param=value&quot;
+         # use a capture group to get the value part
+) # value # numeric - vector of parameter values
+{
+  file %&gt;% str_match(regexp) %&gt;% 
+      subset(select = 2) %&gt;% as.numeric()
+}
+
+# function to extract a sequence of numeric parameter values from the file name
+get_param_num_seq &lt;- function(
+  file, # character - vector of file names
+  regexp # character[1] - regular expression for &quot;param=value&quot;
+         # use a capture group to get the value part
+) # value # character - character representation of a sequence, e.g. &quot;(1,2,3)&quot;
+{
+  file %&gt;% str_match(regexp) %&gt;% 
+      subset(select = 2) %&gt;% 
+    str_replace_all(c(&quot;^&quot; = &quot;(&quot;, &quot;_&quot; = &quot;,&quot;, &quot;$&quot; = &quot;)&quot;)) # reformat as sequence
+}
+
+# function to extract a logical parameter value from the file name
+get_param_log &lt;- function(
+  file, # character - vector of file names
+  regexp # character[1] - regular expression for &quot;param=value&quot;
+  # use a capture group to get the value part
+  # value *must* be T or F
+) # value # logical - vector of logical parameter values
+{
+  file %&gt;% str_match(regexp) %&gt;% 
+    subset(select = 2) %&gt;% as.character() %&gt;% &quot;==&quot;(&quot;T&quot;)
+}
+
+# read the data
+d_wide &lt;- fs::dir_ls(path = here::here(&quot;data&quot;, &quot;multiple_target&quot;), regexp = &quot;/targets=.*\\.csv$&quot;) %&gt;% # get file paths
+  vroom::vroom(id = &quot;file&quot;) %&gt;% # read files
+  dplyr::rename(k_tgt = target) %&gt;% # rename for consistency with single target data
+  dplyr::mutate( # add extra columns
+    file = file %&gt;% fs::path_ext_remove() %&gt;% fs::path_file(), # get file name
+    # get parameters
+    targets  = file %&gt;% get_param_num_seq(&quot;targets=([._0-9]+)_start=&quot;), # hacky
+    k_start  = file %&gt;% get_param_num(&quot;start=([.0-9]+)&quot;), 
+    sim_id   = paste(targets, k_start), # short ID for each simulation
+    k_p      = file %&gt;% get_param_num(&quot;kp=([.0-9]+)&quot;),
+    k_i      = file %&gt;% get_param_num(&quot;Ki=([.0-9]+)&quot;),
+    # k_tgt    = file %&gt;% get_param_num(&quot;k_tgt=([.0-9]+)&quot;), # no longer needed
+    k_windup = file %&gt;% get_param_num(&quot;k_windup=([.0-9]+)&quot;),
+    uclip    = FALSE, # constant across all files
+    dz0      = TRUE, # constant across all files
+    # Deal with the fact that the interpretation of the imported u value
+    # depends on the uclip parameter
+    u_import = u, # keep a copy of the imported value to one side
+    u = dplyr::if_else(uclip, # make u the &quot;correct&quot; value
+                       u_import, 
+                       clip(u_import, 0, 1)
+                       ),
+    # reconstruct the missing nodes
+    i1 = k_tgt - z,
+    i2 = i1 - dz,
+    i3 = e * k_p,
+    i9 = lag(ei, n = 1, default = 0), # initialised to zero
+    i4 = e + i9,
+    i5 = i4 %&gt;% clip(-k_windup, k_windup),
+    i6 = ei * k_i,
+    i7 = i3 + i6,
+    i8 = i7 %&gt;% clip(0, 1),
+    # add a convenience variable for these analyses
+    e_orth = (i1 + dz)/2 # orthogonal input axis to e
+  ) %&gt;% 
+  # add time variable per file
+  dplyr::group_by(file) %&gt;% 
+  dplyr::mutate(t = 1:n()) %&gt;% 
+  dplyr::ungroup()</code></pre>
+<pre><code>Rows: 6000 Columns: 8</code></pre>
+<pre><code>── Column specification ────────────────────────────────────────────────────────
+Delimiter: &quot;,&quot;
+dbl (7): time, target, z, dz, e, ei, u</code></pre>
+<pre><code>
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<pre class="r"><code>dplyr::glimpse(d_wide)</code></pre>
+<pre><code>Rows: 6,000
+Columns: 28
+$ file     &lt;chr&gt; &quot;targets=1_3_5_start=3_kp=0.20_Ki=3.00_k_windup=0.20&quot;, &quot;targe…
+$ time     &lt;dbl&gt; 0.00, 0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0…
+$ k_tgt    &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1…
+$ z        &lt;dbl&gt; 3.000, 3.000, 3.003, 3.005, 3.006, 3.006, 3.005, 3.002, 2.999…
+$ dz       &lt;dbl&gt; 0.000, 0.286, 0.188, 0.090, -0.008, -0.106, -0.204, -0.302, -…
+$ e        &lt;dbl&gt; -2.000, -2.286, -2.191, -2.095, -1.998, -1.899, -1.800, -1.70…
+$ ei       &lt;dbl&gt; -0.200, -0.200, -0.200, -0.200, -0.200, -0.200, -0.200, -0.20…
+$ u        &lt;dbl&gt; 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000…
+$ targets  &lt;chr&gt; &quot;(1,3,5)&quot;, &quot;(1,3,5)&quot;, &quot;(1,3,5)&quot;, &quot;(1,3,5)&quot;, &quot;(1,3,5)&quot;, &quot;(1,3,…
+$ k_start  &lt;dbl&gt; 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3…
+$ sim_id   &lt;chr&gt; &quot;(1,3,5) 3&quot;, &quot;(1,3,5) 3&quot;, &quot;(1,3,5) 3&quot;, &quot;(1,3,5) 3&quot;, &quot;(1,3,5) …
+$ k_p      &lt;dbl&gt; 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0…
+$ k_i      &lt;dbl&gt; 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3…
+$ k_windup &lt;dbl&gt; 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0…
+$ uclip    &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE…
+$ dz0      &lt;lgl&gt; TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, T…
+$ u_import &lt;dbl&gt; -1.000, -1.057, -1.038, -1.019, -1.000, -0.980, -0.960, -0.94…
+$ i1       &lt;dbl&gt; -2.000, -2.000, -2.003, -2.005, -2.006, -2.006, -2.005, -2.00…
+$ i2       &lt;dbl&gt; -2.000, -2.286, -2.191, -2.095, -1.998, -1.900, -1.801, -1.70…
+$ i3       &lt;dbl&gt; -0.4000, -0.4572, -0.4382, -0.4190, -0.3996, -0.3798, -0.3600…
+$ i9       &lt;dbl&gt; 0.000, -0.200, -0.200, -0.200, -0.200, -0.200, -0.200, -0.200…
+$ i4       &lt;dbl&gt; -2.000, -2.486, -2.391, -2.295, -2.198, -2.099, -2.000, -1.90…
+$ i5       &lt;dbl&gt; -0.200, -0.200, -0.200, -0.200, -0.200, -0.200, -0.200, -0.20…
+$ i6       &lt;dbl&gt; -0.600, -0.600, -0.600, -0.600, -0.600, -0.600, -0.600, -0.60…
+$ i7       &lt;dbl&gt; -1.0000, -1.0572, -1.0382, -1.0190, -0.9996, -0.9798, -0.9600…
+$ i8       &lt;dbl&gt; 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.000…
+$ e_orth   &lt;dbl&gt; -1.0000, -0.8570, -0.9075, -0.9575, -1.0070, -1.0560, -1.1045…
+$ t        &lt;int&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18…</code></pre>
+</div>
+<div id="marginal-e-term" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> Marginal <span class="math inline">\(e\)</span> term</h1>
+<p>Model the marginal effect of the <span class="math inline">\(e\)</span> term.</p>
+<p>Check the distribution of <span class="math inline">\(e\)</span>.</p>
+<pre class="r"><code>summary(d_wide$e)</code></pre>
+<pre><code>    Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+-6.00000  0.00000  0.00000 -0.04864  0.00000  6.00000 </code></pre>
+<pre class="r"><code>d_wide %&gt;% 
+  ggplot2::ggplot() +
+  geom_vline(xintercept = c(-0.1, 0, 0.1), colour = &quot;red&quot;) +
+  geom_histogram(aes(x = e), bins = 100) +
+  scale_y_log10()</code></pre>
+<pre><code>Warning: Transformation introduced infinite values in continuous y-axis</code></pre>
+<pre><code>Warning: Removed 13 rows containing missing values (geom_bar).</code></pre>
+<p><img src="figure/PID_task_analysis_VSA.Rmd/unnamed-chunk-2-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-1">
+Past versions of unnamed-chunk-2-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/2e8351723f361ceca01e2a84f197a35d6c445a29/docs/figure/PID_task_analysis_VSA.Rmd/unnamed-chunk-2-1.png" target="_blank">2e83517</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-09-11
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<ul>
+<li><span class="math inline">\(e\)</span> ranges from -6 to 6 with.</li>
+<li><span class="math inline">\(e\)</span> values are heavily concentrated in the interval <span class="math inline">\([-0.1, 0.1]\)</span>
+(the terminal phases of the trajectories).</li>
+</ul>
+<p>Construct a spline specification with knots set at
+<span class="math inline">\(\{-6, -2, -0.1, 0, 0.1, 2, 6\}\)</span>. The linear spline encoding
+interpolates linearly between knots, so the knots at <span class="math inline">\(\{-0.1, 0, 0.1\}\)</span>
+allow for extreme curvature of the motor command surface in that region.
+The knot at 2 is to allow for the slope of motor command surface
+observed on the range <span class="math inline">\(0 \le e \le 2\)</span>.</p>
+<pre class="r"><code>vsa_dim &lt;- 1e4L # default VSA dimensionality
+
+ss_e &lt;- vsa_mk_scalar_encoder_spline_spec(vsa_dim = vsa_dim, knots = c(-6, -0.1, 0, 0.1, 2, 6))</code></pre>
+<p>In using regression to decode VSA representations I will have to create
+a data matrix with one row per observation (the encoding of the value
+<span class="math inline">\(e\)</span>). One column will correspond to the dependent variable - the
+<em>target</em> value <span class="math inline">\(u\)</span>. The remaining columns correspond to the independent
+variables (predictors) - the VSA vector representation of the encoded
+scalar value <span class="math inline">\(e\)</span>. There will be one column for each element of the VSA
+vector representation.</p>
+<p>The number of columns will exceed the number of rows, so simple
+unregularised regression will fail. I will initially attempt to use
+regularised regression (elasticnet, implemented by <code>glmnet</code> in R). Prior
+experimentation showed that the optimal <span class="math inline">\(\alpha = 0\)</span> (ridge regression).</p>
+<p>I use a random sample of observations from the simulation data. This is
+done because my laptop struggles with larger problems.</p>
+<pre class="r"><code># number of observations in subset of data for modelling
+n_samp &lt;- 1000
+
+# select the modelling subset
+d_subset &lt;- d_wide %&gt;% 
+  dplyr::slice_sample(n = n_samp) %&gt;% 
+  dplyr::select(u, e, e_orth, k_tgt, z, dz) # k_tgt, z, dz only used in the last section</code></pre>
+<p>Create a function to encode scalar values as VSA vectors and convert the
+data to a matrix suitable for later regression modelling.</p>
+<pre class="r"><code># function to to take a set of numeric scalar values,
+# encode them as VSA vectors using the given spline specification,
+# and package the results as a data frame for regression modelling
+mk_df &lt;- function(
+  x, # numeric - vector of scalar values to be VSA encoded
+  ss # data frame - spline specification for scalar encoding
+) # value - data frame - one row per scalar, one column for the scalar and each VSA element
+{
+  tibble::tibble(x_num = x) %&gt;% # put scalars as column of data frame
+    dplyr::rowwise() %&gt;% 
+    dplyr::mutate( 
+      x_vsa = x_num %&gt;% vsa_encode_scalar_spline(ss) %&gt;% # encode each scalar
+        tibble(vsa_i = 1:length(.), vsa_val = .) %&gt;% # name all the vector elements
+        tidyr::pivot_wider(names_from = vsa_i, names_prefix = &quot;vsa_&quot;, values_from = vsa_val) %&gt;% # transpose vector to columns
+        list() # package the value for a list column
+    ) %&gt;% 
+    dplyr::ungroup() %&gt;%
+    tidyr::unnest(x_vsa) %&gt;%  # convert the nested df to columns
+    dplyr::select(-x_num) # drop the scalar value that was encoded
+}</code></pre>
+<p>Create the training data from the subset of observations from the
+simulation data. This only contains the outcome <span class="math inline">\(u\)</span> and the VSA encoding
+of the predictor <span class="math inline">\(e\)</span>.</p>
+<pre class="r"><code># create training data
+# contains: u, encode(e)
+d_train &lt;- dplyr::bind_cols(
+  dplyr::select(d_subset, u), 
+  mk_df(dplyr::pull(d_subset, e), ss_e)
+)
+
+# take a quick look at the data
+d_train</code></pre>
+<pre><code># A tibble: 1,000 × 10,001
+       u vsa_1 vsa_2 vsa_3 vsa_4 vsa_5 vsa_6 vsa_7 vsa_8 vsa_9 vsa_10 vsa_11
+   &lt;dbl&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;  &lt;int&gt;  &lt;int&gt;
+ 1 0.52     -1    -1    -1    -1    -1    -1    -1    -1    -1     -1      1
+ 2 0.541    -1    -1    -1    -1    -1    -1    -1    -1    -1     -1      1
+ 3 0.511    -1    -1    -1    -1    -1    -1    -1    -1    -1     -1      1
+ 4 0.519    -1    -1    -1    -1    -1    -1    -1    -1    -1     -1      1
+ 5 0.484    -1    -1    -1    -1    -1    -1    -1    -1    -1     -1      1
+ 6 0.5      -1    -1    -1    -1    -1    -1     1    -1    -1     -1      1
+ 7 0.163    -1    -1    -1    -1    -1    -1    -1    -1    -1     -1      1
+ 8 0.53     -1    -1    -1    -1    -1    -1    -1    -1    -1     -1      1
+ 9 0.507    -1    -1    -1    -1    -1    -1    -1    -1    -1     -1      1
+10 0.517    -1    -1    -1    -1    -1    -1    -1    -1    -1     -1      1
+# … with 990 more rows, and 9,989 more variables: vsa_12 &lt;int&gt;, vsa_13 &lt;int&gt;,
+#   vsa_14 &lt;int&gt;, vsa_15 &lt;int&gt;, vsa_16 &lt;int&gt;, vsa_17 &lt;int&gt;, vsa_18 &lt;int&gt;,
+#   vsa_19 &lt;int&gt;, vsa_20 &lt;int&gt;, vsa_21 &lt;int&gt;, vsa_22 &lt;int&gt;, vsa_23 &lt;int&gt;,
+#   vsa_24 &lt;int&gt;, vsa_25 &lt;int&gt;, vsa_26 &lt;int&gt;, vsa_27 &lt;int&gt;, vsa_28 &lt;int&gt;,
+#   vsa_29 &lt;int&gt;, vsa_30 &lt;int&gt;, vsa_31 &lt;int&gt;, vsa_32 &lt;int&gt;, vsa_33 &lt;int&gt;,
+#   vsa_34 &lt;int&gt;, vsa_35 &lt;int&gt;, vsa_36 &lt;int&gt;, vsa_37 &lt;int&gt;, vsa_38 &lt;int&gt;,
+#   vsa_39 &lt;int&gt;, vsa_40 &lt;int&gt;, vsa_41 &lt;int&gt;, vsa_42 &lt;int&gt;, vsa_43 &lt;int&gt;, …</code></pre>
+<p>Create the test data corresponding to a regular grid of <span class="math inline">\(e\)</span> values. This
+only contains the predictor <span class="math inline">\(e\)</span> and the VSA encoding of <span class="math inline">\(e\)</span>.</p>
+<pre class="r"><code># create testing data
+# contains: e, encode(e)
+e_test &lt;- seq(from = -6, to = 6, by = 0.05) # grid of e values
+d_test &lt;- dplyr::bind_cols(
+  tibble::tibble(e = e_test), 
+  mk_df(e_test, ss_e)
+)
+
+# take a quick look at the data
+d_test</code></pre>
+<pre><code># A tibble: 241 × 10,001
+       e vsa_1 vsa_2 vsa_3 vsa_4 vsa_5 vsa_6 vsa_7 vsa_8 vsa_9 vsa_10 vsa_11
+   &lt;dbl&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;  &lt;int&gt;  &lt;int&gt;
+ 1 -6       -1     1     1     1    -1    -1    -1    -1    -1      1     -1
+ 2 -5.95    -1     1     1     1    -1    -1    -1    -1    -1      1     -1
+ 3 -5.9     -1     1     1     1    -1    -1    -1    -1    -1      1     -1
+ 4 -5.85    -1     1     1     1    -1    -1    -1    -1    -1      1     -1
+ 5 -5.8     -1     1     1     1    -1    -1    -1    -1    -1      1     -1
+ 6 -5.75    -1     1     1     1    -1    -1    -1    -1    -1      1     -1
+ 7 -5.7     -1     1    -1     1    -1    -1    -1    -1    -1      1     -1
+ 8 -5.65    -1     1     1     1    -1    -1    -1    -1    -1      1     -1
+ 9 -5.6     -1     1     1    -1    -1    -1    -1    -1    -1      1     -1
+10 -5.55    -1     1     1     1    -1    -1    -1    -1    -1      1     -1
+# … with 231 more rows, and 9,989 more variables: vsa_12 &lt;int&gt;, vsa_13 &lt;int&gt;,
+#   vsa_14 &lt;int&gt;, vsa_15 &lt;int&gt;, vsa_16 &lt;int&gt;, vsa_17 &lt;int&gt;, vsa_18 &lt;int&gt;,
+#   vsa_19 &lt;int&gt;, vsa_20 &lt;int&gt;, vsa_21 &lt;int&gt;, vsa_22 &lt;int&gt;, vsa_23 &lt;int&gt;,
+#   vsa_24 &lt;int&gt;, vsa_25 &lt;int&gt;, vsa_26 &lt;int&gt;, vsa_27 &lt;int&gt;, vsa_28 &lt;int&gt;,
+#   vsa_29 &lt;int&gt;, vsa_30 &lt;int&gt;, vsa_31 &lt;int&gt;, vsa_32 &lt;int&gt;, vsa_33 &lt;int&gt;,
+#   vsa_34 &lt;int&gt;, vsa_35 &lt;int&gt;, vsa_36 &lt;int&gt;, vsa_37 &lt;int&gt;, vsa_38 &lt;int&gt;,
+#   vsa_39 &lt;int&gt;, vsa_40 &lt;int&gt;, vsa_41 &lt;int&gt;, vsa_42 &lt;int&gt;, vsa_43 &lt;int&gt;, …</code></pre>
+<p>Fit a linear (i.e. Gaussian family) regression model, predicting the
+scalar value <span class="math inline">\(u\)</span> (motor command) from the VSA vector elements.</p>
+<p>Use <span class="math inline">\(\alpha = 0\)</span> (ridge regression).</p>
+<p><code>cva.glmnet()</code> in the code below runs cross-validation fits across a
+grid of <span class="math inline">\(\lambda\)</span> values so that we can choose the best regularisation
+scheme. The <span class="math inline">\(\lambda\)</span> parameter is the weighting of the elastic-net
+penalty.</p>
+<pre class="r"><code># fit a set of models at a grid of alpha and lambda parameter values
+fit_1 &lt;- glmnetUtils::cva.glmnet(u ~ ., data = d_train, family = &quot;gaussian&quot;, alpha = 0)</code></pre>
+<p>Look at the impact of the <span class="math inline">\(\lambda\)</span> parameter on goodness of fit for the
+<span class="math inline">\(\alpha = 0\)</span> curve.</p>
+<pre class="r"><code># extract the alpha = 0 model
+fit_1_alpha_0 &lt;- fit_1$modlist[[1]]
+
+# look at the lambda curve
+plot(fit_1_alpha_0)</code></pre>
+<p><img src="figure/PID_task_analysis_VSA.Rmd/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-1">
+Past versions of unnamed-chunk-9-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-9-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/c3477c7c8725bb2dc7ed2267d87ebc3a16455d7e/docs/figure/PID_task_analysis_VSA.Rmd/unnamed-chunk-9-1.png" target="_blank">c3477c7</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-09-12
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code># get a summary of the alpha = 0 model
+fit_1_alpha_0</code></pre>
+<pre><code>
+Call:  glmnet::cv.glmnet(x = x, y = y, weights = ..1, offset = ..2,      nfolds = nfolds, foldid = foldid, alpha = a, family = &quot;gaussian&quot;) 
+
+Measure: Mean-Squared Error 
+
+    Lambda Index  Measure        SE Nonzero
+min  2.206    85 0.002155 0.0005702    9669
+1se 29.845    29 0.002716 0.0005103    9669</code></pre>
+<ul>
+<li>The left dotted vertical line corresponds to minimum error. The
+right dotted vertical line corresponds to the largest value of
+lambda such that the error is within one standard-error of the
+minimum - the so-called “one-standard-error” rule.</li>
+<li>The numbers along the top margin show the number of nonzero
+coefficients in the regression models corresponding to the lambda
+values. All the plausible models have a number of nonzero
+coefficients equal to roughly 97% of the dimensionality of the VSA
+vectors.</li>
+</ul>
+<p>Prior experimentation found that the minimising <span class="math inline">\(\lambda\)</span> is preferred
+over the model selected by the one-standard-error rule. The more heavily
+penalised model tends not to predict the extreme values of the outcome
+variable (too much shrinkage).</p>
+<p>Look at how well the learned function reconstructs the previously
+observed empirical relation between <span class="math inline">\(u\)</span> and <span class="math inline">\(e\)</span>.</p>
+<pre class="r"><code># add the predicted values to the test data frame
+d_test &lt;- d_test %&gt;% 
+  dplyr::mutate(u_hat = predict(fit_1, newdata = ., alpha = 0, s = &quot;lambda.min&quot;)) %&gt;%
+  dplyr::relocate(u_hat)
+
+# plot of predicted u vs e
+d_test %&gt;% 
+  ggplot() + 
+  geom_vline(xintercept = c(-6, -0.1, 0, 0.1, 2, 6), colour = &quot;skyblue3&quot;) + # knots
+  geom_hline(yintercept = c(0, 1), colour = &quot;darkgrey&quot;) + # limits of u
+  geom_smooth(data = d_wide, aes(x = e, y = u), method = &quot;gam&quot;, formula = y ~ s(x, bs = &quot;ad&quot;, k = 150)) +
+  geom_point(data = d_wide, aes(x = e, y = u), colour = &quot;red&quot;, alpha = 0.2) +
+  geom_point(aes(x = e, y = u_hat))</code></pre>
+<p><img src="figure/PID_task_analysis_VSA.Rmd/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-1">
+Past versions of unnamed-chunk-10-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-10-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/c3477c7c8725bb2dc7ed2267d87ebc3a16455d7e/docs/figure/PID_task_analysis_VSA.Rmd/unnamed-chunk-10-1.png" target="_blank">c3477c7</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-09-12
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>The vertical blue lines indicate the locations of the knots on <span class="math inline">\(e\)</span>.</p>
+<p>The horizontal grey lines indicate the limits of the motor command <span class="math inline">\(u\)</span>.</p>
+<p>The red points are all the observations from the simulation data set.</p>
+<p>The smooth blue curve with the grey confidence band is an adaptive
+smooth summarising the trend of the red points.</p>
+<p>The black points are the <span class="math inline">\(u\)</span> values learned from the VSA vector
+representation.</p>
+<ul>
+<li><p>That’s a pretty good fit.</p></li>
+<li><p>The reconstruction is slightly underfit (the reconstructed values
+are slightly closer to 0.5 than the actual values). This is most
+obvious in the outermost intervals (<span class="math inline">\(e \lt -0.1\)</span> and $e ).</p>
+<ul>
+<li>This is probably due to the regularisation (the regression
+coefficients are shrunk towards zero) but is worth checking for
+other explanations.</li>
+</ul></li>
+</ul>
+</div>
+<div id="marginal-e_orth-term" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> Marginal <span class="math inline">\(e_{orth}\)</span> term</h1>
+<p>Model the marginal effect of the <span class="math inline">\(e_{orth}\)</span> term.</p>
+<p>Check the distribution of <span class="math inline">\(e_{orth}\)</span>.</p>
+<pre class="r"><code>summary(d_wide$e_orth)</code></pre>
+<pre><code>    Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+-4.82950 -0.47987  0.16700  0.04648  0.70762  5.06700 </code></pre>
+<pre class="r"><code>d_wide %&gt;% 
+  ggplot2::ggplot() +
+  geom_vline(xintercept = c(-0.1, 0, 0.1), colour = &quot;red&quot;) +
+  geom_histogram(aes(x = e_orth), bins = 100) +
+  scale_y_log10()</code></pre>
+<p><img src="figure/PID_task_analysis_VSA.Rmd/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-1">
+Past versions of unnamed-chunk-11-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-11-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/c3477c7c8725bb2dc7ed2267d87ebc3a16455d7e/docs/figure/PID_task_analysis_VSA.Rmd/unnamed-chunk-11-1.png" target="_blank">c3477c7</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-09-12
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<ul>
+<li><span class="math inline">\(e_{orth}\)</span> ranges from -5 to 5.</li>
+<li><span class="math inline">\(e_{orth}\)</span> values are concentrated in the interval <span class="math inline">\([-2, 2]\)</span> with a
+notch at zero.</li>
+</ul>
+<p>Construct a spline specification with knots set at <span class="math inline">\({-5, 5}\)</span>. The
+earlier analyses showed that <span class="math inline">\(u\)</span> is a linear function of <span class="math inline">\(e_{orth}\)</span> when
+<span class="math inline">\(e \approx 0\)</span> (otherwise <span class="math inline">\(u\)</span> is unrelated to <span class="math inline">\(e_{orth}\)</span>). Having only
+two knots will force the spline interpolation to be a linear function of
+<span class="math inline">\(e_{orth}\)</span></p>
+<pre class="r"><code>ss_eo &lt;- vsa_mk_scalar_encoder_spline_spec(vsa_dim = vsa_dim, knots = c(-5, 5))</code></pre>
+<p>Restrict this analysis to the observations with <span class="math inline">\(e \approx 0\)</span>.</p>
+<pre class="r"><code>d_subset_eo &lt;- d_subset %&gt;% 
+  dplyr:: filter(abs(e) &lt; 0.1)
+
+dim(d_subset_eo)</code></pre>
+<pre><code>[1] 889   6</code></pre>
+<ul>
+<li>This subset retains ~90% of the original observations. (Only ~10%
+of the observations come from the initial phases of the
+trajectories.)</li>
+</ul>
+<p>Create the training data from the relevant subset of observations from
+the simulation data. This only contains the outcome <span class="math inline">\(u\)</span> and the VSA
+encoding of the predictor <span class="math inline">\(e_{orth}\)</span>.</p>
+<pre class="r"><code># create training data
+# contains: u, encode(e_orth)
+d_train &lt;- dplyr::bind_cols(
+  dplyr::select(d_subset_eo, u), 
+  mk_df(dplyr::pull(d_subset_eo, e_orth), ss_eo)
+  )
+
+# take a quick look at the data
+d_train</code></pre>
+<pre><code># A tibble: 889 × 10,001
+       u vsa_1 vsa_2 vsa_3 vsa_4 vsa_5 vsa_6 vsa_7 vsa_8 vsa_9 vsa_10 vsa_11
+   &lt;dbl&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;  &lt;int&gt;  &lt;int&gt;
+ 1 0.52      1     1    -1     1     1    -1     1     1     1     -1      1
+ 2 0.541     1     1    -1     1    -1    -1     1     1     1     -1      1
+ 3 0.511     1     1    -1     1    -1    -1    -1    -1     1      1      1
+ 4 0.519    -1     1    -1     1     1    -1     1    -1     1      1      1
+ 5 0.484    -1     1    -1     1     1    -1    -1    -1     1     -1      1
+ 6 0.5       1     1    -1     1     1    -1     1    -1     1      1      1
+ 7 0.163     1     1    -1     1     1    -1    -1    -1     1     -1      1
+ 8 0.53      1     1    -1     1    -1    -1    -1    -1     1     -1      1
+ 9 0.507    -1     1    -1     1     1    -1    -1     1     1     -1      1
+10 0.517     1     1    -1     1    -1    -1    -1     1     1      1      1
+# … with 879 more rows, and 9,989 more variables: vsa_12 &lt;int&gt;, vsa_13 &lt;int&gt;,
+#   vsa_14 &lt;int&gt;, vsa_15 &lt;int&gt;, vsa_16 &lt;int&gt;, vsa_17 &lt;int&gt;, vsa_18 &lt;int&gt;,
+#   vsa_19 &lt;int&gt;, vsa_20 &lt;int&gt;, vsa_21 &lt;int&gt;, vsa_22 &lt;int&gt;, vsa_23 &lt;int&gt;,
+#   vsa_24 &lt;int&gt;, vsa_25 &lt;int&gt;, vsa_26 &lt;int&gt;, vsa_27 &lt;int&gt;, vsa_28 &lt;int&gt;,
+#   vsa_29 &lt;int&gt;, vsa_30 &lt;int&gt;, vsa_31 &lt;int&gt;, vsa_32 &lt;int&gt;, vsa_33 &lt;int&gt;,
+#   vsa_34 &lt;int&gt;, vsa_35 &lt;int&gt;, vsa_36 &lt;int&gt;, vsa_37 &lt;int&gt;, vsa_38 &lt;int&gt;,
+#   vsa_39 &lt;int&gt;, vsa_40 &lt;int&gt;, vsa_41 &lt;int&gt;, vsa_42 &lt;int&gt;, vsa_43 &lt;int&gt;, …</code></pre>
+<p>Create the test data corresponding to a regular grid of <span class="math inline">\(e_{orth}\)</span>
+values. This only contains the predictor <span class="math inline">\(e_{orth}\)</span> and the VSA encoding
+of <span class="math inline">\(e_{orth}\)</span>.</p>
+<pre class="r"><code># create testing data
+# contains: e_orth, encode(e_orth)
+eo_test &lt;- seq(from = -5, to = 5, by = 0.05) # grid of e_orth values
+d_test &lt;- dplyr::bind_cols(
+  tibble::tibble(e_orth = eo_test), 
+  mk_df(eo_test, ss_eo)
+  )
+
+# take a quick look at the data
+d_test</code></pre>
+<pre><code># A tibble: 201 × 10,001
+   e_orth vsa_1 vsa_2 vsa_3 vsa_4 vsa_5 vsa_6 vsa_7 vsa_8 vsa_9 vsa_10 vsa_11
+    &lt;dbl&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;  &lt;int&gt;  &lt;int&gt;
+ 1  -5       -1     1    -1     1    -1    -1     1     1     1      1      1
+ 2  -4.95    -1     1    -1     1    -1    -1     1     1     1      1      1
+ 3  -4.9     -1     1    -1     1    -1    -1     1     1     1      1      1
+ 4  -4.85    -1     1    -1     1    -1    -1     1     1     1      1      1
+ 5  -4.8     -1     1    -1     1    -1    -1     1     1     1      1      1
+ 6  -4.75    -1     1    -1     1    -1    -1     1     1     1      1      1
+ 7  -4.7     -1     1    -1     1    -1    -1     1     1     1      1      1
+ 8  -4.65    -1     1    -1     1    -1    -1     1     1     1      1      1
+ 9  -4.6     -1     1    -1     1    -1    -1     1     1     1      1      1
+10  -4.55    -1     1    -1     1    -1    -1     1     1     1      1      1
+# … with 191 more rows, and 9,989 more variables: vsa_12 &lt;int&gt;, vsa_13 &lt;int&gt;,
+#   vsa_14 &lt;int&gt;, vsa_15 &lt;int&gt;, vsa_16 &lt;int&gt;, vsa_17 &lt;int&gt;, vsa_18 &lt;int&gt;,
+#   vsa_19 &lt;int&gt;, vsa_20 &lt;int&gt;, vsa_21 &lt;int&gt;, vsa_22 &lt;int&gt;, vsa_23 &lt;int&gt;,
+#   vsa_24 &lt;int&gt;, vsa_25 &lt;int&gt;, vsa_26 &lt;int&gt;, vsa_27 &lt;int&gt;, vsa_28 &lt;int&gt;,
+#   vsa_29 &lt;int&gt;, vsa_30 &lt;int&gt;, vsa_31 &lt;int&gt;, vsa_32 &lt;int&gt;, vsa_33 &lt;int&gt;,
+#   vsa_34 &lt;int&gt;, vsa_35 &lt;int&gt;, vsa_36 &lt;int&gt;, vsa_37 &lt;int&gt;, vsa_38 &lt;int&gt;,
+#   vsa_39 &lt;int&gt;, vsa_40 &lt;int&gt;, vsa_41 &lt;int&gt;, vsa_42 &lt;int&gt;, vsa_43 &lt;int&gt;, …</code></pre>
+<p>Fit a linear (i.e. Gaussian family) regression model, predicting the
+scalar value <span class="math inline">\(u\)</span> (motor command) from the VSA vector elements.</p>
+<p>Use <span class="math inline">\(\alpha = 0\)</span> (ridge regression).</p>
+<pre class="r"><code># fit a set of models at a grid of alpha and lambda parameter values
+fit_2 &lt;- glmnetUtils::cva.glmnet(u ~ ., data = d_train, family = &quot;gaussian&quot;, alpha = 0)</code></pre>
+<p>Look at the impact of the <span class="math inline">\(\lambda\)</span> parameter on goodness of fit for the
+<span class="math inline">\(\alpha = 0\)</span> curve.</p>
+<pre class="r"><code># extract the alpha = 0 model
+fit_2_alpha_0 &lt;- fit_2$modlist[[1]]
+
+# look at the lambda curve
+plot(fit_2_alpha_0)</code></pre>
+<p><img src="figure/PID_task_analysis_VSA.Rmd/unnamed-chunk-17-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-17-1">
+Past versions of unnamed-chunk-17-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-17-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/65a4b46c4e42d6261a2a497015430117c4c336c4/docs/figure/PID_task_analysis_VSA.Rmd/unnamed-chunk-17-1.png" target="_blank">65a4b46</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-09-12
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/89b2f223e042f3566e88739d1ac6721dd14f0850/docs/figure/PID_task_analysis_VSA.Rmd/unnamed-chunk-17-1.png" target="_blank">89b2f22</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-09-12
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/bf544c6fd0ede4746b8bb903ae5cbfd87b04c92c/docs/figure/PID_task_analysis_VSA.Rmd/unnamed-chunk-17-1.png" target="_blank">bf544c6</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-09-12
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code># get a summary of the alpha = 0 model
+fit_2_alpha_0</code></pre>
+<pre><code>
+Call:  glmnet::cv.glmnet(x = x, y = y, weights = ..1, offset = ..2,      nfolds = nfolds, foldid = foldid, alpha = a, family = &quot;gaussian&quot;) 
+
+Measure: Mean-Squared Error 
+
+    Lambda Index  Measure        SE Nonzero
+min   0.94    56 0.001110 0.0003995    4993
+1se  11.59     2 0.001427 0.0004559    4993</code></pre>
+<ul>
+<li>The left dotted vertical line corresponds to minimum error. The
+right dotted vertical line corresponds to the largest value of
+lambda such that the error is within one standard-error of the
+minimum - the so-called “one-standard-error” rule.</li>
+<li>The numbers along the top margin show the number of nonzero
+coefficients in the regression models corresponding to the lambda
+values. All the plausible models have a number of nonzero
+coefficients equal to roughly 50% of the dimensionality of the VSA
+vectors.</li>
+</ul>
+<p>Prior experimentation found that the minimising <span class="math inline">\(\lambda\)</span> is preferred
+over the model selected by the one-standard-error rule. The more heavily
+penalised model tends not to predict the extreme values of the outcome
+variable (too much shrinkage).</p>
+<p>Look at how well the learned function reconstructs the previously
+observed empirical relation between <span class="math inline">\(u\)</span> and <span class="math inline">\(e_{orth}\)</span>.</p>
+<pre class="r"><code># add the predicted values to the test data frame
+d_test &lt;- d_test %&gt;% 
+  dplyr::mutate(u_hat = predict(fit_2, newdata = ., alpha = 0, s = &quot;lambda.min&quot;)) %&gt;%
+  dplyr::relocate(u_hat)
+
+# plot of predicted u vs e
+d_test %&gt;% 
+  ggplot() + 
+  geom_vline(xintercept = c(-5, 5), colour = &quot;skyblue3&quot;) + # knots
+  geom_hline(yintercept = c(0, 1), colour = &quot;darkgrey&quot;) + # limits of u
+  # geom_smooth(data = dplyr::filter(d_wide, abs(e) &lt; 0.1), aes(x = e_orth, y = u), method = &quot;gam&quot;, formula = y ~ s(x, bs = &quot;ad&quot;)) +
+  geom_point(data = dplyr::filter(d_wide, abs(e) &lt; 0.1), aes(x = e_orth, y = u), colour = &quot;red&quot;, alpha = 0.2) +
+  geom_point(aes(x = e_orth, y = u_hat))</code></pre>
+<p><img src="figure/PID_task_analysis_VSA.Rmd/unnamed-chunk-18-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-18-1">
+Past versions of unnamed-chunk-18-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-18-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/65a4b46c4e42d6261a2a497015430117c4c336c4/docs/figure/PID_task_analysis_VSA.Rmd/unnamed-chunk-18-1.png" target="_blank">65a4b46</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-09-12
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/9724aa501f9993fcf624d3f83403bc90b9fe77e0/docs/figure/PID_task_analysis_VSA.Rmd/unnamed-chunk-18-1.png" target="_blank">9724aa5</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-09-12
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>The vertical blue lines indicate the locations of the knots on
+<span class="math inline">\(e_{orth}\)</span>.</p>
+<p>The horizontal grey lines indicate the limits of the motor command <span class="math inline">\(u\)</span>.</p>
+<p>The red points are all the observations from the simulation data set
+with <span class="math inline">\(-0.1 \lt e \lt 0.1\)</span>.</p>
+<p>The black points are the <span class="math inline">\(u\)</span> values learned from the VSA vector
+representation.</p>
+<ul>
+<li><p>The fit is linear, as expected from only having two knots.</p></li>
+<li><p>The reconstruction is slightly underfit (the reconstructed slope is
+slightly less than the trend of the actual data.</p>
+<ul>
+<li>This is probably due to the regularisation (the regression
+coefficients are shrunk towards zero) but is worth checking for
+other explanations.</li>
+</ul></li>
+<li><p>The dispersion of the red points around the black trend line are due
+to overshoot and oscillation in the simulated PID controller.</p></li>
+</ul>
+</div>
+<div id="joint-e-and-e_orth-term" class="section level1" number="4">
+<h1><span class="header-section-number">4</span> Joint <span class="math inline">\(e\)</span> and <span class="math inline">\(e_{orth}\)</span> term</h1>
+<p>Model the joint effect of <span class="math inline">\(e\)</span> and <span class="math inline">\(e_{orth}\)</span>.</p>
+<p>We are trying to learn a function <span class="math inline">\(e \times e_{orth} \to u\)</span>, so it’s
+appropriate to use <span class="math inline">\(encode(e) \otimes encode(e_{orth})\)</span> as the VSA
+predictor. This equivalent to modelling <span class="math inline">\(u\)</span> from the Cartesian product
+of the knots for <span class="math inline">\(e\)</span> and <span class="math inline">\(e_{orth}\)</span>.</p>
+<p>Create a function to encode scalar values of <span class="math inline">\(e\)</span> and <span class="math inline">\(e_{orth}\)</span> as VSA
+vectors, calculate the VSA product of their representations, and convert
+the data to a matrix suitable for later regression modelling.</p>
+<p>This is particularly appropriate because the curvature of the empirical
+<span class="math inline">\(u\)</span> surface is axis parallel to <span class="math inline">\(e\)</span> and <span class="math inline">\(e_{orth}\)</span>.</p>
+<pre class="r"><code># function to to take two sets of numeric scalar values,
+# encode them as VSA vectors using the given spline specifications,
+# calculate the VSA product of the two VSA representations
+# and package the results as a data frame for regression modelling
+mk_df_j2 &lt;- function(
+  x_e, # numeric - vectors of scalar values to be VSA encoded
+  x_eo,
+  ss_e, # data frame - spline specifications for the scalar encodings
+  ss_eo
+) # value - data frame - one row per scalar, one column for the scalar and each VSA element
+{
+  tibble::tibble(x_e = x_e, x_eo = x_eo) %&gt;% # put scalars as column of data frame
+    dplyr::rowwise() %&gt;% 
+    dplyr::mutate( 
+      x_vsa = vsa_multiply(
+        vsa_encode_scalar_spline(x_e, ss_e),
+        vsa_encode_scalar_spline(x_eo, ss_eo)
+      ) %&gt;% 
+        tibble(vsa_i = 1:length(.), vsa_val = .) %&gt;% # name all the vector elements
+        tidyr::pivot_wider(names_from = vsa_i, names_prefix = &quot;vsa_&quot;, values_from = vsa_val) %&gt;% # transpose vector to columns
+        list() # package the value for a list column
+    ) %&gt;% 
+    dplyr::ungroup() %&gt;%
+    tidyr::unnest(x_vsa) %&gt;%  # convert the nested df to columns
+    dplyr::select(-x_e, -x_eo) # drop the scalar value that was encoded
+}</code></pre>
+<p>Create the training data from the subset of observations from the
+simulation data. This only contains the outcome <span class="math inline">\(u\)</span> and the VSA encoding
+of the predictor <span class="math inline">\(encode(e) \otimes encode(e_{orth})\)</span>$.</p>
+<pre class="r"><code># create training data
+# contains: u, encode(e) * encode(e_orth)
+d_train &lt;- dplyr::bind_cols(
+  dplyr::select(d_subset, u), 
+  mk_df_j2(dplyr::pull(d_subset, e), dplyr::pull(d_subset, e_orth), ss_e, ss_eo)
+)
+
+# take a quick look at the data
+d_train</code></pre>
+<pre><code># A tibble: 1,000 × 10,001
+       u vsa_1 vsa_2 vsa_3 vsa_4 vsa_5 vsa_6 vsa_7 vsa_8 vsa_9 vsa_10 vsa_11
+   &lt;dbl&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;  &lt;int&gt;  &lt;int&gt;
+ 1 0.52      1    -1     1    -1    -1     1     1     1    -1     -1      1
+ 2 0.541    -1    -1     1    -1     1     1    -1     1    -1      1      1
+ 3 0.511     1    -1     1    -1    -1     1    -1     1    -1      1      1
+ 4 0.519     1    -1     1    -1    -1     1    -1    -1    -1      1      1
+ 5 0.484    -1    -1     1    -1    -1     1    -1    -1    -1      1      1
+ 6 0.5       1    -1     1    -1    -1     1     1     1    -1      1      1
+ 7 0.163    -1    -1     1    -1    -1     1     1     1    -1      1      1
+ 8 0.53     -1    -1     1    -1     1     1    -1     1    -1      1      1
+ 9 0.507    -1    -1     1    -1    -1     1     1     1    -1      1      1
+10 0.517     1    -1     1    -1     1     1     1    -1    -1      1      1
+# … with 990 more rows, and 9,989 more variables: vsa_12 &lt;int&gt;, vsa_13 &lt;int&gt;,
+#   vsa_14 &lt;int&gt;, vsa_15 &lt;int&gt;, vsa_16 &lt;int&gt;, vsa_17 &lt;int&gt;, vsa_18 &lt;int&gt;,
+#   vsa_19 &lt;int&gt;, vsa_20 &lt;int&gt;, vsa_21 &lt;int&gt;, vsa_22 &lt;int&gt;, vsa_23 &lt;int&gt;,
+#   vsa_24 &lt;int&gt;, vsa_25 &lt;int&gt;, vsa_26 &lt;int&gt;, vsa_27 &lt;int&gt;, vsa_28 &lt;int&gt;,
+#   vsa_29 &lt;int&gt;, vsa_30 &lt;int&gt;, vsa_31 &lt;int&gt;, vsa_32 &lt;int&gt;, vsa_33 &lt;int&gt;,
+#   vsa_34 &lt;int&gt;, vsa_35 &lt;int&gt;, vsa_36 &lt;int&gt;, vsa_37 &lt;int&gt;, vsa_38 &lt;int&gt;,
+#   vsa_39 &lt;int&gt;, vsa_40 &lt;int&gt;, vsa_41 &lt;int&gt;, vsa_42 &lt;int&gt;, vsa_43 &lt;int&gt;, …</code></pre>
+<p>Create the test data corresponding to a regular grid of <span class="math inline">\(e\)</span> and
+<span class="math inline">\(e_{orth}\)</span> values. This only contains the predictors <span class="math inline">\(e\)</span> <span class="math inline">\(e_{orth}\)</span>, and
+the VSA encoding of <span class="math inline">\(encode(e) \otimes encode(e_{orth})\)</span>.</p>
+<pre class="r"><code># create testing data
+# contains: e, e_orth, encode(e) * encode(e_orth)
+e_test &lt;- c(seq(from = -6, to = -1, by = 1), seq(from = -0.2, to = 0.2, by = 0.05), seq(from = 1, to = 6, by = 1)) # grid of e values
+eo_test &lt;- seq(from = -5, to = 5, by = 1) # grid of e values
+d_grid &lt;- tidyr::expand_grid(e = e_test, e_orth = eo_test)
+
+d_test &lt;- dplyr::bind_cols(
+  d_grid,
+  mk_df_j2(dplyr::pull(d_grid, e), dplyr::pull(d_grid, e_orth), ss_e, ss_eo)
+)
+
+# take a quick look at the data
+d_test</code></pre>
+<pre><code># A tibble: 231 × 10,002
+       e e_orth vsa_1 vsa_2 vsa_3 vsa_4 vsa_5 vsa_6 vsa_7 vsa_8 vsa_9 vsa_10
+   &lt;dbl&gt;  &lt;dbl&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;  &lt;int&gt;
+ 1    -6     -5     1     1    -1     1     1     1    -1    -1    -1      1
+ 2    -6     -4     1     1    -1     1     1     1    -1    -1    -1      1
+ 3    -6     -3     1     1    -1     1     1     1    -1    -1    -1     -1
+ 4    -6     -2     1     1    -1     1    -1     1    -1    -1    -1     -1
+ 5    -6     -1    -1     1    -1     1     1     1     1     1    -1      1
+ 6    -6      0    -1     1    -1     1    -1     1     1    -1    -1      1
+ 7    -6      1     1     1    -1     1     1     1    -1    -1    -1     -1
+ 8    -6      2     1     1    -1     1    -1     1     1     1    -1     -1
+ 9    -6      3     1     1    -1     1     1     1     1     1    -1      1
+10    -6      4    -1     1    -1     1    -1     1     1     1    -1     -1
+# … with 221 more rows, and 9,990 more variables: vsa_11 &lt;int&gt;, vsa_12 &lt;int&gt;,
+#   vsa_13 &lt;int&gt;, vsa_14 &lt;int&gt;, vsa_15 &lt;int&gt;, vsa_16 &lt;int&gt;, vsa_17 &lt;int&gt;,
+#   vsa_18 &lt;int&gt;, vsa_19 &lt;int&gt;, vsa_20 &lt;int&gt;, vsa_21 &lt;int&gt;, vsa_22 &lt;int&gt;,
+#   vsa_23 &lt;int&gt;, vsa_24 &lt;int&gt;, vsa_25 &lt;int&gt;, vsa_26 &lt;int&gt;, vsa_27 &lt;int&gt;,
+#   vsa_28 &lt;int&gt;, vsa_29 &lt;int&gt;, vsa_30 &lt;int&gt;, vsa_31 &lt;int&gt;, vsa_32 &lt;int&gt;,
+#   vsa_33 &lt;int&gt;, vsa_34 &lt;int&gt;, vsa_35 &lt;int&gt;, vsa_36 &lt;int&gt;, vsa_37 &lt;int&gt;,
+#   vsa_38 &lt;int&gt;, vsa_39 &lt;int&gt;, vsa_40 &lt;int&gt;, vsa_41 &lt;int&gt;, vsa_42 &lt;int&gt;, …</code></pre>
+<p>Fit a linear (i.e. Gaussian family) regression model, predicting the
+scalar value <span class="math inline">\(u\)</span> (motor command) from the VSA vector elements.</p>
+<p>Use <span class="math inline">\(\alpha = 0\)</span> (ridge regression).</p>
+<pre class="r"><code># fit a set of models at a grid of alpha and lambda parameter values
+fit_3 &lt;- glmnetUtils::cva.glmnet(u ~ ., data = d_train, family = &quot;gaussian&quot;, alpha = 0)</code></pre>
+<p>Look at the impact of the <span class="math inline">\(\lambda\)</span> parameter on goodness of fit for the
+<span class="math inline">\(\alpha = 0\)</span> curve.</p>
+<pre class="r"><code># extract the alpha = 0 model
+fit_3_alpha_0 &lt;- fit_3$modlist[[1]]
+
+# look at the lambda curve
+plot(fit_3_alpha_0)</code></pre>
+<p><img src="figure/PID_task_analysis_VSA.Rmd/unnamed-chunk-23-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-23-1">
+Past versions of unnamed-chunk-23-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-23-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/c3477c7c8725bb2dc7ed2267d87ebc3a16455d7e/docs/figure/PID_task_analysis_VSA.Rmd/unnamed-chunk-23-1.png" target="_blank">c3477c7</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-09-12
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code># get a summary of the alpha = 0 model
+fit_3_alpha_0</code></pre>
+<pre><code>
+Call:  glmnet::cv.glmnet(x = x, y = y, weights = ..1, offset = ..2,      nfolds = nfolds, foldid = foldid, alpha = a, family = &quot;gaussian&quot;) 
+
+Measure: Mean-Squared Error 
+
+    Lambda Index  Measure        SE Nonzero
+min  1.387    95 0.001552 0.0004283    9849
+1se 11.247    50 0.001961 0.0003915    9849</code></pre>
+<ul>
+<li>The left dotted vertical line corresponds to minimum error. The
+right dotted vertical line corresponds to the largest value of
+lambda such that the error is within one standard-error of the
+minimum - the so-called “one-standard-error” rule.</li>
+<li>The numbers along the top margin show the number of nonzero
+coefficients in the regression models corresponding to the lambda
+values. All the plausible models have a number of nonzero
+coefficients equal to roughly 98% of the dimensionality of the VSA
+vectors.</li>
+</ul>
+<p>Prior experimentation found that the minimising <span class="math inline">\(\lambda\)</span> is preferred
+over the model selected by the one-standard-error rule. The more heavily
+penalised model tends not to predict the extreme values of the outcome
+variable (too much shrinkage).</p>
+<p>Look at how well the learned function reconstructs the previously
+observed empirical relation from <span class="math inline">\(e \times e_{orth}\)</span> to <span class="math inline">\(u\)</span>.</p>
+<pre class="r"><code># add the predicted values to the test data frame
+d_test &lt;- d_test %&gt;% 
+  dplyr::mutate(u_hat = predict(fit_3, newdata = ., alpha = 0, s = &quot;lambda.min&quot;)) %&gt;%
+  dplyr::relocate(u_hat)
+
+# plot of predicted u vs e * e_orth
+d_test %&gt;% 
+  ggplot() + 
+  geom_point(aes(x = e, y = e_orth, size = u_hat, colour = u_hat)) +
+  scale_color_viridis_c()</code></pre>
+<p><img src="figure/PID_task_analysis_VSA.Rmd/unnamed-chunk-24-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-24-1">
+Past versions of unnamed-chunk-24-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-24-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/65a4b46c4e42d6261a2a497015430117c4c336c4/docs/figure/PID_task_analysis_VSA.Rmd/unnamed-chunk-24-1.png" target="_blank">65a4b46</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-09-12
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/9724aa501f9993fcf624d3f83403bc90b9fe77e0/docs/figure/PID_task_analysis_VSA.Rmd/unnamed-chunk-24-1.png" target="_blank">9724aa5</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-09-12
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>lattice::wireframe(u_hat ~ e * e_orth, data = d_test, drape = TRUE)</code></pre>
+<p><img src="figure/PID_task_analysis_VSA.Rmd/unnamed-chunk-24-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-24-2">
+Past versions of unnamed-chunk-24-2.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-24-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/c3477c7c8725bb2dc7ed2267d87ebc3a16455d7e/docs/figure/PID_task_analysis_VSA.Rmd/unnamed-chunk-24-2.png" target="_blank">c3477c7</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-09-12
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>d_test %&gt;% 
+  ggplot() + 
+  geom_point(aes(x = e_orth, y = u_hat)) +
+  facet_wrap(facets = vars(e))</code></pre>
+<p><img src="figure/PID_task_analysis_VSA.Rmd/unnamed-chunk-24-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-24-3">
+Past versions of unnamed-chunk-24-3.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-24-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/c3477c7c8725bb2dc7ed2267d87ebc3a16455d7e/docs/figure/PID_task_analysis_VSA.Rmd/unnamed-chunk-24-3.png" target="_blank">c3477c7</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-09-12
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<ul>
+<li><p>That looks like a pretty good reconstruction of the empirical
+relationship from <span class="math inline">\(e\)</span> and <span class="math inline">\(e_{orth}\)</span> to <span class="math inline">\(u\)</span>.</p>
+<ul>
+<li>The overall dependence of <span class="math inline">\(u\)</span> on the sign of <span class="math inline">\(e\)</span> is obvious.</li>
+<li>The linear relationship from <span class="math inline">\(e_{orth}\)</span> to <span class="math inline">\(u\)</span> when
+<span class="math inline">\(e \approx 0\)</span> has been captured.</li>
+</ul></li>
+</ul>
+<p>So, that works reasonably well.</p>
+</div>
+<div id="joint-k_tgt-z-and-dz-term" class="section level1" number="5">
+<h1><span class="header-section-number">5</span> Joint <span class="math inline">\(k_{tgt}\)</span>, <span class="math inline">\(z\)</span>, and <span class="math inline">\(dz\)</span> term</h1>
+<p>The predictors in the earlier sections, <span class="math inline">\(e\)</span> and <span class="math inline">\(e_{orth}\)</span>, are
+deterministic functions of <span class="math inline">\(k_{tgt}\)</span>, <span class="math inline">\(z\)</span>, and <span class="math inline">\(dz\)</span>.</p>
+<p>In principle, we should be able to learn the function
+<span class="math inline">\(k_{tgt} \times z \times dz \to u\)</span>. However, the curvature in the <span class="math inline">\(u\)</span>
+surface would no longer be axis-parallel, and it would not be possible
+to hand-craft the knots on the variables to reflect the demands of the
+task.</p>
+<p>Consequently, I think it’s likely a naive approach to doing this won’t
+work.</p>
+<p>Model the joint effect of <span class="math inline">\(k_{tgt}\)</span>, <span class="math inline">\(z\)</span>, and <span class="math inline">\(dz\)</span>.</p>
+<p>Check the distributions of input variables.</p>
+<pre class="r"><code>summary(d_wide$k_tgt)</code></pre>
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  1.000   2.000   4.000   4.001   5.000   8.000 </code></pre>
+<pre class="r"><code>d_wide %&gt;% 
+  ggplot2::ggplot() +
+  geom_histogram(aes(x = k_tgt), bins = 100)</code></pre>
+<p><img src="figure/PID_task_analysis_VSA.Rmd/unnamed-chunk-25-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-25-1">
+Past versions of unnamed-chunk-25-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-25-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/rgayler/VSA_altitude_hold/blob/9724aa501f9993fcf624d3f83403bc90b9fe77e0/docs/figure/PID_task_analysis_VSA.Rmd/unnamed-chunk-25-1.png" target="_blank">9724aa5</a>
+</td>
+<td>
+Ross Gayler
+</td>
+<td>
+2021-09-12
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>summary(d_wide$z)</code></pre>
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  1.079   2.549   3.807   3.979   5.086   7.926 </code></pre>
+<pre class="r"><code>d_wide %&gt;% 
+  ggplot2::ggplot() +
+  geom_histogram(aes(x = z), bins = 100) +
+  scale_y_log10()</code></pre>
+<p><img src="figure/PID_task_analysis_VSA.Rmd/unnamed-chunk-26-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>summary(d_wide$dz)</code></pre>
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+-4.9950 -0.4522  0.1640  0.0708  0.6793  5.0730 </code></pre>
+<pre class="r"><code>d_wide %&gt;% 
+  ggplot2::ggplot() +
+  geom_histogram(aes(x = dz), bins = 100) +
+  scale_y_log10()</code></pre>
+<p><img src="figure/PID_task_analysis_VSA.Rmd/unnamed-chunk-27-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>We can’t choose the knots to meet the expected task demands, so just
+encode each predictor with a uniformly spaced grid of knots.</p>
+<p>Choose the number of knots to make the spacing relatively close (to try
+to capture regions of sharp curvature), On the other hand, the linear
+spline encoding scheme only interpolates between adjacent knots, so it
+can’t generalise over greater distances. Using a large number of knots
+makes the learning process more like a nearest neighbour lookup process,
+so sparsity of data relative to the grid of knots will become a problem.</p>
+<p>Create the spline specifications for each of the predictor variables.</p>
+<pre class="r"><code>ss_tgt &lt;- vsa_mk_scalar_encoder_spline_spec(vsa_dim = vsa_dim, knots = seq(from = 1, to = 8, by = 0.5))
+ss_z &lt;- vsa_mk_scalar_encoder_spline_spec(vsa_dim = vsa_dim, knots = seq(from = 1, to = 8, by = 0.5))
+ss_dz &lt;- vsa_mk_scalar_encoder_spline_spec(vsa_dim = vsa_dim, knots = seq(from = -5, to = 5, by = 0.5))</code></pre>
+<p>We are trying to learn a function <span class="math inline">\(k_{tgt} \times z \times dz \to u\)</span>, so
+it’s appropriate to use
+<span class="math inline">\(encode(k_{tgt}) \otimes encode(z) \otimes encode(dz)\)</span> as the VSA
+predictor. This is equivalent to modelling <span class="math inline">\(u\)</span> from the Cartesian
+product of the knots for <span class="math inline">\(k_{tgt}\)</span>, <span class="math inline">\(z\)</span>, and <span class="math inline">\(dz\)</span>.</p>
+<p>Create a function to encode scalar values of <span class="math inline">\(k_{tgt}\)</span>, <span class="math inline">\(z\)</span>, and <span class="math inline">\(dz\)</span> as
+VSA vectors, calculate the VSA product of their representations, and
+convert the data to a matrix suitable for later regression modelling.</p>
+<pre class="r"><code># function to to take 3 sets of numeric scalar values,
+# encode them as VSA vectors using the given spline specifications,
+# calculate the VSA product of the VSA representations
+# and package the results as a data frame for regression modelling
+mk_df_j3 &lt;- function(
+  x_tgt, # numeric - vectors of scalar values to be VSA encoded
+  x_z,
+  x_dz,
+  ss_tgt,# data frame - spline specifications for scalar encoding
+  ss_z,
+  ss_dz 
+) # value - data frame - one row per 3 scalars, one column for each scalar and each VSA element
+{
+  tibble::tibble(x_tgt = x_tgt, x_z = x_z, x_dz = x_dz) %&gt;% # put scalars as columns of data frame
+    dplyr::rowwise() %&gt;% 
+    dplyr::mutate( 
+      x_vsa = vsa_multiply(
+        vsa_encode_scalar_spline(x_tgt, ss_tgt),
+        vsa_encode_scalar_spline(x_z, ss_z),
+        vsa_encode_scalar_spline(x_dz, ss_dz)
+      ) %&gt;% 
+        tibble(vsa_i = 1:length(.), vsa_val = .) %&gt;% # name all the vector elements
+        tidyr::pivot_wider(names_from = vsa_i, names_prefix = &quot;vsa_&quot;, values_from = vsa_val) %&gt;% # transpose vector to columns
+        list() # package the value for a list column
+    ) %&gt;% 
+    dplyr::ungroup() %&gt;%
+    tidyr::unnest(x_vsa) %&gt;%  # convert the nested df to columns
+    dplyr::select(-x_tgt, -x_z, -x_dz) # drop the scalar values that were encoded
+}</code></pre>
+<p>Create the training data from the subset of observations from the
+simulation data. This only contains the outcome <span class="math inline">\(u\)</span> and the VSA encoding
+of the predictor <span class="math inline">\(encode(k_{tgt}) \otimes encode(z) \otimes encode(dz)\)</span>.</p>
+<pre class="r"><code># create training data
+# contains: u, encode(e)
+d_train &lt;- dplyr::bind_cols(
+  dplyr::select(d_subset, u), 
+  mk_df_j3(dplyr::pull(d_subset, k_tgt), dplyr::pull(d_subset, z), dplyr::pull(d_subset, dz), ss_tgt, ss_z, ss_dz)
+)
+
+# take a quick look at the data
+d_train</code></pre>
+<pre><code># A tibble: 1,000 × 10,001
+       u vsa_1 vsa_2 vsa_3 vsa_4 vsa_5 vsa_6 vsa_7 vsa_8 vsa_9 vsa_10 vsa_11
+   &lt;dbl&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;  &lt;int&gt;  &lt;int&gt;
+ 1 0.52      1     1    -1    -1    -1     1     1    -1     1     -1     -1
+ 2 0.541    -1    -1     1     1     1    -1    -1     1     1      1      1
+ 3 0.511    -1     1    -1    -1    -1     1    -1     1     1      1      1
+ 4 0.519     1     1     1    -1    -1    -1    -1    -1     1      1     -1
+ 5 0.484    -1     1    -1    -1    -1     1     1    -1     1      1     -1
+ 6 0.5       1    -1     1     1    -1     1     1    -1     1      1      1
+ 7 0.163    -1     1     1     1     1     1     1    -1    -1     -1      1
+ 8 0.53     -1     1    -1    -1     1    -1    -1     1     1      1      1
+ 9 0.507    -1    -1     1     1    -1     1    -1     1     1      1      1
+10 0.517     1    -1     1    -1    -1     1    -1     1     1     -1      1
+# … with 990 more rows, and 9,989 more variables: vsa_12 &lt;int&gt;, vsa_13 &lt;int&gt;,
+#   vsa_14 &lt;int&gt;, vsa_15 &lt;int&gt;, vsa_16 &lt;int&gt;, vsa_17 &lt;int&gt;, vsa_18 &lt;int&gt;,
+#   vsa_19 &lt;int&gt;, vsa_20 &lt;int&gt;, vsa_21 &lt;int&gt;, vsa_22 &lt;int&gt;, vsa_23 &lt;int&gt;,
+#   vsa_24 &lt;int&gt;, vsa_25 &lt;int&gt;, vsa_26 &lt;int&gt;, vsa_27 &lt;int&gt;, vsa_28 &lt;int&gt;,
+#   vsa_29 &lt;int&gt;, vsa_30 &lt;int&gt;, vsa_31 &lt;int&gt;, vsa_32 &lt;int&gt;, vsa_33 &lt;int&gt;,
+#   vsa_34 &lt;int&gt;, vsa_35 &lt;int&gt;, vsa_36 &lt;int&gt;, vsa_37 &lt;int&gt;, vsa_38 &lt;int&gt;,
+#   vsa_39 &lt;int&gt;, vsa_40 &lt;int&gt;, vsa_41 &lt;int&gt;, vsa_42 &lt;int&gt;, vsa_43 &lt;int&gt;, …</code></pre>
+<p>Create the test data corresponding to a regular grid of <span class="math inline">\(k_{tgt}\)</span>, <span class="math inline">\(z\)</span>,
+and <span class="math inline">\(dz\)</span> values. Calculate <span class="math inline">\(e\)</span> and <span class="math inline">\(e_{orth}\)</span> from the input values. Add
+the VSA vector encoding of
+<span class="math inline">\(encode(k_{tgt}) \otimes encode(z) \otimes encode(dz)\)</span>.</p>
+<p>Filter the observations to only have values of <span class="math inline">\(e\)</span> and <span class="math inline">\(e_{orth}\)</span> that
+are in the range observed in the simulation data.</p>
+<pre class="r"><code># create testing data
+# contains: k_tgt, z, dz, e, e_orth, encode(k_tgt) * encode(z) * encode(dz)
+tgt_test &lt;- 1:8 # grid of k_tgt values
+z_test &lt;- seq(from = 1, to = 8, by = 0.5) # grid of z values
+dz_test &lt;- seq(from = -5, to = 5, by = 0.5) # grid of dz values
+d_grid &lt;- tidyr::expand_grid(k_tgt = tgt_test, z = z_test, dz = dz_test) %&gt;% 
+  dplyr::mutate(
+    i1 = k_tgt - z,
+    e = i1 - dz,
+    e_orth = (i1 + dz)/2
+  ) %&gt;% 
+  dplyr::filter(abs(e)&lt;= 6 &amp; abs(e_orth) &lt;= 5) # remove extreme values of e and e_orth
+
+d_test &lt;- dplyr::bind_cols(
+  d_grid,
+  mk_df_j3(dplyr::pull(d_grid, k_tgt), dplyr::pull(d_grid, z), dplyr::pull(d_grid, dz), ss_tgt, ss_z, ss_dz)
+)
+
+# take a quick look at the data
+d_test</code></pre>
+<pre><code># A tibble: 2,088 × 10,006
+   k_tgt     z    dz    i1     e e_orth vsa_1 vsa_2 vsa_3 vsa_4 vsa_5 vsa_6
+   &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;
+ 1     1     1  -5       0   5    -2.5     -1    -1     1    -1    -1     1
+ 2     1     1  -4.5     0   4.5  -2.25     1     1     1    -1     1     1
+ 3     1     1  -4       0   4    -2       -1     1    -1    -1     1    -1
+ 4     1     1  -3.5     0   3.5  -1.75    -1     1    -1     1    -1    -1
+ 5     1     1  -3       0   3    -1.5     -1    -1     1    -1    -1     1
+ 6     1     1  -2.5     0   2.5  -1.25     1    -1     1    -1    -1     1
+ 7     1     1  -2       0   2    -1       -1    -1     1     1    -1     1
+ 8     1     1  -1.5     0   1.5  -0.75     1     1    -1     1    -1    -1
+ 9     1     1  -1       0   1    -0.5      1    -1    -1     1    -1     1
+10     1     1  -0.5     0   0.5  -0.25    -1     1     1    -1     1     1
+# … with 2,078 more rows, and 9,994 more variables: vsa_7 &lt;int&gt;, vsa_8 &lt;int&gt;,
+#   vsa_9 &lt;int&gt;, vsa_10 &lt;int&gt;, vsa_11 &lt;int&gt;, vsa_12 &lt;int&gt;, vsa_13 &lt;int&gt;,
+#   vsa_14 &lt;int&gt;, vsa_15 &lt;int&gt;, vsa_16 &lt;int&gt;, vsa_17 &lt;int&gt;, vsa_18 &lt;int&gt;,
+#   vsa_19 &lt;int&gt;, vsa_20 &lt;int&gt;, vsa_21 &lt;int&gt;, vsa_22 &lt;int&gt;, vsa_23 &lt;int&gt;,
+#   vsa_24 &lt;int&gt;, vsa_25 &lt;int&gt;, vsa_26 &lt;int&gt;, vsa_27 &lt;int&gt;, vsa_28 &lt;int&gt;,
+#   vsa_29 &lt;int&gt;, vsa_30 &lt;int&gt;, vsa_31 &lt;int&gt;, vsa_32 &lt;int&gt;, vsa_33 &lt;int&gt;,
+#   vsa_34 &lt;int&gt;, vsa_35 &lt;int&gt;, vsa_36 &lt;int&gt;, vsa_37 &lt;int&gt;, vsa_38 &lt;int&gt;, …</code></pre>
+<p>Fit a linear (i.e. Gaussian family) regression model, predicting the
+scalar value <span class="math inline">\(u\)</span> (motor command) from the VSA vector elements.</p>
+<p>Use <span class="math inline">\(\alpha = 0\)</span> (ridge regression).</p>
+<pre class="r"><code># fit a set of models at a grid of alpha and lambda parameter values
+fit_4 &lt;- glmnetUtils::cva.glmnet(u ~ ., data = d_train, family = &quot;gaussian&quot;, alpha = 0)</code></pre>
+<p>Look at the impact of the <span class="math inline">\(\lambda\)</span> parameter on goodness of fit for the
+<span class="math inline">\(\alpha = 0\)</span> curve.</p>
+<pre class="r"><code># extract the alpha = 0 model
+fit_4_alpha_0 &lt;- fit_4$modlist[[1]]
+
+# look at the lambda curve
+plot(fit_4_alpha_0)</code></pre>
+<p><img src="figure/PID_task_analysis_VSA.Rmd/unnamed-chunk-33-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># get a summary of the alpha = 0 model
+fit_4_alpha_0</code></pre>
+<pre><code>
+Call:  glmnet::cv.glmnet(x = x, y = y, weights = ..1, offset = ..2,      nfolds = nfolds, foldid = foldid, alpha = a, family = &quot;gaussian&quot;) 
+
+Measure: Mean-Squared Error 
+
+    Lambda Index  Measure        SE Nonzero
+min 0.3036   100 0.009149 0.0009965   10000
+1se 0.8850    77 0.010133 0.0010442   10000</code></pre>
+<ul>
+<li>The left dotted vertical line corresponds to minimum error. The
+right dotted vertical line corresponds to the largest value of
+lambda such that the error is within one standard-error of the
+minimum - the so-called “one-standard-error” rule.</li>
+<li>The numbers along the top margin show the number of nonzero
+coefficients in the regression models corresponding to the lambda
+values. All the plausible models have a number of nonzero
+coefficients equal to the dimensionality of the VSA vectors.</li>
+</ul>
+<p>Prior experimentation found that the minimising <span class="math inline">\(\lambda\)</span> is preferred
+over the model selected by the one-standard-error rule. The more heavily
+penalised model tends not to predict the extreme values of the outcome
+variable (too much shrinkage).</p>
+<p>Look at how well the learned function reconstructs the previously
+observed empirical relation from <span class="math inline">\(e \times e_{orth}\)</span> to <span class="math inline">\(u\)</span>.</p>
+<pre class="r"><code># add the predicted values to the test data frame
+d_test &lt;- d_test %&gt;% 
+  dplyr::mutate(u_hat = predict(fit_4, newdata = ., alpha = 0, s = &quot;lambda.min&quot;)) %&gt;%
+  dplyr::relocate(u_hat)</code></pre>
+<p>Check the distributions of <span class="math inline">\(e\)</span> and <span class="math inline">\(e_{orth}\)</span> values (remember - these
+were calculated from the grid of input variables).</p>
+<pre class="r"><code>summary(d_test$e)</code></pre>
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   -6.0    -2.5     0.0     0.0     2.5     6.0 </code></pre>
+<pre class="r"><code>d_test %&gt;% 
+  ggplot2::ggplot() +
+  geom_histogram(aes(x = e), bins = 100)</code></pre>
+<p><img src="figure/PID_task_analysis_VSA.Rmd/unnamed-chunk-35-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>summary(d_test$e_orth)</code></pre>
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  -5.00   -1.75    0.00    0.00    1.75    5.00 </code></pre>
+<pre class="r"><code>d_test %&gt;% 
+  ggplot2::ggplot() +
+  geom_histogram(aes(x = e_orth), bins = 100)</code></pre>
+<p><img src="figure/PID_task_analysis_VSA.Rmd/unnamed-chunk-35-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>d_test %&gt;% 
+  ggplot2::ggplot() +
+  geom_vline(xintercept = 0, colour = &quot;red&quot;) +
+  geom_jitter(aes(x = e, y = e_orth))</code></pre>
+<p><img src="figure/PID_task_analysis_VSA.Rmd/unnamed-chunk-35-3.png" width="672" style="display: block; margin: auto;" /></p>
+<ul>
+<li>Reasonable coverage of the <span class="math inline">\(e \times e_{orth}\)</span> plane.</li>
+</ul>
+<p>Check the distribution of predicted <span class="math inline">\(u\)</span> values.</p>
+<pre class="r"><code>summary(d_test$u_hat)</code></pre>
+<pre><code>   lambda.min      
+ Min.   :0.001295  
+ 1st Qu.:0.452549  
+ Median :0.475719  
+ Mean   :0.474845  
+ 3rd Qu.:0.499801  
+ Max.   :0.854391  </code></pre>
+<pre class="r"><code>d_test %&gt;% 
+  ggplot2::ggplot() +
+  geom_histogram(aes(x = u_hat), bins = 100)</code></pre>
+<p><img src="figure/PID_task_analysis_VSA.Rmd/unnamed-chunk-36-1.png" width="672" style="display: block; margin: auto;" /></p>
+<ul>
+<li>Too many central values and not enough extreme values. It looks like
+the model is underfit.</li>
+</ul>
+<p>Look at how well the learned function reconstructs the previously
+observed empirical relation between <span class="math inline">\(u\)</span> and <span class="math inline">\(e\)</span>.</p>
+<pre class="r"><code># plot of predicted u vs e * e_orth
+d_test %&gt;% 
+  ggplot() + 
+  geom_jitter(aes(x = e, y = e_orth, colour = u_hat)) +
+  scale_color_viridis_c()</code></pre>
+<p><img src="figure/PID_task_analysis_VSA.Rmd/unnamed-chunk-37-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>d_test %&gt;% 
+  ggplot() + 
+  geom_jitter(aes(x = e, y = e_orth, colour = u_hat)) +
+  scale_color_viridis_c() +
+  facet_wrap(facets = vars(k_tgt))</code></pre>
+<p><img src="figure/PID_task_analysis_VSA.Rmd/unnamed-chunk-37-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>d_test %&gt;% 
+  ggplot() + 
+  geom_point(aes(x = e, y = u_hat)) +
+  geom_smooth(aes(x = e, y = u_hat)) +
+  facet_wrap(facets = vars(k_tgt))</code></pre>
+<pre><code>`geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;</code></pre>
+<p><img src="figure/PID_task_analysis_VSA.Rmd/unnamed-chunk-37-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>d_test %&gt;% 
+  dplyr::filter(abs(e) &lt; 0.1) %&gt;% 
+  ggplot() + 
+  geom_point(aes(x = e_orth, y = u_hat)) +
+  geom_smooth(aes(x = e_orth, y = u_hat), method = &quot;lm&quot;) +
+  facet_wrap(facets = vars(k_tgt))</code></pre>
+<pre><code>`geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
+<p><img src="figure/PID_task_analysis_VSA.Rmd/unnamed-chunk-37-4.png" width="672" style="display: block; margin: auto;" /></p>
+<ul>
+<li>That’s pretty awful.</li>
+</ul>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.1.1 (2021-08-10)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: Ubuntu 21.04
+
+Matrix products: default
+BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.9.0
+LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.9.0
+
+locale:
+ [1] LC_CTYPE=en_AU.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_AU.UTF-8        LC_COLLATE=en_AU.UTF-8    
+ [5] LC_MONETARY=en_AU.UTF-8    LC_MESSAGES=en_AU.UTF-8   
+ [7] LC_PAPER=en_AU.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_AU.UTF-8 LC_IDENTIFICATION=C       
+
+attached base packages:
+[1] stats     graphics  grDevices datasets  utils     methods   base     
+
+other attached packages:
+ [1] purrr_0.3.4        DiagrammeR_1.0.6.1 lattice_0.20-44    glmnetUtils_1.1.8 
+ [5] glmnet_4.1-2       Matrix_1.3-4       tidyr_1.1.3        tibble_3.1.4      
+ [9] ggplot2_3.3.5      stringr_1.4.0      dplyr_1.0.7        vroom_1.5.4       
+[13] here_1.0.1         fs_1.5.0          
+
+loaded via a namespace (and not attached):
+ [1] Rcpp_1.0.7         visNetwork_2.0.9   rprojroot_2.0.2    digest_0.6.27     
+ [5] foreach_1.5.1      utf8_1.2.2         R6_2.5.1           evaluate_0.14     
+ [9] highr_0.9          pillar_1.6.2       rlang_0.4.11       rstudioapi_0.13   
+[13] whisker_0.4        rmarkdown_2.10     labeling_0.4.2     splines_4.1.1     
+[17] htmlwidgets_1.5.4  bit_4.0.4          munsell_0.5.0      compiler_4.1.1    
+[21] httpuv_1.6.3       xfun_0.25          pkgconfig_2.0.3    shape_1.4.6       
+[25] mgcv_1.8-36        htmltools_0.5.2    tidyselect_1.1.1   bookdown_0.24     
+[29] workflowr_1.6.2    codetools_0.2-18   viridisLite_0.4.0  fansi_0.5.0       
+[33] crayon_1.4.1       tzdb_0.1.2         withr_2.4.2        later_1.3.0       
+[37] grid_4.1.1         nlme_3.1-153       jsonlite_1.7.2     gtable_0.3.0      
+[41] lifecycle_1.0.0    git2r_0.28.0       magrittr_2.0.1     scales_1.1.1      
+[45] cli_3.0.1          stringi_1.7.4      farver_2.1.0       renv_0.14.0       
+[49] promises_1.2.0.1   ellipsis_0.3.2     generics_0.1.0     vctrs_0.3.8       
+[53] RColorBrewer_1.1-2 iterators_1.0.13   tools_4.1.1        bit64_4.0.5       
+[57] glue_1.4.2         parallel_4.1.1     fastmap_1.1.0      survival_3.2-13   
+[61] yaml_2.2.1         colorspace_2.0-2   knitr_1.34        </code></pre>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+http://docs.mathjax.org/en/latest/configuration.html.  This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3,h4,h5",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

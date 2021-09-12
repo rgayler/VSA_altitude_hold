@@ -391,7 +391,7 @@ plot(fit4, se = FALSE, scheme = 1, theta = -30)
 -   \~88% deviance explained. (This is only a slight increase relative
     to modelling only the $e$ term.)
 
-## With feature engineering
+## With feature engineering {#feature-engineering}
 
 Model the function, this time using features designed to capture the
 major aspects of the shape of the surface. Such features constitute a
